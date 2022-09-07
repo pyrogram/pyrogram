@@ -21,6 +21,7 @@ import ipaddress
 import logging
 import socket
 import time
+from concurrent.futures import ThreadPoolExecutor
 
 try:
     import socks
@@ -47,9 +48,8 @@ class TCP:
         self.lock = asyncio.Lock()
         self.loop = asyncio.get_event_loop()
 
-        if proxy.get("enabled", False):
-            hostname = proxy.get("hostname", None)
-            port = proxy.get("port", None)
+        if proxy:
+            hostname = proxy.get("hostname")
 
             try:
                 ip_address = ipaddress.ip_address(hostname)
@@ -62,14 +62,14 @@ class TCP:
                     self.socket = socks.socksocket(socket.AF_INET)
 
             self.socket.set_proxy(
-                proxy_type=socks.SOCKS5,
+                proxy_type=getattr(socks, proxy.get("scheme").upper()),
                 addr=hostname,
-                port=port,
+                port=proxy.get("port", None),
                 username=proxy.get("username", None),
                 password=proxy.get("password", None)
             )
 
-            log.info(f"Using proxy {hostname}:{port}")
+            log.info(f"Using proxy {hostname}")
         else:
             self.socket = socks.socksocket(
                 socket.AF_INET6 if ipv6
@@ -79,7 +79,11 @@ class TCP:
         self.socket.settimeout(TCP.TIMEOUT)
 
     async def connect(self, address: tuple):
-        self.socket.connect(address)
+        # The socket used by the whole logic is blocking and thus it blocks when connecting.
+        # Offload the task to a thread executor to avoid blocking the main event loop.
+        with ThreadPoolExecutor(1) as executor:
+            await self.loop.run_in_executor(executor, self.socket.connect, address)
+
         self.reader, self.writer = await asyncio.open_connection(sock=self.socket)
 
     def close(self):

@@ -20,7 +20,7 @@ Install Pyrogram
 
         $ pip3 install -U pyrogram
 
--   or, with :doc:`TgCrypto <../topics/tgcrypto>` as extra requirement (recommended):
+-   or, with :doc:`TgCrypto <../topics/speedups>` as extra requirement (recommended):
 
     .. code-block:: text
 

@@ -25,7 +25,7 @@ button:
 
     from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 
-    app.send_message(
+    await app.send_message(
         "username",  # Change this to your username or id
         "Pyrogram custom filter test",
         reply_markup=InlineKeyboardMarkup(
@@ -48,40 +48,20 @@ queries containing "pyrogram" as data:
 
     from pyrogram import filters
 
-    static_data_filter = filters.create(lambda _, __, query: query.data == "pyrogram")
-
-The first two arguments of the callback function are unused here and because of this we named them using underscores.
-
-The ``lambda`` operator in python is used to create small anonymous functions and is perfect for this example. The same
-can be achieved with a normal function, but we don't really need it as it makes sense only inside the filter's scope:
-
-.. code-block:: python
-
-    from pyrogram import filters
-
-    def func(_, __, query):
-        return query.data == "pyrogram"
-
-    static_data_filter = filters.create(func)
-
-Asynchronous filters are also possible. Sadly, Python itself doesn't have an ``async lambda``, so we are left with
-using a named function:
-
-.. code-block:: python
-
-    from pyrogram import filters
-
     async def func(_, __, query):
         return query.data == "pyrogram"
 
     static_data_filter = filters.create(func)
+
+
+The first two arguments of the callback function are unused here and because of this we named them using underscores.
 
 Finally, the filter usage remains the same:
 
 .. code-block:: python
 
     @app.on_callback_query(static_data_filter)
-    def pyrogram_data(_, query):
+    async def pyrogram_data(_, query):
         query.answer("it works!")
 
 Filters with Arguments
@@ -99,18 +79,6 @@ This is how a dynamic custom filter looks like:
     from pyrogram import filters
 
     def dynamic_data_filter(data):
-        return filters.create(
-            lambda flt, _, query: flt.data == query.data,
-            data=data  # "data" kwarg is accessed with "flt.data" above
-        )
-
-And its asynchronous variant:
-
-.. code-block:: python
-
-    from pyrogram import filters
-
-    def dynamic_data_filter(data):
         async def func(flt, _, query):
             return flt.data == query.data
 
@@ -122,7 +90,7 @@ And finally its usage:
 .. code-block:: python
 
     @app.on_callback_query(dynamic_data_filter("pyrogram"))
-    def pyrogram_data(_, query):
+    async def pyrogram_data(_, query):
         query.answer("it works!")
 
 
@@ -132,16 +100,6 @@ Method Calls Inside Filters
 The missing piece we haven't covered yet is the second argument of a filter callback function, namely, the ``client``
 argument. This is a reference to the :obj:`~pyrogram.Client` instance that is running the filter and it is useful in
 case you would like to make some API calls before deciding whether the filter should allow the update or not:
-
-.. code-block:: python
-
-    def func(_, client, query):
-        # r = client.some_api_method()
-        # check response "r" and decide to return True or False
-        ...
-
-Asynchronous filters making API calls work fine as well. Just remember that you need to put ``async`` in front of
-function definitions and ``await`` in front of method calls:
 
 .. code-block:: python
 

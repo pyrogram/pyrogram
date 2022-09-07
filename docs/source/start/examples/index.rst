@@ -17,9 +17,9 @@ to give you a basic idea.
     :align: center
 
     :doc:`hello_world`, "Demonstration of basic API usage"
-    :doc:`echobot`, "Echo every private text message"
-    :doc:`welcomebot`, "The Welcome Bot in @PyrogramChat"
-    :doc:`get_history`, "Get the full message history of a chat"
+    :doc:`echo_bot`, "Echo every private text message"
+    :doc:`welcome_bot`, "The Welcome Bot in @PyrogramChat"
+    :doc:`get_chat_history`, "Get the full message history of a chat"
     :doc:`get_chat_members`, "Get all the members of a chat"
     :doc:`get_dialogs`, "Get all of your dialog chats"
     :doc:`callback_queries`, "Handle callback queries (as bot) coming from inline button presses"
@@ -34,9 +34,9 @@ For more advanced examples, see https://snippets.pyrogram.org.
     :hidden:
 
     hello_world
-    echobot
-    welcomebot
-    get_history
+    echo_bot
+    welcome_bot
+    get_chat_history
     get_chat_members
     get_dialogs
     callback_queries

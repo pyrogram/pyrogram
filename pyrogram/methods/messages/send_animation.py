@@ -18,25 +18,26 @@
 
 import os
 import re
-from typing import Union, BinaryIO, List, Optional
+from datetime import datetime
+from typing import Union, BinaryIO, List, Optional, Callable
 
-from pyrogram import StopTransmission
+import pyrogram
+from pyrogram import StopTransmission, enums
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 
-class SendAnimation(Scaffold):
+class SendAnimation:
     async def send_animation(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         animation: Union[str, BinaryIO],
         caption: str = "",
         unsave: bool = False,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         width: int = 0,
@@ -45,7 +46,7 @@ class SendAnimation(Scaffold):
         file_name: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -53,7 +54,7 @@ class SendAnimation(Scaffold):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> Optional["types.Message"]:
         """Send animation files (animation or H.264/MPEG-4 AVC video without sound).
@@ -78,12 +79,9 @@ class SendAnimation(Scaffold):
                 By default, the server will save into your own collection any new animation you send.
                 Pass True to automatically unsave the sent animation. Defaults to False.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -114,8 +112,8 @@ class SendAnimation(Scaffold):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
@@ -124,7 +122,7 @@ class SendAnimation(Scaffold):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -155,19 +153,19 @@ class SendAnimation(Scaffold):
             .. code-block:: python
 
                 # Send animation by uploading from local file
-                app.send_animation("me", "animation.gif")
+                await app.send_animation("me", "animation.gif")
 
                 # Add caption to the animation
-                app.send_animation("me", "animation.gif", caption="animation caption")
+                await app.send_animation("me", "animation.gif", caption="animation caption")
 
                 # Unsave the animation once is sent
-                app.send_animation("me", "animation.gif", unsave=True)
+                await app.send_animation("me", "animation.gif", unsave=True)
 
                 # Keep track of the progress while uploading
-                def progress(current, total):
+                async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
 
-                app.send_animation("me", "animation.gif", progress=progress)
+                await app.send_animation("me", "animation.gif", progress=progress)
         """
         file = None
 
@@ -218,21 +216,21 @@ class SendAnimation(Scaffold):
 
             while True:
                 try:
-                    r = await self.send(
+                    r = await self.invoke(
                         raw.functions.messages.SendMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=media,
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
-                            schedule_date=schedule_date,
+                            schedule_date=utils.datetime_to_timestamp(schedule_date),
                             noforwards=protect_content,
                             reply_markup=await reply_markup.write(self) if reply_markup else None,
                             **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                         )
                     )
                 except FilePartMissing as e:
-                    await self.save_file(animation, file_id=file.id, file_part=e.x)
+                    await self.save_file(animation, file_id=file.id, file_part=e.value)
                 else:
                     for i in r.updates:
                         if isinstance(i, (raw.types.UpdateNewMessage,
@@ -251,7 +249,7 @@ class SendAnimation(Scaffold):
                                     document.file_id, FileType.ANIMATION
                                 ).id
 
-                                await self.send(
+                                await self.invoke(
                                     raw.functions.messages.SaveGif(
                                         id=document_id,
                                         unsave=True

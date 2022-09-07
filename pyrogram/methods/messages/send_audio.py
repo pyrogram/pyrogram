@@ -18,24 +18,25 @@
 
 import os
 import re
-from typing import Union, BinaryIO, List, Optional
+from datetime import datetime
+from typing import Union, BinaryIO, List, Optional, Callable
 
-from pyrogram import StopTransmission
+import pyrogram
+from pyrogram import StopTransmission, enums
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
 from pyrogram.errors import FilePartMissing
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 
 
-class SendAudio(Scaffold):
+class SendAudio:
     async def send_audio(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         audio: Union[str, BinaryIO],
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         duration: int = 0,
         performer: str = None,
@@ -44,7 +45,7 @@ class SendAudio(Scaffold):
         file_name: str = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -52,7 +53,7 @@ class SendAudio(Scaffold):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        progress: callable = None,
+        progress: Callable = None,
         progress_args: tuple = ()
     ) -> Optional["types.Message"]:
         """Send audio files.
@@ -75,12 +76,9 @@ class SendAudio(Scaffold):
             caption (``str``, *optional*):
                 Audio caption, 0-1024 characters.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -111,8 +109,8 @@ class SendAudio(Scaffold):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
@@ -121,7 +119,7 @@ class SendAudio(Scaffold):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
 
-            progress (``callable``, *optional*):
+            progress (``Callable``, *optional*):
                 Pass a callback function to view the file transmission progress.
                 The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
                 detailed description) and will be called back each time a new file chunk has been successfully
@@ -151,21 +149,21 @@ class SendAudio(Scaffold):
             .. code-block:: python
 
                 # Send audio file by uploading from file
-                app.send_audio("me", "audio.mp3")
+                await app.send_audio("me", "audio.mp3")
 
                 # Add caption to the audio
-                app.send_audio("me", "audio.mp3", caption="audio caption")
+                await app.send_audio("me", "audio.mp3", caption="audio caption")
 
                 # Set audio metadata
-                app.send_audio(
+                await app.send_audio(
                     "me", "audio.mp3",
                     title="Title", performer="Performer", duration=234)
 
                 # Keep track of the progress while uploading
-                def progress(current, total):
+                async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
 
-                app.send_audio("me", "audio.mp3", progress=progress)
+                await app.send_audio("me", "audio.mp3", progress=progress)
         """
         file = None
 
@@ -212,21 +210,21 @@ class SendAudio(Scaffold):
 
             while True:
                 try:
-                    r = await self.send(
+                    r = await self.invoke(
                         raw.functions.messages.SendMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=media,
                             silent=disable_notification or None,
                             reply_to_msg_id=reply_to_message_id,
                             random_id=self.rnd_id(),
-                            schedule_date=schedule_date,
+                            schedule_date=utils.datetime_to_timestamp(schedule_date),
                             noforwards=protect_content,
                             reply_markup=await reply_markup.write(self) if reply_markup else None,
                             **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                         )
                     )
                 except FilePartMissing as e:
-                    await self.save_file(audio, file_id=file.id, file_part=e.x)
+                    await self.save_file(audio, file_id=file.id, file_part=e.value)
                 else:
                     for i in r.updates:
                         if isinstance(i, (raw.types.UpdateNewMessage,

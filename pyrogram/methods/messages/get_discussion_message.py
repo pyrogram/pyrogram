@@ -18,20 +18,21 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetDiscussionMessage(Scaffold):
+class GetDiscussionMessage:
     async def get_discussion_message(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
     ) -> "types.Message":
-        """Get the discussion message from the linked discussion group of a channel post.
+        """Get the first discussion message of a channel post or a discussion thread in a group.
 
-        Reply to the returned message to leave a comment on the linked channel post.
+        Reply to the returned message to leave a comment on the linked channel post or to continue
+        the discussion thread.
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -44,12 +45,12 @@ class GetDiscussionMessage(Scaffold):
             .. code-block:: python
 
                 # Get the discussion message
-                m = app.get_discussion_message(channel_id, message_id)
+                m = await app.get_discussion_message(channel_id, message_id)
 
                 # Comment to the post by replying
-                m.reply("comment")
+                await m.reply("comment")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetDiscussionMessage(
                 peer=await self.resolve_peer(chat_id),
                 msg_id=message_id

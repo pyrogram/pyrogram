@@ -18,16 +18,17 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SendReaction(Scaffold):
+class SendReaction:
     async def send_reaction(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
-        emoji: str = ""
+        emoji: str = "",
+        big: bool = False
     ) -> bool:
         """Send a reaction to a message.
 
@@ -41,6 +42,10 @@ class SendReaction(Scaffold):
             emoji (``str``, *optional*):
                 Reaction emoji.
                 Pass "" as emoji (default) to retract the reaction.
+            
+            big (``bool``, *optional*):
+                Pass True to show a bigger and longer reaction.
+                Defaults to False.
 
         Returns:
             ``bool``: On success, True is returned.
@@ -49,16 +54,17 @@ class SendReaction(Scaffold):
             .. code-block:: python
 
                 # Send a reaction
-                app.send_reaction(chat_id, message_id, "🔥")
+                await app.send_reaction(chat_id, message_id, "🔥")
 
                 # Retract a reaction
-                app.send_reaction(chat_id, message_id)
+                await app.send_reaction(chat_id, message_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.messages.SendReaction(
                 peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,
-                reaction=emoji
+                reaction=[raw.types.ReactionEmoji(emoticon=emoji)] if emoji else None,
+                big=big
             )
         )
 

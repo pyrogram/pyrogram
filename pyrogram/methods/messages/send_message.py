@@ -16,24 +16,25 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union, List, Optional
 
-from pyrogram import raw, utils
+import pyrogram
+from pyrogram import raw, utils, enums
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class SendMessage(Scaffold):
+class SendMessage:
     async def send_message(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -53,12 +54,9 @@ class SendMessage(Scaffold):
             text (``str``):
                 Text of the message to be sent.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in message text, which can be specified instead of *parse_mode*.
@@ -73,8 +71,8 @@ class SendMessage(Scaffold):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
@@ -90,31 +88,29 @@ class SendMessage(Scaffold):
             .. code-block:: python
 
                 # Simple example
-                app.send_message("me", "Message sent with **Pyrogram**!")
+                await app.send_message("me", "Message sent with **Pyrogram**!")
 
                 # Disable web page previews
-                app.send_message("me", "https://docs.pyrogram.org", disable_web_page_preview=True)
+                await app.send_message("me", "https://docs.pyrogram.org",
+                    disable_web_page_preview=True)
 
                 # Reply to a message using its id
-                app.send_message("me", "this is a reply", reply_to_message_id=12345)
+                await app.send_message("me", "this is a reply", reply_to_message_id=123)
 
-                # Force HTML-only styles for this request only
-                app.send_message("me", "**not bold**, <i>italic<i>", parse_mode="html")
+            .. code-block:: python
 
-                ##
                 # For bots only, send messages with keyboards attached
-                ##
 
                 from pyrogram.types import (
                     ReplyKeyboardMarkup, InlineKeyboardMarkup, InlineKeyboardButton)
 
                 # Send a normal keyboard
-                app.send_message(
+                await app.send_message(
                     chat_id, "Look at that button!",
                     reply_markup=ReplyKeyboardMarkup([["Nice!"]]))
 
                 # Send an inline keyboard
-                app.send_message(
+                await app.send_message(
                     chat_id, "These are inline buttons",
                     reply_markup=InlineKeyboardMarkup(
                         [
@@ -125,14 +121,14 @@ class SendMessage(Scaffold):
 
         message, entities = (await utils.parse_text_entities(self, text, parse_mode, entities)).values()
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMessage(
                 peer=await self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
-                schedule_date=schedule_date,
+                schedule_date=utils.datetime_to_timestamp(schedule_date),
                 reply_markup=await reply_markup.write(self) if reply_markup else None,
                 message=message,
                 entities=entities,
@@ -150,20 +146,20 @@ class SendMessage(Scaffold):
             )
 
             return types.Message(
-                message_id=r.id,
+                id=r.id,
                 chat=types.Chat(
                     id=peer_id,
-                    type="private",
+                    type=enums.ChatType.PRIVATE,
                     client=self
                 ),
                 text=message,
-                date=r.date,
+                date=utils.timestamp_to_datetime(r.date),
                 outgoing=r.out,
                 reply_markup=reply_markup,
                 entities=[
                     types.MessageEntity._parse(None, entity, {})
                     for entity in entities
-                ],
+                ] if entities else None,
                 client=self
             )
 

@@ -18,17 +18,20 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram.errors import PhoneMigrate, NetworkMigrate
-from pyrogram.scaffold import Scaffold
 from pyrogram.session import Session, Auth
 
 log = logging.getLogger(__name__)
 
 
-class SendCode(Scaffold):
-    async def send_code(self, phone_number: str) -> "types.SentCode":
+class SendCode:
+    async def send_code(
+        self: "pyrogram.Client",
+        phone_number: str
+    ) -> "types.SentCode":
         """Send the confirmation code to the given phone number.
 
         Parameters:
@@ -46,7 +49,7 @@ class SendCode(Scaffold):
 
         while True:
             try:
-                r = await self.send(
+                r = await self.invoke(
                     raw.functions.auth.SendCode(
                         phone_number=phone_number,
                         api_id=self.api_id,
@@ -57,7 +60,7 @@ class SendCode(Scaffold):
             except (PhoneMigrate, NetworkMigrate) as e:
                 await self.session.stop()
 
-                await self.storage.dc_id(e.x)
+                await self.storage.dc_id(e.value)
                 await self.storage.auth_key(
                     await Auth(
                         self, await self.storage.dc_id(),

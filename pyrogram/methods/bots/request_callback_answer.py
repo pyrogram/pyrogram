@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class RequestCallbackAnswer(Scaffold):
+class RequestCallbackAnswer:
     async def request_callback_answer(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         callback_data: Union[str, bytes],
@@ -58,13 +58,13 @@ class RequestCallbackAnswer(Scaffold):
         Example:
             .. code-block:: python
 
-                app.request_callback_answer(chat_id, message_id, "callback_data")
+                await app.request_callback_answer(chat_id, message_id, "callback_data")
         """
 
         # Telegram only wants bytes, but we are allowed to pass strings too.
         data = bytes(callback_data, "utf-8") if isinstance(callback_data, str) else callback_data
 
-        return await self.send(
+        return await self.invoke(
             raw.functions.messages.GetBotCallbackAnswer(
                 peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,

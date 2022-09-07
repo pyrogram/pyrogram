@@ -16,12 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from base64 import b64encode
-from struct import pack
 from typing import Union, List, Match, Optional
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 from pyrogram import types
 from ..object import Object
 from ..update import Update
@@ -89,22 +87,20 @@ class CallbackQuery(Object, Update):
         self.matches = matches
 
     @staticmethod
-    async def _parse(client, callback_query, users) -> "CallbackQuery":
+    async def _parse(client: "pyrogram.Client", callback_query, users) -> "CallbackQuery":
         message = None
         inline_message_id = None
 
         if isinstance(callback_query, raw.types.UpdateBotCallbackQuery):
-            message = await client.get_messages(utils.get_peer_id(callback_query.peer), callback_query.msg_id)
+            chat_id = utils.get_peer_id(callback_query.peer)
+            message_id = callback_query.msg_id
+
+            message = client.message_cache[(chat_id, message_id)]
+
+            if not message:
+                message = await client.get_messages(chat_id, message_id)
         elif isinstance(callback_query, raw.types.UpdateInlineBotCallbackQuery):
-            inline_message_id = b64encode(
-                pack(
-                    "<iqq",
-                    callback_query.msg_id.dc_id,
-                    callback_query.msg_id.id,
-                    callback_query.msg_id.access_hash
-                ),
-                b"-_"
-            ).decode().rstrip("=")
+            inline_message_id = utils.pack_inline_message_id(callback_query.msg_id)
 
         # Try to decode callback query data into string. If that fails, fallback to bytes instead of decoding by
         # ignoring/replacing errors, this way, button clicks will still work.
@@ -131,7 +127,7 @@ class CallbackQuery(Object, Update):
 
         .. code-block:: python
 
-            client.answer_callback_query(
+            await client.answer_callback_query(
                 callback_query.id,
                 text="Hello",
                 show_alert=True
@@ -140,7 +136,7 @@ class CallbackQuery(Object, Update):
         Example:
             .. code-block:: python
 
-                callback_query.answer("Hello", show_alert=True)
+                await callback_query.answer("Hello", show_alert=True)
 
         Parameters:
             text (``str``, *optional*):
@@ -171,7 +167,7 @@ class CallbackQuery(Object, Update):
     async def edit_message_text(
         self,
         text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> Union["types.Message", bool]:
@@ -183,12 +179,9 @@ class CallbackQuery(Object, Update):
             text (``str``):
                 New text of the message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             disable_web_page_preview (``bool``, *optional*):
                 Disables link previews for links in this message.
@@ -206,7 +199,7 @@ class CallbackQuery(Object, Update):
         if self.inline_message_id is None:
             return await self._client.edit_message_text(
                 chat_id=self.message.chat.id,
-                message_id=self.message.message_id,
+                message_id=self.message.id,
                 text=text,
                 parse_mode=parse_mode,
                 disable_web_page_preview=disable_web_page_preview,
@@ -224,7 +217,7 @@ class CallbackQuery(Object, Update):
     async def edit_message_caption(
         self,
         caption: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> Union["types.Message", bool]:
         """Edit the caption of media messages attached to callback queries.
@@ -235,12 +228,9 @@ class CallbackQuery(Object, Update):
             caption (``str``):
                 New caption of the message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
@@ -280,7 +270,7 @@ class CallbackQuery(Object, Update):
         if self.inline_message_id is None:
             return await self._client.edit_message_media(
                 chat_id=self.message.chat.id,
-                message_id=self.message.message_id,
+                message_id=self.message.id,
                 media=media,
                 reply_markup=reply_markup
             )
@@ -313,7 +303,7 @@ class CallbackQuery(Object, Update):
         if self.inline_message_id is None:
             return await self._client.edit_message_reply_markup(
                 chat_id=self.message.chat.id,
-                message_id=self.message.message_id,
+                message_id=self.message.id,
                 reply_markup=reply_markup
             )
         else:

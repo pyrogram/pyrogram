@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SetChatDescription(Scaffold):
+class SetChatDescription:
     async def set_chat_description(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         description: str
     ) -> bool:
@@ -47,12 +47,12 @@ class SetChatDescription(Scaffold):
         Example:
             .. code-block:: python
 
-                app.set_chat_description(chat_id, "New Description")
+                await app.set_chat_description(chat_id, "New Description")
         """
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, (raw.types.InputPeerChannel, raw.types.InputPeerChat)):
-            await self.send(
+            await self.invoke(
                 raw.functions.messages.EditChatAbout(
                     peer=peer,
                     about=description

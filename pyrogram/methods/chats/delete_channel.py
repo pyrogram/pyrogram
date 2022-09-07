@@ -18,12 +18,15 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class DeleteChannel(Scaffold):
-    async def delete_channel(self, chat_id: Union[int, str]) -> bool:
+class DeleteChannel:
+    async def delete_channel(
+        self: "pyrogram.Client",
+        chat_id: Union[int, str]
+    ) -> bool:
         """Delete a channel.
 
         Parameters:
@@ -36,9 +39,9 @@ class DeleteChannel(Scaffold):
         Example:
             .. code-block:: python
 
-                app.delete_channel(channel_id)
+                await app.delete_channel(channel_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.channels.DeleteChannel(
                 channel=await self.resolve_peer(chat_id)
             )

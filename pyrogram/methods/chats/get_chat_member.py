@@ -18,15 +18,15 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram.errors import UserNotParticipant
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatMember(Scaffold):
+class GetChatMember:
     async def get_chat_member(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str]
     ) -> "types.ChatMember":
@@ -47,14 +47,14 @@ class GetChatMember(Scaffold):
         Example:
             .. code-block:: python
 
-                member = app.get_chat_member(chat_id, "me")
+                member = await app.get_chat_member(chat_id, "me")
                 print(member)
         """
         chat = await self.resolve_peer(chat_id)
         user = await self.resolve_peer(user_id)
 
         if isinstance(chat, raw.types.InputPeerChat):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.messages.GetFullChat(
                     chat_id=chat.chat_id
                 )
@@ -75,7 +75,7 @@ class GetChatMember(Scaffold):
             else:
                 raise UserNotParticipant
         elif isinstance(chat, raw.types.InputPeerChannel):
-            r = await self.send(
+            r = await self.invoke(
                 raw.functions.channels.GetParticipant(
                     channel=chat,
                     participant=user

@@ -18,19 +18,19 @@
 
 from typing import Union, List, Optional
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 
-class EditMessageText(Scaffold):
+class EditMessageText:
     async def edit_message_text(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         text: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         entities: List["types.MessageEntity"] = None,
         disable_web_page_preview: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
@@ -49,12 +49,9 @@ class EditMessageText(Scaffold):
             text (``str``):
                 New text of the message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in message text, which can be specified instead of *parse_mode*.
@@ -72,15 +69,15 @@ class EditMessageText(Scaffold):
             .. code-block:: python
 
                 # Simple edit text
-                app.edit_message_text(chat_id, message_id, "new text")
+                await app.edit_message_text(chat_id, message_id, "new text")
 
                 # Take the same text message, remove the web page preview only
-                app.edit_message_text(
+                await app.edit_message_text(
                     chat_id, message_id, message.text,
                     disable_web_page_preview=True)
         """
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.EditMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

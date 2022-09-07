@@ -15,15 +15,14 @@
 #
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
-
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class CreateChannel(Scaffold):
+class CreateChannel:
     async def create_channel(
-        self,
+        self: "pyrogram.Client",
         title: str,
         description: str = ""
     ) -> "types.Chat":
@@ -42,9 +41,9 @@ class CreateChannel(Scaffold):
         Example:
             .. code-block:: python
 
-                app.create_channel("Channel Title", "Channel Description")
+                await app.create_channel("Channel Title", "Channel Description")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.channels.CreateChannel(
                 title=title,
                 about=description,

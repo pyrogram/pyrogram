@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class UnpinChatMessage(Scaffold):
+class UnpinChatMessage:
     async def unpin_chat_message(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int = 0
     ) -> bool:
@@ -46,9 +46,9 @@ class UnpinChatMessage(Scaffold):
         Example:
             .. code-block:: python
 
-                app.unpin_chat_message(chat_id, message_id)
+                await app.unpin_chat_message(chat_id, message_id)
         """
-        await self.send(
+        await self.invoke(
             raw.functions.messages.UpdatePinnedMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,

@@ -26,12 +26,12 @@ For example, take these two handlers:
 .. code-block:: python
 
     @app.on_message(filters.text | filters.sticker)
-    def text_or_sticker(client, message):
+    async def text_or_sticker(client, message):
         print("Text or Sticker")
 
 
     @app.on_message(filters.text)
-    def just_text(client, message):
+    async def just_text(client, message):
         print("Just Text")
 
 Here, ``just_text`` is never executed because ``text_or_sticker``, which has been registered first, already handles
@@ -40,7 +40,7 @@ texts (``filters.text`` is shared and conflicting). To enable it, register the h
 .. code-block:: python
 
     @app.on_message(filters.text, group=1)
-    def just_text(client, message):
+    async def just_text(client, message):
         print("Just Text")
 
 Or, if you want ``just_text`` to be executed *before* ``text_or_sticker`` (note ``-1``, which is less than ``0``):
@@ -48,7 +48,7 @@ Or, if you want ``just_text`` to be executed *before* ``text_or_sticker`` (note 
 .. code-block:: python
 
     @app.on_message(filters.text, group=-1)
-    def just_text(client, message):
+    async def just_text(client, message):
         print("Just Text")
 
 With :meth:`~pyrogram.Client.add_handler` (without decorators) the same can be achieved with:
@@ -68,17 +68,17 @@ continue to propagate the same update to the next groups until all the handlers 
 .. code-block:: python
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(0)
 
 
     @app.on_message(filters.private, group=1)
-    def _(client, message):
+    async def _(client, message):
         raise Exception("Unhandled exception!")  # Simulate an unhandled exception
 
 
     @app.on_message(filters.private, group=2)
-    def _(client, message):
+    async def _(client, message):
         print(2)
 
 All these handlers will handle the same kind of messages, that are, messages sent or received in private chats.
@@ -110,18 +110,18 @@ Example with ``stop_propagation()``:
 .. code-block:: python
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(0)
 
 
     @app.on_message(filters.private, group=1)
-    def _(client, message):
+    async def _(client, message):
         print(1)
         message.stop_propagation()
 
 
     @app.on_message(filters.private, group=2)
-    def _(client, message):
+    async def _(client, message):
         print(2)
 
 Example with ``raise StopPropagation``:
@@ -131,18 +131,18 @@ Example with ``raise StopPropagation``:
     from pyrogram import StopPropagation
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(0)
 
 
     @app.on_message(filters.private, group=1)
-    def _(client, message):
+    async ef _(client, message):
         print(1)
         raise StopPropagation
 
 
     @app.on_message(filters.private, group=2)
-    def _(client, message):
+    async def _(client, message):
         print(2)
 
 Each handler is registered in a different group, but the handler in group number 2 will never be executed because the
@@ -178,19 +178,19 @@ Example with ``continue_propagation()``:
 .. code-block:: python
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(0)
         message.continue_propagation()
 
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(1)
         message.continue_propagation()
 
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(2)
 
 Example with ``raise ContinuePropagation``:
@@ -200,19 +200,19 @@ Example with ``raise ContinuePropagation``:
     from pyrogram import ContinuePropagation
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(0)
         raise ContinuePropagation
 
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(1)
         raise ContinuePropagation
 
 
     @app.on_message(filters.private)
-    def _(client, message):
+    async def _(client, message):
         print(2)
 
 Three handlers are registered in the same group, and all of them will be executed because the propagation was continued

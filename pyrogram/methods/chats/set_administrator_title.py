@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SetAdministratorTitle(Scaffold):
+class SetAdministratorTitle:
     async def set_administrator_title(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
         title: str,
@@ -52,12 +52,12 @@ class SetAdministratorTitle(Scaffold):
         Example:
             .. code-block:: python
 
-                app.set_administrator_title(chat_id, user_id, "Admin Title")
+                await app.set_administrator_title(chat_id, user_id, "Admin Title")
         """
         chat_id = await self.resolve_peer(chat_id)
         user_id = await self.resolve_peer(user_id)
 
-        r = (await self.send(
+        r = (await self.invoke(
             raw.functions.channels.GetParticipant(
                 channel=chat_id,
                 participant=user_id
@@ -65,46 +65,13 @@ class SetAdministratorTitle(Scaffold):
         )).participant
 
         if isinstance(r, raw.types.ChannelParticipantCreator):
-            admin_rights = raw.types.ChatAdminRights(
-                change_info=True,
-                post_messages=True,
-                edit_messages=True,
-                delete_messages=True,
-                ban_users=True,
-                invite_users=True,
-                pin_messages=True,
-                add_admins=True,
-            )
+            admin_rights = raw.types.ChatAdminRights()
         elif isinstance(r, raw.types.ChannelParticipantAdmin):
             admin_rights = r.admin_rights
         else:
             raise ValueError("Custom titles can only be applied to owners or administrators of supergroups")
 
-        if not admin_rights.change_info:
-            admin_rights.change_info = None
-
-        if not admin_rights.post_messages:
-            admin_rights.post_messages = None
-
-        if not admin_rights.edit_messages:
-            admin_rights.edit_messages = None
-
-        if not admin_rights.delete_messages:
-            admin_rights.delete_messages = None
-
-        if not admin_rights.ban_users:
-            admin_rights.ban_users = None
-
-        if not admin_rights.invite_users:
-            admin_rights.invite_users = None
-
-        if not admin_rights.pin_messages:
-            admin_rights.pin_messages = None
-
-        if not admin_rights.add_admins:
-            admin_rights.add_admins = None
-
-        await self.send(
+        await self.invoke(
             raw.functions.channels.EditAdmin(
                 channel=chat_id,
                 user_id=user_id,

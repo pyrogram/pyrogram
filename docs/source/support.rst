@@ -7,14 +7,16 @@ Support Pyrogram
 
     <div style="float: right; margin-bottom: 10px">
         <a class="github-button"
-           href="https://github.com/pyrogram/pyrogram/fork"
-           data-icon="octicon-repo-forked" data-size="large" data-show-count="true"
-           aria-label="Fork pyrogram/pyrogram on GitHub">Fork</a>
+           href="https://github.com/pyrogram/pyrogram"
+           data-color-scheme="no-preference: light; light: light; dark: dark;"
+           data-icon="octicon-star" data-size="large" data-show-count="true"
+           aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
 
         <a class="github-button"
-           href="https://github.com/pyrogram/pyrogram"
-           data-icon="octicon-star" data-size="large"
-           data-show-count="true" aria-label="Star pyrogram/pyrogram on GitHub">Star</a>
+           href="https://github.com/pyrogram/pyrogram/fork"
+           data-color-scheme="no-preference: light; light: light; dark: dark;"
+           data-icon="octicon-repo-forked" data-size="large"
+           data-show-count="true" aria-label="Fork pyrogram/pyrogram on GitHub">Fork</a>
     </div>
 
     <br style="clear: both"/>
@@ -34,10 +36,9 @@ GitHub Sponsor
 
     <a class="github-button"
        href="https://github.com/sponsors/delivrance"
-       data-icon="octicon-heart"
-       data-size="large"
-       aria-label="Sponsor @delivrance on GitHub">
-    Sponsor</a>
+       data-color-scheme="no-preference: light; light: light; dark: dark;"
+       data-icon="octicon-heart" data-size="large"
+       aria-label="Sponsor @delivrance on GitHub">Sponsor</a>
 
 -----
 

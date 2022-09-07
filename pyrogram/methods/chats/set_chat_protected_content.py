@@ -18,13 +18,13 @@
 
 from typing import Union
 
-from pyrogram.raw import functions
-from pyrogram.scaffold import Scaffold
+import pyrogram
+from pyrogram import raw
 
 
-class SetChatProtectedContent(Scaffold):
+class SetChatProtectedContent:
     async def set_chat_protected_content(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         enabled: bool
     ) -> bool:
@@ -41,8 +41,8 @@ class SetChatProtectedContent(Scaffold):
             ``bool``: On success, True is returned.
         """
 
-        await self.send(
-            functions.messages.ToggleNoForwards(
+        await self.invoke(
+            raw.functions.messages.ToggleNoForwards(
                 peer=await self.resolve_peer(chat_id),
                 enabled=enabled
             )

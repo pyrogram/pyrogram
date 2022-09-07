@@ -16,87 +16,22 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from enum import Enum, auto
 from typing import Optional
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums
 from pyrogram import types
 from ..object import Object
 
 
-class AutoName(Enum):
-    def _generate_next_value_(self, *args):
-        return self.lower()
-
-
-class MessageEntityType(AutoName):
-    MENTION = auto()
-    HASHTAG = auto()
-    CASHTAG = auto()
-    BOT_COMMAND = auto()
-    URL = auto()
-    EMAIL = auto()
-    PHONE_NUMBER = auto()
-    BOLD = auto()
-    ITALIC = auto()
-    UNDERLINE = auto()
-    STRIKETHROUGH = auto()
-    SPOILER = auto()
-    CODE = auto()
-    PRE = auto()
-    TEXT_LINK = auto()
-    TEXT_MENTION = auto()
-    BLOCKQUOTE = auto()
-
-
-RAW_ENTITIES_TO_TYPE = {
-    raw.types.MessageEntityMention: MessageEntityType.MENTION,
-    raw.types.MessageEntityHashtag: MessageEntityType.HASHTAG,
-    raw.types.MessageEntityCashtag: MessageEntityType.CASHTAG,
-    raw.types.MessageEntityBotCommand: MessageEntityType.BOT_COMMAND,
-    raw.types.MessageEntityUrl: MessageEntityType.URL,
-    raw.types.MessageEntityEmail: MessageEntityType.EMAIL,
-    raw.types.MessageEntityBold: MessageEntityType.BOLD,
-    raw.types.MessageEntityItalic: MessageEntityType.ITALIC,
-    raw.types.MessageEntityCode: MessageEntityType.CODE,
-    raw.types.MessageEntityPre: MessageEntityType.PRE,
-    raw.types.MessageEntityUnderline: MessageEntityType.UNDERLINE,
-    raw.types.MessageEntityStrike: MessageEntityType.STRIKETHROUGH,
-    raw.types.MessageEntitySpoiler: MessageEntityType.SPOILER,
-    raw.types.MessageEntityBlockquote: MessageEntityType.BLOCKQUOTE,
-    raw.types.MessageEntityTextUrl: MessageEntityType.TEXT_LINK,
-    raw.types.MessageEntityMentionName: MessageEntityType.TEXT_MENTION,
-    raw.types.MessageEntityPhone: MessageEntityType.PHONE_NUMBER
-}
-
-TYPE_TO_RAW_ENTITIES = {v.value: k for k, v in RAW_ENTITIES_TO_TYPE.items()}
-
-
 class MessageEntity(Object):
     """One special entity in a text message.
+    
     For example, hashtags, usernames, URLs, etc.
 
     Parameters:
-        type (``str``):
-            Type of the entity. Can be:
-
-            - "mention": ``@username``.
-            - "hashtag": ``#hashtag``.
-            - "cashtag": ``$PYRO``.
-            - "bot_command": ``/start@pyrogrambot``.
-            - "url": ``https://pyrogram.org`` (see *url* below).
-            - "email": ``do-not-reply@pyrogram.org``.
-            - "phone_number": ``+1-123-456-7890``.
-            - "bold": **bold text**.
-            - "italic": *italic text*.
-            - "underline": underlined text.
-            - "strikethrough": strikethrough text.
-            - "spoiler": spoiler text.
-            - "code": monowidth string.
-            - "pre": monowidth block (see *language* below).
-            - "text_link": for clickable text URLs.
-            - "text_mention": for users without usernames (see *user* below).
+        type (:obj:`~pyrogram.enums.MessageEntityType`):
+            Type of the entity.
 
         offset (``int``):
             Offset in UTF-16 code units to the start of the entity.
@@ -105,25 +40,30 @@ class MessageEntity(Object):
             Length of the entity in UTF-16 code units.
 
         url (``str``, *optional*):
-            For "text_link" only, url that will be opened after user taps on the text.
+            For :obj:`~pyrogram.enums.MessageEntityType.TEXT_LINK` only, url that will be opened after user taps on the text.
 
         user (:obj:`~pyrogram.types.User`, *optional*):
-            For "text_mention" only, the mentioned user.
+            For :obj:`~pyrogram.enums.MessageEntityType.TEXT_MENTION` only, the mentioned user.
 
-        language (``str``. *optional*):
+        language (``str``, *optional*):
             For "pre" only, the programming language of the entity text.
+
+        custom_emoji_id (``int``, *optional*):
+            For :obj:`~pyrogram.enums.MessageEntityType.CUSTOM_EMOJI` only, unique identifier of the custom emoji.
+            Use :meth:`~pyrogram.Client.get_custom_emoji_stickers` to get full information about the sticker.
     """
 
     def __init__(
         self,
         *,
         client: "pyrogram.Client" = None,
-        type: str,
+        type: "enums.MessageEntityType",
         offset: int,
         length: int,
         url: str = None,
         user: "types.User" = None,
-        language: str = None
+        language: str = None,
+        custom_emoji_id: int = None
     ):
         super().__init__(client)
 
@@ -133,21 +73,27 @@ class MessageEntity(Object):
         self.url = url
         self.user = user
         self.language = language
+        self.custom_emoji_id = custom_emoji_id
 
     @staticmethod
-    def _parse(client, entity, users: dict) -> Optional["MessageEntity"]:
-        type = RAW_ENTITIES_TO_TYPE.get(entity.__class__, None)
-
-        if type is None:
-            return None
+    def _parse(client, entity: "raw.base.MessageEntity", users: dict) -> Optional["MessageEntity"]:
+        # Special case for InputMessageEntityMentionName -> MessageEntityType.TEXT_MENTION
+        # This happens in case of UpdateShortSentMessage inside send_message() where entities are parsed from the input
+        if isinstance(entity, raw.types.InputMessageEntityMentionName):
+            entity_type = enums.MessageEntityType.TEXT_MENTION
+            user_id = entity.user_id.user_id
+        else:
+            entity_type = enums.MessageEntityType(entity.__class__)
+            user_id = getattr(entity, "user_id", None)
 
         return MessageEntity(
-            type=type.value,
+            type=entity_type,
             offset=entity.offset,
             length=entity.length,
             url=getattr(entity, "url", None),
-            user=types.User._parse(client, users.get(getattr(entity, "user_id", None), None)),
+            user=types.User._parse(client, users.get(user_id, None)),
             language=getattr(entity, "language", None),
+            custom_emoji_id=getattr(entity, "document_id", None),
             client=client
         )
 
@@ -166,15 +112,13 @@ class MessageEntity(Object):
         if self.language is None:
             args.pop("language")
 
-        try:
-            entity = TYPE_TO_RAW_ENTITIES[self.type]
+        args.pop("custom_emoji_id")
+        if self.custom_emoji_id is not None:
+            args["document_id"] = self.custom_emoji_id
 
-            if entity is raw.types.MessageEntityMentionName:
-                entity = raw.types.InputMessageEntityMentionName
-        except KeyError as e:
-            raise ValueError(f"Invalid message entity type {e}")
-        else:
-            try:
-                return entity(**args)
-            except TypeError as e:
-                raise TypeError(f"{entity.QUALNAME}'s {e}")
+        entity = self.type.value
+
+        if entity is raw.types.MessageEntityMentionName:
+            entity = raw.types.InputMessageEntityMentionName
+
+        return entity(**args)

@@ -19,16 +19,16 @@
 import logging
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class SignIn(Scaffold):
+class SignIn:
     async def sign_in(
-        self,
+        self: "pyrogram.Client",
         phone_number: str,
         phone_code_hash: str,
         phone_code: str
@@ -58,7 +58,7 @@ class SignIn(Scaffold):
         """
         phone_number = phone_number.strip(" +")
 
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.auth.SignIn(
                 phone_number=phone_number,
                 phone_code_hash=phone_code_hash,

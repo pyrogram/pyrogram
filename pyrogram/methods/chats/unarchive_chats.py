@@ -18,13 +18,13 @@
 
 from typing import Union, List
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class UnarchiveChats(Scaffold):
+class UnarchiveChats:
     async def unarchive_chats(
-        self,
+        self: "pyrogram.Client",
         chat_ids: Union[int, str, List[Union[int, str]]],
     ) -> bool:
         """Unarchive one or more chats.
@@ -41,10 +41,10 @@ class UnarchiveChats(Scaffold):
             .. code-block:: python
 
                 # Unarchive chat
-                app.unarchive_chats(chat_id)
+                await app.unarchive_chats(chat_id)
 
                 # Unarchive multiple chats at once
-                app.unarchive_chats([chat_id1, chat_id2, chat_id3])
+                await app.unarchive_chats([chat_id1, chat_id2, chat_id3])
         """
 
         if not isinstance(chat_ids, list):
@@ -60,7 +60,7 @@ class UnarchiveChats(Scaffold):
                 )
             )
 
-        await self.send(
+        await self.invoke(
             raw.functions.folders.EditPeerFolders(
                 folder_peers=folder_peers
             )

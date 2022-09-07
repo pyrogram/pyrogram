@@ -20,16 +20,15 @@ from typing import Callable
 
 import pyrogram
 from pyrogram.filters import Filter
-from pyrogram.scaffold import Scaffold
 
 
-class OnMessage(Scaffold):
+class OnMessage:
     def on_message(
         self=None,
         filters=None,
         group: int = 0
-    ) -> callable:
-        """Decorator for handling messages.
+    ) -> Callable:
+        """Decorator for handling new messages.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the
         :obj:`~pyrogram.handlers.MessageHandler`.

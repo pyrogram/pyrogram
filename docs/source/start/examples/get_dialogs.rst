@@ -9,6 +9,11 @@ This example shows how to get the full dialogs list (as user).
 
     app = Client("my_account")
 
-    with app:
-        for dialog in app.iter_dialogs():
-            print(dialog.chat.title or dialog.chat.first_name)
+
+    async def main():
+        async with app:
+            async for dialog in app.get_dialogs():
+                print(dialog.chat.title or dialog.chat.first_name)
+
+
+    app.run(main())

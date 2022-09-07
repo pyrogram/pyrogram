@@ -16,13 +16,15 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class GetMe(Scaffold):
-    async def get_me(self) -> "types.User":
+class GetMe:
+    async def get_me(
+        self: "pyrogram.Client"
+    ) -> "types.User":
         """Get your own user identity.
 
         Returns:
@@ -31,10 +33,10 @@ class GetMe(Scaffold):
         Example:
             .. code-block:: python
 
-                me = app.get_me()
+                me = await app.get_me()
                 print(me)
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.users.GetFullUser(
                 id=raw.types.InputUserSelf()
             )

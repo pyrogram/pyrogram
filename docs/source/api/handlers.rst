@@ -36,6 +36,7 @@ Index
     :columns: 3
 
     - :class:`MessageHandler`
+    - :class:`EditedMessageHandler`
     - :class:`DeletedMessagesHandler`
     - :class:`CallbackQueryHandler`
     - :class:`InlineQueryHandler`
@@ -53,6 +54,7 @@ Details
 
 .. Handlers
 .. autoclass:: MessageHandler()
+.. autoclass:: EditedMessageHandler()
 .. autoclass:: DeletedMessagesHandler()
 .. autoclass:: CallbackQueryHandler()
 .. autoclass:: InlineQueryHandler()

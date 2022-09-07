@@ -20,15 +20,14 @@ from typing import Callable
 
 import pyrogram
 from pyrogram.filters import Filter
-from pyrogram.scaffold import Scaffold
 
 
-class OnDeletedMessages(Scaffold):
+class OnDeletedMessages:
     def on_deleted_messages(
         self=None,
         filters=None,
         group: int = 0
-    ) -> callable:
+    ) -> Callable:
         """Decorator for handling deleted messages.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the

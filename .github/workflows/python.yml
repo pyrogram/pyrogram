@@ -8,8 +8,8 @@ jobs:
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest, windows-latest]
-        python-version: [3.6, 3.7, 3.8, 3.9, "3.10"]
+        os: [ubuntu-latest, macos-latest]
+        python-version: ["3.7", "3.8", "3.9", "3.10"]
 
     steps:
       - uses: actions/checkout@v2
@@ -26,7 +26,8 @@ jobs:
 
       - name: Generate API
         run: |
-          python setup.py generate --api
+          make venv
+          make api
 
       - name: Run tests
         run: |

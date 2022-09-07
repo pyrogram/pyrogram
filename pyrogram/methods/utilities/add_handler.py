@@ -16,13 +16,17 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram.handlers import DisconnectHandler
 from pyrogram.handlers.handler import Handler
-from pyrogram.scaffold import Scaffold
 
 
-class AddHandler(Scaffold):
-    def add_handler(self, handler: "Handler", group: int = 0):
+class AddHandler:
+    def add_handler(
+        self: "pyrogram.Client",
+        handler: "Handler",
+        group: int = 0
+    ):
         """Register an update handler.
 
         You can register multiple handlers, but at most one handler within a group will be used for a single update.
@@ -46,12 +50,12 @@ class AddHandler(Scaffold):
                 from pyrogram import Client
                 from pyrogram.handlers import MessageHandler
 
-                def dump(client, message):
+                async def hello(client, message):
                     print(message)
 
                 app = Client("my_account")
 
-                app.add_handler(MessageHandler(dump))
+                app.add_handler(MessageHandler(hello))
 
                 app.run()
         """

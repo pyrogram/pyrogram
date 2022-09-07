@@ -18,17 +18,17 @@
 
 from typing import Union, List, Optional
 
-from pyrogram import types
-from pyrogram.scaffold import Scaffold
+import pyrogram
+from pyrogram import types, enums
 
 
-class EditMessageCaption(Scaffold):
+class EditMessageCaption:
     async def edit_message_caption(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_id: int,
         caption: str,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None
     ) -> "types.Message":
@@ -46,12 +46,9 @@ class EditMessageCaption(Scaffold):
             caption (``str``):
                 New caption of the media message.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -65,7 +62,7 @@ class EditMessageCaption(Scaffold):
         Example:
             .. code-block:: python
 
-                app.edit_message_caption(chat_id, message_id, "new media caption")
+                await app.edit_message_caption(chat_id, message_id, "new media caption")
         """
         return await self.edit_message_text(
             chat_id=chat_id,

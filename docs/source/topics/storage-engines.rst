@@ -31,15 +31,15 @@ This is the most common storage engine. It is implemented by using **SQLite**, w
 The database will be saved to disk as a single portable file and is designed to efficiently store and retrieve
 data whenever they are needed.
 
-To use this type of engine, simply pass any name of your choice to the ``session_name`` parameter of the
+To use this type of engine, simply pass any name of your choice to the ``name`` parameter of the
 :obj:`~pyrogram.Client` constructor, as usual:
 
 .. code-block:: python
 
     from pyrogram import Client
 
-    with Client("my_account") as app:
-        print(app.get_me())
+    async with Client("my_account") as app:
+        print(await app.get_me())
 
 Once you successfully log in (either with a user or a bot identity), a session file will be created and saved to disk as
 ``my_account.session``. Any subsequent client restart will make Pyrogram search for a file named that way and the
@@ -48,15 +48,15 @@ session database will be automatically loaded.
 Memory Storage
 ^^^^^^^^^^^^^^
 
-In case you don't want to have any session file saved to disk, you can use an in-memory storage by passing the special
-session name "**:memory:**" to the ``session_name`` parameter of the :obj:`~pyrogram.Client` constructor:
+In case you don't want to have any session file saved to disk, you can use an in-memory storage by passing True to the
+``in_memory`` parameter of the :obj:`~pyrogram.Client` constructor:
 
 .. code-block:: python
 
     from pyrogram import Client
 
-    with Client(":memory:") as app:
-        print(app.get_me())
+    async with Client("my_account", in_memory=True) as app:
+        print(await app.get_me())
 
 This storage engine is still backed by SQLite, but the database exists purely in memory. This means that, once you stop
 a client, the entire database is discarded and the session details used for logging in again will be lost forever.
@@ -71,11 +71,11 @@ In case you want to use an in-memory storage, but also want to keep access to th
 
     from pyrogram import Client
 
-    with Client(":memory:") as app:
-        print(app.export_session_string())
+    async with Client("my_account", in_memory=True) as app:
+        print(await app.export_session_string())
 
-...and save the resulting string. You can use this string as session name the next time you want to login
-using the same session; the storage used will still be in-memory:
+...and save the resulting string. You can use this string by passing it as Client argument the next time you want to
+login using the same session; the storage used will still be in-memory:
 
 .. code-block:: python
 
@@ -83,8 +83,8 @@ using the same session; the storage used will still be in-memory:
 
     session_string = "...ZnUIFD8jsjXTb8g_vpxx48k1zkov9sapD-tzjz-S4WZv70M..."
 
-    with Client(session_string) as app:
-        print(app.get_me())
+    async with Client("my_account", session_string=session_string) as app:
+        print(await app.get_me())
 
 Session strings are useful when you want to run authorized Pyrogram clients on platforms where their ephemeral
 filesystems makes it harder for a file-based storage engine to properly work as intended.

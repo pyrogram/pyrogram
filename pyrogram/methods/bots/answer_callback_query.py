@@ -16,13 +16,13 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class AnswerCallbackQuery(Scaffold):
+class AnswerCallbackQuery:
     async def answer_callback_query(
-        self,
+        self: "pyrogram.Client",
         callback_query_id: str,
         text: str = None,
         show_alert: bool = None,
@@ -60,15 +60,15 @@ class AnswerCallbackQuery(Scaffold):
             .. code-block:: python
 
                 # Answer only (remove the spinning circles)
-                app.answer_callback_query(query_id)
+                await app.answer_callback_query(query_id)
 
                 # Answer without alert
-                app.answer_callback_query(query_id, text=text)
+                await app.answer_callback_query(query_id, text=text)
 
                 # Answer with alert
-                app.answer_callback_query(query_id, text=text, show_alert=True)
+                await app.answer_callback_query(query_id, text=text, show_alert=True)
         """
-        return await self.send(
+        return await self.invoke(
             raw.functions.messages.SetBotCallbackAnswer(
                 query_id=int(callback_query_id),
                 cache_time=cache_time,

@@ -16,10 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Dict, Union
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from ..object import Object
 from ..update import Update
@@ -35,8 +36,8 @@ class ChatMemberUpdated(Object, Update):
         from_user (:obj:`~pyrogram.types.User`):
             Performer of the action, which resulted in the change.
 
-        date (``int``):
-            Date the change was done in Unix time.
+        date (:py:obj:`~datetime.datetime`):
+            Date the change was done.
 
         old_chat_member (:obj:`~pyrogram.types.ChatMember`, *optional*):
             Previous information about the chat member.
@@ -54,7 +55,7 @@ class ChatMemberUpdated(Object, Update):
         client: "pyrogram.Client" = None,
         chat: "types.Chat",
         from_user: "types.User",
-        date: int,
+        date: datetime,
         old_chat_member: "types.ChatMember",
         new_chat_member: "types.ChatMember",
         invite_link: "types.ChatInviteLink" = None,
@@ -93,7 +94,7 @@ class ChatMemberUpdated(Object, Update):
         return ChatMemberUpdated(
             chat=types.Chat._parse_chat(client, chats[chat_id]),
             from_user=types.User._parse(client, users[update.actor_id]),
-            date=update.date,
+            date=utils.timestamp_to_datetime(update.date),
             old_chat_member=old_chat_member,
             new_chat_member=new_chat_member,
             invite_link=invite_link,

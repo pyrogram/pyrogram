@@ -21,6 +21,7 @@ import re
 from typing import Callable, Union, List, Pattern
 
 import pyrogram
+from pyrogram import enums
 from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
 
 
@@ -126,7 +127,7 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
     Custom filters give you extra control over which updates are allowed or not to be processed by your handlers.
 
     Parameters:
-        func (``callable``):
+        func (``Callable``):
             A function that accepts three positional arguments *(filter, client, update)* and returns a boolean: True if the
             update should be handled, False otherwise. 
             The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below). 
@@ -249,16 +250,6 @@ caption = create(caption_filter)
 
 # endregion
 
-# region edited_filter
-async def edited_filter(_, __, m: Message):
-    return bool(m.edit_date)
-
-
-edited = create(edited_filter)
-"""Filter edited messages."""
-
-
-# endregion
 
 # region audio_filter
 async def audio_filter(_, __, m: Message):
@@ -438,7 +429,7 @@ dice = create(dice_filter)
 
 # region private_filter
 async def private_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type in {"private", "bot"})
+    return bool(m.chat and m.chat.type in {enums.ChatType.PRIVATE, enums.ChatType.BOT})
 
 
 private = create(private_filter)
@@ -449,7 +440,7 @@ private = create(private_filter)
 
 # region group_filter
 async def group_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type in {"group", "supergroup"})
+    return bool(m.chat and m.chat.type in {enums.ChatType.GROUP, enums.ChatType.SUPERGROUP})
 
 
 group = create(group_filter)
@@ -460,7 +451,7 @@ group = create(group_filter)
 
 # region channel_filter
 async def channel_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type == "channel")
+    return bool(m.chat and m.chat.type == enums.ChatType.CHANNEL)
 
 
 channel = create(channel_filter)
@@ -645,34 +636,34 @@ via_bot = create(via_bot_filter)
 
 # endregion
 
-# region voice_chat_started_filter
-async def voice_chat_started_filter(_, __, m: Message):
-    return bool(m.voice_chat_started)
+# region video_chat_started_filter
+async def video_chat_started_filter(_, __, m: Message):
+    return bool(m.video_chat_started)
 
 
-voice_chat_started = create(voice_chat_started_filter)
-"""Filter messages for started voice chats"""
-
-
-# endregion
-
-# region voice_chat_ended_filter
-async def voice_chat_ended_filter(_, __, m: Message):
-    return bool(m.voice_chat_ended)
-
-
-voice_chat_ended = create(voice_chat_ended_filter)
-"""Filter messages for ended voice chats"""
+video_chat_started = create(video_chat_started_filter)
+"""Filter messages for started video chats"""
 
 
 # endregion
 
-# region voice_chat_members_invited_filter
-async def voice_chat_members_invited_filter(_, __, m: Message):
-    return bool(m.voice_chat_members_invited)
+# region video_chat_ended_filter
+async def video_chat_ended_filter(_, __, m: Message):
+    return bool(m.video_chat_ended)
 
 
-voice_chat_members_invited = create(voice_chat_members_invited_filter)
+video_chat_ended = create(video_chat_ended_filter)
+"""Filter messages for ended video chats"""
+
+
+# endregion
+
+# region video_chat_members_invited_filter
+async def video_chat_members_invited_filter(_, __, m: Message):
+    return bool(m.video_chat_members_invited)
+
+
+video_chat_members_invited = create(video_chat_members_invited_filter)
 """Filter messages for voice chat invited members"""
 
 
@@ -689,7 +680,7 @@ service = create(service_filter)
 A service message contains any of the following fields set: *left_chat_member*,
 *new_chat_title*, *new_chat_photo*, *delete_chat_photo*, *group_chat_created*, *supergroup_chat_created*,
 *channel_chat_created*, *migrate_to_chat_id*, *migrate_from_chat_id*, *pinned_message*, *game_score*,
-*voice_chat_started*, *voice_chat_ended*, *voice_chat_members_invited*.
+*video_chat_started*, *video_chat_ended*, *video_chat_members_invited*.
 """
 
 
@@ -744,11 +735,6 @@ linked_channel = create(linked_channel_filter)
 
 
 # region command_filter
-
-# Used by the command filter below
-username = None
-
-
 def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "/", case_sensitive: bool = False):
     """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
@@ -771,12 +757,7 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
     command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
     async def func(flt, client: pyrogram.Client, message: Message):
-        # Username shared among all commands; used for mention commands, e.g.: /start@username
-        global username
-
-        if username is None:
-            username = (await client.get_me()).username or ""
-
+        username = client.me.username or ""
         text = message.text or message.caption
         message.command = None
 

@@ -19,7 +19,7 @@
 from typing import Optional, List
 
 import pyrogram
-from pyrogram import raw, types, utils
+from pyrogram import raw, types, utils, enums
 from .inline_query_result import InlineQueryResult
 
 
@@ -63,12 +63,9 @@ class InlineQueryResultVideo(InlineQueryResult):
         caption (``str``, *optional*):
             Caption of the video to be sent, 0-1024 characters.
 
-        parse_mode (``str``, *optional*):
+        parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
             You can combine both syntaxes together.
-            Pass "markdown" or "md" to enable Markdown-style parsing only.
-            Pass "html" to enable HTML-style parsing only.
-            Pass None to completely disable style parsing.
 
         caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
             List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
@@ -93,7 +90,7 @@ class InlineQueryResultVideo(InlineQueryResult):
         video_duration: int = 0,
         description: str = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
         input_message_content: "types.InputMessageContent" = None

@@ -18,18 +18,24 @@
 
 import os
 import re
+import io
+import asyncio
+import io
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
+from pyrogram.errors import RPCError, MediaEmpty
 from pyrogram.file_id import FileType
-from pyrogram.scaffold import Scaffold
 from .inline_session import get_session
 
 
-class EditInlineMedia(Scaffold):
+class EditInlineMedia:
+    MAX_RETRIES = 3
+
     async def edit_inline_media(
-        self,
+        self: "pyrogram.Client",
         inline_message_id: str,
         media: "types.InputMedia",
         reply_markup: "types.InlineKeyboardMarkup" = None
@@ -61,32 +67,52 @@ class EditInlineMedia(Scaffold):
                 # Bots only
 
                 # Replace the current media with a local photo
-                app.edit_inline_media(inline_message_id, InputMediaPhoto("new_photo.jpg"))
+                await app.edit_inline_media(inline_message_id, InputMediaPhoto("new_photo.jpg"))
 
                 # Replace the current media with a local video
-                app.edit_inline_media(inline_message_id, InputMediaVideo("new_video.mp4"))
+                await app.edit_inline_media(inline_message_id, InputMediaVideo("new_video.mp4"))
 
                 # Replace the current media with a local audio
-                app.edit_inline_media(inline_message_id, InputMediaAudio("new_audio.mp3"))
+                await app.edit_inline_media(inline_message_id, InputMediaAudio("new_audio.mp3"))
         """
         caption = media.caption
         parse_mode = media.parse_mode
 
-        if isinstance(media, types.InputMediaPhoto):
-            if os.path.isfile(media.media):
+        is_photo = isinstance(media, types.InputMediaPhoto)
+
+        is_bytes_io = isinstance(media.media, io.BytesIO)
+        is_uploaded_file = is_bytes_io or os.path.isfile(media.media)
+
+        is_external_url = not is_uploaded_file and re.match("^https?://", media.media)
+
+        if is_bytes_io and not hasattr(media.media, "name"):
+            media.media.name = "media"
+
+        if is_uploaded_file:
+            filename_attribute = [
+                raw.types.DocumentAttributeFilename(
+                    file_name=media.media.name if is_bytes_io else os.path.basename(media.media)
+                )
+            ]
+        else:
+            filename_attribute = []
+
+
+        if is_photo:
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedPhoto(
                     file=await self.save_file(media.media)
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaPhotoExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
-            if os.path.isfile(media.media):
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(media.media) or "video/mp4",
+                    mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "video/mp4",
                     thumb=await self.save_file(media.thumb),
                     file=await self.save_file(media.media),
                     attributes=[
@@ -95,22 +121,19 @@ class EditInlineMedia(Scaffold):
                             duration=media.duration,
                             w=media.width,
                             h=media.height
-                        ),
-                        raw.types.DocumentAttributeFilename(
-                            file_name=os.path.basename(media.media)
                         )
-                    ]
+                    ] + filename_attribute
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
-            if os.path.isfile(media.media):
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
+                    mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "audio/mpeg",
                     thumb=await self.save_file(media.thumb),
                     file=await self.save_file(media.media),
                     attributes=[
@@ -118,22 +141,19 @@ class EditInlineMedia(Scaffold):
                             duration=media.duration,
                             performer=media.performer,
                             title=media.title
-                        ),
-                        raw.types.DocumentAttributeFilename(
-                            file_name=os.path.basename(media.media)
                         )
-                    ]
+                    ] + filename_attribute
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
-            if os.path.isfile(media.media):
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(media.media) or "video/mp4",
+                    mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "video/mp4",
                     thumb=await self.save_file(media.thumb),
                     file=await self.save_file(media.media),
                     attributes=[
@@ -143,31 +163,26 @@ class EditInlineMedia(Scaffold):
                             w=media.width,
                             h=media.height
                         ),
-                        raw.types.DocumentAttributeFilename(
-                            file_name=os.path.basename(media.media)
-                        ),
                         raw.types.DocumentAttributeAnimated()
-                    ]
+                    ] + filename_attribute,
+                    nosound_video=True
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
-            if os.path.isfile(media.media):
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(media.media) or "application/zip",
+                    mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "application/zip",
                     thumb=await self.save_file(media.thumb),
                     file=await self.save_file(media.media),
-                    attributes=[
-                        raw.types.DocumentAttributeFilename(
-                            file_name=os.path.basename(media.media)
-                        )
-                    ]
+                    attributes=filename_attribute,
+                    force_file=True
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
@@ -179,12 +194,46 @@ class EditInlineMedia(Scaffold):
 
         session = await get_session(self, dc_id)
 
-        return await session.send(
-            raw.functions.messages.EditInlineBotMessage(
-                id=unpacked,
-                media=media,
-                reply_markup=await reply_markup.write(self) if reply_markup else None,
-                **await self.parser.parse(caption, parse_mode)
-            ),
-            sleep_threshold=self.sleep_threshold
-        )
+
+        if is_uploaded_file:
+            uploaded_media = await self.invoke(
+                raw.functions.messages.UploadMedia(
+                    peer=raw.types.InputPeerSelf(),
+                    media=media
+                )
+            )
+
+            actual_media = raw.types.InputMediaPhoto(
+                id=raw.types.InputPhoto(
+                    id=uploaded_media.photo.id,
+                    access_hash=uploaded_media.photo.access_hash,
+                    file_reference=uploaded_media.photo.file_reference
+                )
+            ) if is_photo else raw.types.InputMediaDocument(
+                id=raw.types.InputDocument(
+                    id=uploaded_media.document.id,
+                    access_hash=uploaded_media.document.access_hash,
+                    file_reference=uploaded_media.document.file_reference                    
+                )
+            )
+        else:
+            actual_media = media
+
+        for i in range(self.MAX_RETRIES):
+            try:
+                return await session.invoke(
+                    raw.functions.messages.EditInlineBotMessage(
+                        id=unpacked,
+                        media=actual_media,
+                        reply_markup=await reply_markup.write(self) if reply_markup else None,
+                        **await self.parser.parse(caption, parse_mode)
+                    ),
+                    sleep_threshold=self.sleep_threshold
+                )
+            except RPCError as e:
+                if i == self.MAX_RETRIES - 1:
+                    raise
+
+                if isinstance(e, MediaEmpty):
+                    # Must wait due to a server race condition
+                    await asyncio.sleep(1)

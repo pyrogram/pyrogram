@@ -14,6 +14,10 @@ Welcome to Pyrogram
         <b>Telegram MTProto API Framework for Python</b>
 
         <br>
+        <a href="https://pyrogram.org">
+            Homepage
+        </a>
+        •
         <a href="https://github.com/pyrogram/pyrogram">
             Development
         </a>
@@ -54,23 +58,15 @@ If you'd like to support Pyrogram, you can consider:
 - `Become a LiberaPay patron <https://liberapay.com/delivrance>`_.
 - `Become an OpenCollective backer <https://opencollective.com/pyrogram>`_.
 
-Key Features
-------------
-
-- **Ready**: Install Pyrogram with pip and start building your applications right away.
-- **Easy**: Makes the Telegram API simple and intuitive, while still allowing advanced usages.
-- **Elegant**: Low-level details are abstracted and re-presented in a more convenient way.
-- **Fast**: Boosted up by :doc:`TgCrypto <topics/tgcrypto>`, a high-performance crypto library written in pure C.
-- **Type-hinted**: Types and methods are all type-hinted, enabling excellent editor support.
-- **Async**: Fully asynchronous (also usable synchronously if wanted, for convenience).
-- **Powerful**: Full access to Telegram's API to execute any official client action and more.
-
 How the Documentation is Organized
 ----------------------------------
 
 Contents are organized into sections composed of self-contained topics which can be all accessed from the sidebar, or by
-following them in order using the :guilabel:`Next` button at the end of each page. Here below you can, instead, find a
-list of the most relevant pages for a quick access.
+following them in order using the :guilabel:`Next` button at the end of each page.
+You can also switch to Dark or Light theme or leave on Auto (follows system preferences) by using the dedicated button
+in the top left corner.
+
+Here below you can, instead, find a list of the most relevant pages for a quick access.
 
 First Steps
 ^^^^^^^^^^^
@@ -79,7 +75,7 @@ First Steps
     :columns: 1
 
     - :doc:`Quick Start <intro/quickstart>`: Overview to get you started quickly.
-    - :doc:`Calling Methods <start/invoking>`: How to call Pyrogram's methods.
+    - :doc:`Invoking Methods <start/invoking>`: How to call Pyrogram's methods.
     - :doc:`Handling Updates <start/updates>`: How to handle Telegram updates.
     - :doc:`Error Handling <start/errors>`: How to handle API errors correctly.
 
@@ -92,6 +88,7 @@ API Reference
     - :doc:`Pyrogram Client <api/client>`: Reference details about the Client class.
     - :doc:`Available Methods <api/methods/index>`: List of available high-level methods.
     - :doc:`Available Types <api/types/index>`: List of available high-level types.
+    - :doc:`Enumerations <api/enums/index>`: List of available enumerations.
     - :doc:`Bound Methods <api/bound-methods/index>`: List of convenient bound methods.
 
 Meta
@@ -110,12 +107,12 @@ Meta
 
     intro/quickstart
     intro/install
-    intro/setup
 
 .. toctree::
     :hidden:
     :caption: Getting Started
 
+    start/setup
     start/auth
     start/invoking
     start/updates
@@ -130,6 +127,7 @@ Meta
     api/methods/index
     api/types/index
     api/bound-methods/index
+    api/enums/index
     api/handlers
     api/decorators
     api/errors/index
@@ -142,12 +140,12 @@ Meta
     topics/use-filters
     topics/create-filters
     topics/more-on-updates
-    topics/config-file
-    topics/smart-plugins
     topics/client-settings
-    topics/tgcrypto
-    topics/storage-engines
+    topics/speedups
     topics/text-formatting
+    topics/synchronous
+    topics/smart-plugins
+    topics/storage-engines
     topics/serializing
     topics/proxy
     topics/scheduling
@@ -167,7 +165,7 @@ Meta
 
 .. toctree::
     :hidden:
-    :caption: Telegram API
+    :caption: Telegram Raw API
 
     telegram/functions/index
     telegram/types/index

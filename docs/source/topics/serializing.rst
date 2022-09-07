@@ -15,16 +15,14 @@ humans and another more compact for machines that is able to recover the origina
 For Humans - str(obj)
 ---------------------
 
-If you want a nicely formatted, human readable JSON representation of any object in the API -- namely, any object from
-:doc:`Pyrogram types <../api/types/index>`, :doc:`raw functions <../telegram/functions/index>` and
-:doc:`raw types <../telegram/types/index>` -- you can use ``str(obj)``.
+If you want a nicely formatted, human readable JSON representation of any object in the API you can use ``str(obj)``.
 
 .. code-block:: python
 
     ...
 
-    with app:
-        r = app.get_chat("me")
+    async with app:
+        r = await app.get_chat("me")
         print(str(r))
 
 .. tip::
@@ -46,8 +44,8 @@ as the process requires the package to be in scope.
 
     ...
 
-    with app:
-        r = app.get_chat("me")
+    async with app:
+        r = await app.get_chat("me")
 
         print(repr(r))
         print(eval(repr(r)) == r)  # True

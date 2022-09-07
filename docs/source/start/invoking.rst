@@ -1,5 +1,5 @@
-Calling Methods
-===============
+Invoking Methods
+================
 
 At this point, we have successfully :doc:`installed Pyrogram <../intro/install>` and :doc:`authorized <auth>` our
 account; we are now aiming towards the core of the framework.
@@ -14,7 +14,7 @@ account; we are now aiming towards the core of the framework.
 Basic Usage
 -----------
 
-Making API method calls with Pyrogram is very simple. Here's a basic example we are going to examine step by step:
+Making API calls with Pyrogram is very simple. Here's a basic example we are going to examine step by step:
 
 .. code-block:: python
 
@@ -22,9 +22,11 @@ Making API method calls with Pyrogram is very simple. Here's a basic example we 
 
     app = Client("my_account")
 
+
     async def main():
         async with app:
             await app.send_message("me", "Hi!")
+
 
     app.run(main())
 
@@ -43,7 +45,7 @@ Step-by-step
 
         app = Client("my_account")
 
-#.  Async methods can't be executed at the top level, because they must be inside an async context.
+#.  Async methods must be invoked within an async context.
     Here we define an async function and put our code inside. Also notice the ``await`` keyword in front of the method
     call; this is required for all asynchronous methods.
 
@@ -76,10 +78,12 @@ Below there's the same example as above, but without the use of the context mana
 
     app = Client("my_account")
 
+
     async def main():
         await app.start()
         await app.send_message("me", "Hi!")
         await app.stop()
+
 
     app.run(main())
 
@@ -95,30 +99,12 @@ be instantiated inside the main function.
     import asyncio
     from pyrogram import Client
 
+
     async def main():
         app = Client("my_account")
 
         async with app:
             await app.send_message("me", "Hi!")
 
+
     asyncio.run(main())
-
-Synchronous Calls
-------------------
-
-Pyrogram is an asynchronous framework, but it also provides a convenience way for calling methods without the need
-of async/await keywords and the extra boilerplate. In case you want Pyrogram to run synchronously, simply  use the
-synchronous context manager:
-
-.. code-block:: python
-
-    from pyrogram import Client
-
-    app = Client("my_account")
-
-    with app:
-        app.send_message("me", "Hi!")
-
-As you can see, the non-async example becomes less cluttered. Use Pyrogram in this non-asynchronous way only when you
-want to write something without the boilerplate or in case you want to combine Pyrogram with other libraries that are
-not async.

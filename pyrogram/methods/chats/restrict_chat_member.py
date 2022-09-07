@@ -16,20 +16,21 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class RestrictChatMember(Scaffold):
+class RestrictChatMember:
     async def restrict_chat_member(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         user_id: Union[int, str],
         permissions: "types.ChatPermissions",
-        until_date: int = 0
+        until_date: datetime = utils.zero_datetime()
     ) -> "types.Chat":
         """Restrict a user in a supergroup.
 
@@ -47,10 +48,10 @@ class RestrictChatMember(Scaffold):
             permissions (:obj:`~pyrogram.types.ChatPermissions`):
                 New user permissions.
 
-            until_date (``int``, *optional*):
-                Date when the user will be unbanned, unix time.
+            until_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the user will be unbanned.
                 If user is banned for more than 366 days or less than 30 seconds from the current time they are
-                considered to be banned forever. Defaults to 0 (ban forever).
+                considered to be banned forever. Defaults to epoch (ban forever).
 
         Returns:
             :obj:`~pyrogram.types.Chat`: On success, a chat object is returned.
@@ -58,36 +59,37 @@ class RestrictChatMember(Scaffold):
         Example:
             .. code-block:: python
 
-                from time import time
-
+                from datetime import datetime, timedelta
                 from pyrogram.types import ChatPermissions
 
                 # Completely restrict chat member (mute) forever
-                app.restrict_chat_member(chat_id, user_id, ChatPermissions())
+                await app.restrict_chat_member(chat_id, user_id, ChatPermissions())
 
                 # Chat member muted for 24h
-                app.restrict_chat_member(chat_id, user_id, ChatPermissions(), int(time() + 86400))
+                await app.restrict_chat_member(chat_id, user_id, ChatPermissions(),
+                    datetime.now() + timedelta(days=1))
 
                 # Chat member can only send text messages
-                app.restrict_chat_member(chat_id, user_id, ChatPermissions(can_send_messages=True))
+                await app.restrict_chat_member(chat_id, user_id,
+                    ChatPermissions(can_send_messages=True))
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.channels.EditBanned(
                 channel=await self.resolve_peer(chat_id),
                 participant=await self.resolve_peer(user_id),
                 banned_rights=raw.types.ChatBannedRights(
-                    until_date=until_date,
-                    send_messages=True if not permissions.can_send_messages else None,
-                    send_media=True if not permissions.can_send_media_messages else None,
-                    send_stickers=True if not permissions.can_send_other_messages else None,
-                    send_gifs=True if not permissions.can_send_other_messages else None,
-                    send_games=True if not permissions.can_send_other_messages else None,
-                    send_inline=True if not permissions.can_send_other_messages else None,
-                    embed_links=True if not permissions.can_add_web_page_previews else None,
-                    send_polls=True if not permissions.can_send_polls else None,
-                    change_info=True if not permissions.can_change_info else None,
-                    invite_users=True if not permissions.can_invite_users else None,
-                    pin_messages=True if not permissions.can_pin_messages else None,
+                    until_date=utils.datetime_to_timestamp(until_date),
+                    send_messages=not permissions.can_send_messages,
+                    send_media=not permissions.can_send_media_messages,
+                    send_stickers=not permissions.can_send_other_messages,
+                    send_gifs=not permissions.can_send_other_messages,
+                    send_games=not permissions.can_send_other_messages,
+                    send_inline=not permissions.can_send_other_messages,
+                    embed_links=not permissions.can_add_web_page_previews,
+                    send_polls=not permissions.can_send_polls,
+                    change_info=not permissions.can_change_info,
+                    invite_users=not permissions.can_invite_users,
+                    pin_messages=not permissions.can_pin_messages,
                 )
             )
         )

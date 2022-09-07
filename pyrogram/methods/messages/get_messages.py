@@ -17,12 +17,12 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Union, Iterable, List
+from typing import Union, List, Iterable
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
@@ -30,9 +30,9 @@ log = logging.getLogger(__name__)
 # TODO: Rewrite using a flag for replied messages and have message_ids non-optional
 
 
-class GetMessages(Scaffold):
+class GetMessages:
     async def get_messages(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]] = None,
         reply_to_message_ids: Union[int, Iterable[int]] = None,
@@ -48,13 +48,13 @@ class GetMessages(Scaffold):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            message_ids (``iterable``, *optional*):
-                Pass a single message identifier or a list of message ids (as integers) to get the content of the
-                message themselves. Iterators and Generators are also accepted.
+            message_ids (``int`` | Iterable of ``int``, *optional*):
+                Pass a single message identifier or an iterable of message ids (as integers) to get the content of the
+                message themselves.
 
-            reply_to_message_ids (``iterable``, *optional*):
-                Pass a single message identifier or a list of message ids (as integers) to get the content of
-                the previous message you replied to using this message. Iterators and Generators are also accepted.
+            reply_to_message_ids (``int`` | Iterable of ``int``, *optional*):
+                Pass a single message identifier or an iterable of message ids (as integers) to get the content of
+                the previous message you replied to using this message.
                 If *message_ids* is set, this argument will be ignored.
 
             replies (``int``, *optional*):
@@ -63,27 +63,26 @@ class GetMessages(Scaffold):
                 Defaults to 1.
 
         Returns:
-            :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was an
-            integer, the single requested message is returned, otherwise, in case *message_ids* was an iterable, the
-            returned value will be a list of messages, even if such iterable contained just a single element.
+            :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was not
+            a list, a single message is returned, otherwise a list of messages is returned.
 
         Example:
             .. code-block:: python
 
                 # Get one message
-                app.get_messages(chat_id, 12345)
+                await app.get_messages(chat_id, 12345)
 
                 # Get more than one message (list of messages)
-                app.get_messages(chat_id, [12345, 12346])
+                await app.get_messages(chat_id, [12345, 12346])
 
                 # Get message by ignoring any replied-to message
-                app.get_messages(chat_id, message_id, replies=0)
+                await app.get_messages(chat_id, message_id, replies=0)
 
                 # Get message with all chained replied-to messages
-                app.get_messages(chat_id, message_id, replies=-1)
+                await app.get_messages(chat_id, message_id, replies=-1)
 
                 # Get the replied-to message of a message
-                app.get_messages(chat_id, reply_to_message_ids=message_id)
+                await app.get_messages(chat_id, reply_to_message_ids=message_id)
 
         Raises:
             ValueError: In case of invalid arguments.
@@ -111,7 +110,7 @@ class GetMessages(Scaffold):
         else:
             rpc = raw.functions.messages.GetMessages(id=ids)
 
-        r = await self.send(rpc, sleep_threshold=-1)
+        r = await self.invoke(rpc, sleep_threshold=-1)
 
         messages = await utils.parse_messages(self, r, replies=replies)
 

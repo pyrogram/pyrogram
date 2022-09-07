@@ -33,8 +33,14 @@ from .inline_keyboard_button import InlineKeyboardButton
 from .inline_keyboard_markup import InlineKeyboardMarkup
 from .keyboard_button import KeyboardButton
 from .login_url import LoginUrl
+from .menu_button import MenuButton
+from .menu_button_commands import MenuButtonCommands
+from .menu_button_default import MenuButtonDefault
+from .menu_button_web_app import MenuButtonWebApp
 from .reply_keyboard_markup import ReplyKeyboardMarkup
 from .reply_keyboard_remove import ReplyKeyboardRemove
+from .sent_web_app_message import SentWebAppMessage
+from .web_app_info import WebAppInfo
 
 __all__ = [
     "CallbackGame",
@@ -56,4 +62,10 @@ __all__ = [
     "BotCommandScopeChatAdministrators",
     "BotCommandScopeChatMember",
     "BotCommandScopeDefault",
+    "WebAppInfo",
+    "MenuButton",
+    "MenuButtonCommands",
+    "MenuButtonWebApp",
+    "MenuButtonDefault",
+    "SentWebAppMessage"
 ]

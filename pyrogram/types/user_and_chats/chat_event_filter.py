@@ -28,7 +28,7 @@ class ChatEventFilter(Object):
             True, if member restricted/unrestricted/banned/unbanned events should be returned.
             Defaults to False.
 
-        admin_rights (``bool``, *optional*):
+        new_privileges (``bool``, *optional*):
             True, if member promotion/demotion events should be returned.
             Defaults to False.
 
@@ -66,15 +66,15 @@ class ChatEventFilter(Object):
             True, if members leaving events should be returned.
             Defaults to False.
 
-        voice_chats (``bool``, *optional*):
-            True, if voice chats events should be returned.
+        video_chats (``bool``, *optional*):
+            True, if video chats events should be returned.
             Defaults to False.
     """
 
     def __init__(
         self, *,
         new_restrictions: bool = False,
-        admin_rights: bool = False,
+        new_privileges: bool = False,
         new_members: bool = False,
         chat_info: bool = False,
         chat_settings: bool = False,
@@ -83,12 +83,12 @@ class ChatEventFilter(Object):
         edited_messages: bool = False,
         pinned_messages: bool = False,
         leaving_members: bool = False,
-        voice_chats: bool = False
+        video_chats: bool = False
     ):
         super().__init__()
 
         self.new_restrictions = new_restrictions
-        self.admin_rights = admin_rights
+        self.new_privileges = new_privileges
         self.new_members = new_members
         self.chat_info = chat_info
         self.chat_settings = chat_settings
@@ -97,7 +97,7 @@ class ChatEventFilter(Object):
         self.edited_messages = edited_messages
         self.pinned_messages = pinned_messages
         self.leaving_members = leaving_members
-        self.voice_chats = voice_chats
+        self.video_chats = video_chats
 
     def write(self) -> "raw.base.ChannelAdminLogEventsFilter":
         join = False
@@ -123,7 +123,7 @@ class ChatEventFilter(Object):
             kick = True
             unkick = True
 
-        if self.admin_rights:
+        if self.new_privileges:
             promote = True
             demote = True
 
@@ -152,7 +152,7 @@ class ChatEventFilter(Object):
         if self.leaving_members:
             leave = True
 
-        if self.voice_chats:
+        if self.video_chats:
             group_call = True
 
         return raw.types.ChannelAdminLogEventsFilter(

@@ -16,16 +16,17 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Union
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, utils
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class SendVenue(Scaffold):
+class SendVenue:
     async def send_venue(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         latitude: float,
         longitude: float,
@@ -35,7 +36,7 @@ class SendVenue(Scaffold):
         foursquare_type: str = "",
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -78,8 +79,8 @@ class SendVenue(Scaffold):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
@@ -95,10 +96,10 @@ class SendVenue(Scaffold):
             .. code-block:: python
 
                 app.send_venue(
-                    "me", 51.500729, -0.124583,
-                    "Elizabeth Tower", "Westminster, London SW1A 0AA, UK")
+                    "me", latitude, longitude,
+                    "Venue title", "Venue address")
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.SendMedia(
                 peer=await self.resolve_peer(chat_id),
                 media=raw.types.InputMediaVenue(
@@ -116,7 +117,7 @@ class SendVenue(Scaffold):
                 silent=disable_notification or None,
                 reply_to_msg_id=reply_to_message_id,
                 random_id=self.rnd_id(),
-                schedule_date=schedule_date,
+                schedule_date=utils.datetime_to_timestamp(schedule_date),
                 noforwards=protect_content,
                 reply_markup=await reply_markup.write(self) if reply_markup else None
             )

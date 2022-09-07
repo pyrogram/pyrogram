@@ -18,15 +18,16 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
-from pyrogram.syncer import Syncer
 
 log = logging.getLogger(__name__)
 
 
-class Terminate(Scaffold):
-    async def terminate(self):
+class Terminate:
+    async def terminate(
+        self: "pyrogram.Client",
+    ):
         """Terminate the client by shutting down workers.
 
         This method does the opposite of :meth:`~pyrogram.Client.initialize`.
@@ -39,10 +40,10 @@ class Terminate(Scaffold):
             raise ConnectionError("Client is already terminated")
 
         if self.takeout_id:
-            await self.send(raw.functions.account.FinishTakeoutSession())
+            await self.invoke(raw.functions.account.FinishTakeoutSession())
             log.warning(f"Takeout session {self.takeout_id} finished")
 
-        await Syncer.remove(self)
+        await self.storage.save()
         await self.dispatcher.stop()
 
         for media_session in self.media_sessions.values():

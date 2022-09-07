@@ -133,8 +133,6 @@ def start():
     with open("{}/all.py".format(DEST), "w", encoding="utf-8") as f:
         f.write(re.sub("{count}", str(count), content))
 
-    print("Compiling Errors: [100%]")
-
 
 if "__main__" == __name__:
     HOME = "."

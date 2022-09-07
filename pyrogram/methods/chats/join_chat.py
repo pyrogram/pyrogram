@@ -18,16 +18,16 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class JoinChat(Scaffold):
+class JoinChat:
     async def join_chat(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str]
-    ):
+    ) -> "types.Chat":
         """Join a group chat or channel.
 
         Parameters:
@@ -41,19 +41,19 @@ class JoinChat(Scaffold):
         Example:
             .. code-block:: python
 
-                # Join chat via username
-                app.join_chat("pyrogram")
-
                 # Join chat via invite link
-                app.join_chat("https://t.me/joinchat/AAAAAE0QmSW3IUmm3UFR7A")
+                await app.join_chat("https://t.me/+AbCdEf0123456789")
+
+                # Join chat via username
+                await app.join_chat("pyrogram")
 
                 # Join a linked chat
-                app.join_chat(app.get_chat("pyrogram").linked_chat.id)
+                await app.join_chat(app.get_chat("pyrogram").linked_chat.id)
         """
         match = self.INVITE_LINK_RE.match(str(chat_id))
 
         if match:
-            chat = await self.send(
+            chat = await self.invoke(
                 raw.functions.messages.ImportChatInvite(
                     hash=match.group(1)
                 )
@@ -63,7 +63,7 @@ class JoinChat(Scaffold):
             elif isinstance(chat.chats[0], raw.types.Channel):
                 return types.Chat._parse_channel_chat(self, chat.chats[0])
         else:
-            chat = await self.send(
+            chat = await self.invoke(
                 raw.functions.channels.JoinChannel(
                     channel=await self.resolve_peer(chat_id)
                 )

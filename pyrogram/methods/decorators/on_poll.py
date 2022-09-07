@@ -20,15 +20,14 @@ from typing import Callable
 
 import pyrogram
 from pyrogram.filters import Filter
-from pyrogram.scaffold import Scaffold
 
 
-class OnPoll(Scaffold):
+class OnPoll:
     def on_poll(
         self=None,
         filters=None,
         group: int = 0
-    ) -> callable:
+    ) -> Callable:
         """Decorator for handling poll updates.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the

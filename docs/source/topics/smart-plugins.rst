@@ -33,7 +33,6 @@ after importing your modules, like this:
 .. code-block:: text
 
     myproject/
-        config.ini
         handlers.py
         main.py
 
@@ -41,12 +40,12 @@ after importing your modules, like this:
 
     .. code-block:: python
 
-        def echo(client, message):
-            message.reply(message.text)
+        async def echo(client, message):
+            await message.reply(message.text)
 
 
-        def echo_reversed(client, message):
-            message.reply(message.text[::-1])
+        async def echo_reversed(client, message):
+            await message.reply(message.text[::-1])
 
 -   ``main.py``
 
@@ -84,7 +83,7 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
 
 #. Create a new folder to store all the plugins (e.g.: "plugins", "handlers", ...).
 #. Put your python files full of plugins inside. Organize them as you wish.
-#. Enable plugins in your Client or via the *config.ini* file.
+#. Enable plugins in your Client.
 
 .. note::
 
@@ -95,7 +94,6 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
     myproject/
         plugins/
             handlers.py
-        config.ini
         main.py
 
 -   ``plugins/handlers.py``
@@ -106,30 +104,15 @@ Setting up your Pyrogram project to accommodate Smart Plugins is pretty straight
 
 
         @Client.on_message(filters.text & filters.private)
-        def echo(client, message):
-            message.reply(message.text)
+        async def echo(client, message):
+            await message.reply(message.text)
 
 
         @Client.on_message(filters.text & filters.private, group=1)
-        def echo_reversed(client, message):
-            message.reply(message.text[::-1])
-
--   ``config.ini``
-
-    .. code-block:: ini
-
-        [plugins]
-        root = plugins
+        async def echo_reversed(client, message):
+            await message.reply(message.text[::-1])
 
 -   ``main.py``
-
-    .. code-block:: python
-
-        from pyrogram import Client
-
-        Client("my_account").run()
-
-    Alternatively, without using the *config.ini* file:
 
     .. code-block:: python
 
@@ -144,9 +127,9 @@ The first important thing to note is the new ``plugins`` folder. You can put *an
 each file can contain *any decorated function* (handlers) with one limitation: within a single module (file) you must
 use different names for each decorated function.
 
-The second thing is telling Pyrogram where to look for your plugins: you can either use the *config.ini* file or
-the Client parameter "plugins"; the *root* value must match the name of your plugins root folder. Your Pyrogram Client
-instance will **automatically** scan the folder upon starting to search for valid handlers and register them for you.
+The second thing is telling Pyrogram where to look for your plugins: you can use the Client parameter "plugins";
+the *root* value must match the name of your plugins root folder. Your Pyrogram Client instance will **automatically**
+scan the folder upon starting to search for valid handlers and register them for you.
 
 Then you'll notice you can now use decorators. That's right, you can apply the usual decorators to your callback
 functions in a static way, i.e. **without having the Client instance around**: simply use ``@Client`` (Client class)
@@ -166,7 +149,7 @@ found inside each module will be, instead, loaded in the order they are defined,
 
 This default loading behaviour is usually enough, but sometimes you want to have more control on what to include (or
 exclude) and in which exact order to load plugins. The way to do this is to make use of ``include`` and ``exclude``
-directives, either in the *config.ini* file or in the dictionary passed as Client argument. Here's how they work:
+directives in the dictionary passed as Client argument. Here's how they work:
 
 - If both ``include`` and ``exclude`` are omitted, all plugins are loaded as described above.
 - If ``include`` is given, only the specified plugins will be loaded, in the order they are passed.
@@ -208,15 +191,6 @@ also organized in subfolders:
 -   Load every handler from every module, namely *plugins0.py*, *plugins1.py* and *plugins2.py* in alphabetical order
     (files) and definition order (handlers inside files):
 
-    Using *config.ini* file:
-
-    .. code-block:: ini
-
-        [plugins]
-        root = plugins
-
-    Using *Client*'s parameter:
-
     .. code-block:: python
 
         plugins = dict(root="plugins")
@@ -224,18 +198,6 @@ also organized in subfolders:
         Client("my_account", plugins=plugins).run()
 
 -   Load only handlers defined inside *plugins2.py* and *plugins0.py*, in this order:
-
-    Using *config.ini* file:
-
-    .. code-block:: ini
-
-        [plugins]
-        root = plugins
-        include =
-            subfolder2.plugins2
-            plugins0
-
-    Using *Client*'s parameter:
 
     .. code-block:: python
 
@@ -251,16 +213,6 @@ also organized in subfolders:
 
 -   Load everything except the handlers inside *plugins2.py*:
 
-    Using *config.ini* file:
-
-    .. code-block:: ini
-
-        [plugins]
-        root = plugins
-        exclude = subfolder2.plugins2
-
-    Using *Client*'s parameter:
-
     .. code-block:: python
 
         plugins = dict(
@@ -271,16 +223,6 @@ also organized in subfolders:
         Client("my_account", plugins=plugins).run()
 
 -   Load only *fn3*, *fn1* and *fn2* (in this order) from *plugins1.py*:
-
-    Using *config.ini* file:
-
-    .. code-block:: ini
-
-        [plugins]
-        root = plugins
-        include = subfolder1.plugins1 fn3 fn1 fn2
-
-    Using *Client*'s parameter:
 
     .. code-block:: python
 
@@ -306,8 +248,8 @@ updates) will be modified in such a way that a special ``handlers`` attribute po
     .. code-block:: python
 
         @Client.on_message(filters.text & filters.private)
-        def echo(client, message):
-            message.reply(message.text)
+        async def echo(client, message):
+            await message.reply(message.text)
 
         print(echo)
         print(echo.handlers)

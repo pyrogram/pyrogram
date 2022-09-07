@@ -16,6 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import Dict
 
 import pyrogram
@@ -35,8 +36,8 @@ class ChatJoinRequest(Object, Update):
         from_user (:obj:`~pyrogram.types.User`):
             User that sent the join request.
 
-        date (``int``):
-            Date the request was sent in Unix time
+        date (:py:obj:`~datetime.datetime`):
+            Date the request was sent.
 
         bio (``str``, *optional*):
             Bio of the user.
@@ -51,7 +52,7 @@ class ChatJoinRequest(Object, Update):
         client: "pyrogram.Client" = None,
         chat: "types.Chat",
         from_user: "types.User",
-        date: int,
+        date: datetime,
         bio: str = None,
         invite_link: "types.ChatInviteLink" = None
     ):
@@ -75,7 +76,7 @@ class ChatJoinRequest(Object, Update):
         return ChatJoinRequest(
             chat=types.Chat._parse_chat(client, chats[chat_id]),
             from_user=types.User._parse(client, users[update.user_id]),
-            date=update.date,
+            date=utils.timestamp_to_datetime(update.date),
             bio=update.about,
             invite_link=types.ChatInviteLink._parse(client, update.invite, users),
             client=client
@@ -88,7 +89,7 @@ class ChatJoinRequest(Object, Update):
         
         .. code-block:: python
 
-            client.approve_chat_join_request(
+            await client.approve_chat_join_request(
                 chat_id=request.chat.id,
                 user_id=request.from_user.id
             )
@@ -96,7 +97,7 @@ class ChatJoinRequest(Object, Update):
         Example:
             .. code-block:: python
 
-                request.approve()
+                await request.approve()
                 
         Returns:
             ``bool``: True on success.
@@ -116,7 +117,7 @@ class ChatJoinRequest(Object, Update):
         
         .. code-block:: python
 
-            client.decline_chat_join_request(
+            await client.decline_chat_join_request(
                 chat_id=request.chat.id,
                 user_id=request.from_user.id
             )
@@ -124,7 +125,7 @@ class ChatJoinRequest(Object, Update):
         Example:
             .. code-block:: python
 
-                request.decline()
+                await request.decline()
                 
         Returns:
             ``bool``: True on success.

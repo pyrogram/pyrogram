@@ -18,22 +18,18 @@
 
 import typing
 from datetime import datetime
+from enum import Enum
 from json import dumps
 
 import pyrogram
 
 
-class Meta(type, metaclass=type("", (type,), {"__str__": lambda _: "~hi"})):
-    def __str__(self):
-        return f"<class 'pyrogram.types.{self.__name__}'>"
-
-
-class Object(metaclass=Meta):
+class Object:
     def __init__(self, client: "pyrogram.Client" = None):
         self._client = client
 
     def bind(self, client: "pyrogram.Client"):
-        """Bind a Client instance to this Pyrogram Object
+        """Bind a Client instance to this and to all nested Pyrogram objects.
 
         Parameters:
             client (:obj:`~pyrogram.types.Client`):
@@ -41,6 +37,12 @@ class Object(metaclass=Meta):
                 deserializing Pyrogram objects with ``repr`` and ``eval``.
         """
         self._client = client
+
+        for i in self.__dict__:
+            o = getattr(self, i)
+
+            if isinstance(o, Object):
+                o.bind(client)
 
     @staticmethod
     def default(obj: "Object"):
@@ -52,14 +54,17 @@ class Object(metaclass=Meta):
         if isinstance(obj, typing.Match):
             return repr(obj)
 
+        if isinstance(obj, Enum):
+            return str(obj)
+
+        if isinstance(obj, datetime):
+            return str(obj)
+
         return {
             "_": obj.__class__.__name__,
             **{
                 attr: (
-                    "*" * 9
-                    if attr == "phone_number" else
-                    str(datetime.fromtimestamp(getattr(obj, attr)))
-                    if attr.endswith("date") else
+                    "*" * 9 if attr == "phone_number" else
                     getattr(obj, attr)
                 )
                 for attr in filter(lambda x: not x.startswith("_"), obj.__dict__)
@@ -83,6 +88,9 @@ class Object(metaclass=Meta):
     def __eq__(self, other: "Object") -> bool:
         for attr in self.__dict__:
             try:
+                if attr.startswith("_"):
+                    continue
+
                 if getattr(self, attr) != getattr(other, attr):
                     return False
             except AttributeError:
@@ -90,13 +98,24 @@ class Object(metaclass=Meta):
 
         return True
 
-    def __getitem__(self, item):
-        return getattr(self, item)
+    def __setstate__(self, state):
+        for attr in state:
+            obj = state[attr]
 
-    def __setitem__(self, key, value):
-        setattr(self, key, value)
+            # Maybe a better alternative would be https://docs.python.org/3/library/inspect.html#inspect.signature
+            if isinstance(obj, tuple) and len(obj) == 2 and obj[0] == "dt":
+                state[attr] = datetime.fromtimestamp(obj[1])
+
+        self.__dict__ = state
 
     def __getstate__(self):
-        new_dict = self.__dict__.copy()
-        new_dict.pop("_client", None)
-        return new_dict
+        state = self.__dict__.copy()
+        state.pop("_client", None)
+
+        for attr in state:
+            obj = state[attr]
+
+            if isinstance(obj, datetime):
+                state[attr] = ("dt", obj.timestamp())
+
+        return state

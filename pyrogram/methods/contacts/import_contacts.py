@@ -18,14 +18,14 @@
 
 from typing import List
 
+import pyrogram
 from pyrogram import raw
 from pyrogram import types
-from pyrogram.scaffold import Scaffold
 
 
-class ImportContacts(Scaffold):
+class ImportContacts:
     async def import_contacts(
-        self,
+        self: "pyrogram.Client",
         contacts: List["types.InputPhoneContact"]
     ):
         """Import contacts to your Telegram address book.
@@ -42,12 +42,12 @@ class ImportContacts(Scaffold):
 
                 from pyrogram.types import InputPhoneContact
 
-                app.import_contacts([
+                await app.import_contacts([
                     InputPhoneContact("+1-123-456-7890", "Foo"),
                     InputPhoneContact("+1-456-789-0123", "Bar"),
                     InputPhoneContact("+1-789-012-3456", "Baz")])
         """
-        imported_contacts = await self.send(
+        imported_contacts = await self.invoke(
             raw.functions.contacts.ImportContacts(
                 contacts=contacts
             )

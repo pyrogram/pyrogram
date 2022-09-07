@@ -10,6 +10,11 @@ This example demonstrates a basic API usage
     # Create a new Client instance
     app = Client("my_account")
 
-    with app:
-        # Send a message, Markdown is enabled by default
-        app.send_message("me", "Hi there! I'm using **Pyrogram**")
+
+    async def main():
+        async with app:
+            # Send a message, Markdown is enabled by default
+            await app.send_message("me", "Hi there! I'm using **Pyrogram**")
+
+
+    app.run(main())

@@ -17,10 +17,9 @@ This FAQ page provides answers to common questions about Pyrogram and, to some e
 - :doc:`code-hangs-when-calling-stop-restart-add-remove-handler`
 - :doc:`unicodeencodeerror-codec-cant-encode`
 - :doc:`uploading-with-urls-gives-error-webpage-curl-failed`
-- :doc:`why-is-the-event-handler-triggered-twice-or-more`
 - :doc:`sqlite3-operationalerror-database-is-locked`
 - :doc:`sqlite3-interfaceerror-error-binding-parameter`
-- :doc:`socket-send-raised-exception-oserror-timeouterror`
+- :doc:`socket-send-oserror-timeouterror-connection-lost-reset`
 - :doc:`how-to-avoid-flood-waits`
 - :doc:`the-account-has-been-limited-deactivated`
 
@@ -39,9 +38,8 @@ This FAQ page provides answers to common questions about Pyrogram and, to some e
     code-hangs-when-calling-stop-restart-add-remove-handler
     unicodeencodeerror-codec-cant-encode
     uploading-with-urls-gives-error-webpage-curl-failed
-    why-is-the-event-handler-triggered-twice-or-more
     sqlite3-operationalerror-database-is-locked
     sqlite3-interfaceerror-error-binding-parameter
-    socket-send-raised-exception-oserror-timeouterror
+    socket-send-oserror-timeouterror-connection-lost-reset
     how-to-avoid-flood-waits
     the-account-has-been-limited-deactivated

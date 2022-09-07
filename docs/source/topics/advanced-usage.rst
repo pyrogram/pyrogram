@@ -38,7 +38,7 @@ live in their respective packages (and sub-packages): ``pyrogram.raw.functions``
 as Python classes, meaning you need to create an instance of each every time you need them and fill them in with the
 correct values using named arguments.
 
-Next, to actually invoke the raw function you have to use the :meth:`~pyrogram.Client.send` method provided by the
+Next, to actually invoke the raw function you have to use the :meth:`~pyrogram.Client.invoke` method provided by the
 Client class and pass the function object you created.
 
 Here's some examples:
@@ -50,8 +50,8 @@ Here's some examples:
         from pyrogram import Client
         from pyrogram.raw import functions
 
-        with Client("my_account") as app:
-            app.send(
+        async with Client("my_account") as app:
+            await app.invoke(
                 functions.account.UpdateProfile(
                     first_name="First Name", last_name="Last Name",
                     about="New bio text"
@@ -65,12 +65,12 @@ Here's some examples:
         from pyrogram import Client
         from pyrogram.raw import functions, types
 
-        with Client("my_account") as app:
+        async with Client("my_account") as app:
             # Set online status
-            app.send(functions.account.UpdateStatus(offline=False))
+            await app.invoke(functions.account.UpdateStatus(offline=False))
 
             # Set offline status
-            app.send(functions.account.UpdateStatus(offline=True))
+            await app.invoke(functions.account.UpdateStatus(offline=True))
 
 -   Get chat info:
 
@@ -79,8 +79,8 @@ Here's some examples:
         from pyrogram import Client
         from pyrogram.raw import functions, types
 
-        with Client("my_account") as app:
-            r = app.send(
+        async with Client("my_account") as app:
+            r = await app.invoke(
                 functions.channels.GetFullChannel(
                     channel=app.resolve_peer("username")
                 )

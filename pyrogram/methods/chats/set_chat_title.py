@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SetChatTitle(Scaffold):
+class SetChatTitle:
     async def set_chat_title(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         title: str
     ) -> bool:
@@ -52,19 +52,19 @@ class SetChatTitle(Scaffold):
         Example:
             .. code-block:: python
 
-                app.set_chat_title(chat_id, "New Title")
+                await app.set_chat_title(chat_id, "New Title")
         """
         peer = await self.resolve_peer(chat_id)
 
         if isinstance(peer, raw.types.InputPeerChat):
-            await self.send(
+            await self.invoke(
                 raw.functions.messages.EditChatTitle(
                     chat_id=peer.chat_id,
                     title=title
                 )
             )
         elif isinstance(peer, raw.types.InputPeerChannel):
-            await self.send(
+            await self.invoke(
                 raw.functions.channels.EditTitle(
                     channel=peer,
                     title=title

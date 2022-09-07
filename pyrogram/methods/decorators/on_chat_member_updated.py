@@ -20,15 +20,14 @@ from typing import Callable
 
 import pyrogram
 from pyrogram.filters import Filter
-from pyrogram.scaffold import Scaffold
 
 
-class OnChatMemberUpdated(Scaffold):
+class OnChatMemberUpdated:
     def on_chat_member_updated(
         self=None,
         filters=None,
         group: int = 0
-    ) -> callable:
+    ) -> Callable:
         """Decorator for handling event changes on chat members.
 
         This does the same thing as :meth:`~pyrogram.Client.add_handler` using the

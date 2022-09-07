@@ -18,13 +18,13 @@
 
 from typing import Union, Optional
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class SetSlowMode(Scaffold):
+class SetSlowMode:
     async def set_slow_mode(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         seconds: Optional[int]
     ) -> bool:
@@ -45,13 +45,13 @@ class SetSlowMode(Scaffold):
             .. code-block:: python
 
                 # Set slow mode to 60 seconds
-                app.set_slow_mode(chat_id, 60)
+                await app.set_slow_mode(chat_id, 60)
 
                 # Disable slow mode
-                app.set_slow_mode(chat_id, None)
+                await app.set_slow_mode(chat_id, None)
         """
 
-        await self.send(
+        await self.invoke(
             raw.functions.channels.ToggleSlowMode(
                 channel=await self.resolve_peer(chat_id),
                 seconds=seconds or 0

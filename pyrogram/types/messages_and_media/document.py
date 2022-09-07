@@ -16,10 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import List
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType
 from ..object import Object
@@ -45,8 +46,8 @@ class Document(Object):
         file_size (``int``, *optional*):
             File size.
 
-        date (``int``, *optional*):
-            Date the document was sent in Unix time.
+        date (:py:obj:`~datetime.datetime`, *optional*):
+            Date the document was sent.
 
         thumbs (List of :obj:`~pyrogram.types.Thumbnail`, *optional*):
             Document thumbnails as defined by sender.
@@ -61,7 +62,7 @@ class Document(Object):
         file_name: str = None,
         mime_type: str = None,
         file_size: int = None,
-        date: int = None,
+        date: datetime = None,
         thumbs: List["types.Thumbnail"] = None
     ):
         super().__init__(client)
@@ -91,7 +92,7 @@ class Document(Object):
             file_name=file_name,
             mime_type=document.mime_type,
             file_size=document.size,
-            date=document.date,
+            date=utils.timestamp_to_datetime(document.date),
             thumbs=types.Thumbnail._parse(client, document),
             client=client
         )

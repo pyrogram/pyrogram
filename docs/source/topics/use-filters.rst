@@ -28,7 +28,7 @@ Let's start right away with a simple example:
 
 
         @app.on_message(filters.sticker)
-        def my_handler(client, message):
+        async def my_handler(client, message):
             print(message)
 
 -   or, without decorators. Here filters are passed as the second argument of the handler constructor; the first is the
@@ -40,7 +40,7 @@ Let's start right away with a simple example:
         from pyrogram.handlers import MessageHandler
 
 
-        def my_handler(client, message):
+        async def my_handler(client, message):
             print(message)
 
 
@@ -57,12 +57,12 @@ operators ``~``, ``&`` and ``|``:
 
 Here are some examples:
 
--   Message is a **text** message **and** is **not edited**.
+-   Message is a **text** message **or** a **photo**.
 
     .. code-block:: python
 
-        @app.on_message(filters.text & ~filters.edited)
-        def my_handler(client, message):
+        @app.on_message(filters.text | filters.photo)
+        async def my_handler(client, message):
             print(message)
 
 -   Message is a **sticker** **and** is coming from a **channel or** a **private** chat.
@@ -70,7 +70,7 @@ Here are some examples:
     .. code-block:: python
 
         @app.on_message(filters.sticker & (filters.channel | filters.private))
-        def my_handler(client, message):
+        async def my_handler(client, message):
             print(message)
 
 Advanced Filters
@@ -84,7 +84,7 @@ can also accept arguments:
     .. code-block:: python
 
         @app.on_message(filters.command(["start", "help"]))
-        def my_handler(client, message):
+        async def my_handler(client, message):
             print(message)
 
 -   Message is a **text** message or a media **caption** matching the given **regex** pattern.
@@ -92,7 +92,7 @@ can also accept arguments:
     .. code-block:: python
 
         @app.on_message(filters.regex("pyrogram"))
-        def my_handler(client, message):
+        async def my_handler(client, message):
             print(message)
 
 More handlers using different filters can also live together.
@@ -100,15 +100,15 @@ More handlers using different filters can also live together.
 .. code-block:: python
 
     @app.on_message(filters.command("start"))
-    def start_command(client, message):
+    async def start_command(client, message):
         print("This is the /start command")
 
 
     @app.on_message(filters.command("help"))
-    def help_command(client, message):
+    async def help_command(client, message):
         print("This is the /help command")
 
 
     @app.on_message(filters.chat("PyrogramChat"))
-    def from_pyrogramchat(client, message):
+    async def from_pyrogramchat(client, message):
         print("New message in @PyrogramChat")

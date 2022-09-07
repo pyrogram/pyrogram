@@ -16,6 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from typing import Callable
+
 from .handler import Handler
 
 
@@ -27,7 +29,7 @@ class ChosenInlineResultHandler(Handler):
     :meth:`~pyrogram.Client.on_chosen_inline_result` decorator.
 
     Parameters:
-        callback (``callable``):
+        callback (``Callable``):
             Pass a function that will be called when a new chosen inline result arrives.
             It takes *(client, chosen_inline_result)* as positional arguments (look at the section below for a
             detailed description).
@@ -44,5 +46,5 @@ class ChosenInlineResultHandler(Handler):
             The received chosen inline result.
     """
 
-    def __init__(self, callback: callable, filters=None):
+    def __init__(self, callback: Callable, filters=None):
         super().__init__(callback, filters)

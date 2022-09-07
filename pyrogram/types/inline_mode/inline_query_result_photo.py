@@ -19,7 +19,7 @@
 from typing import Optional, List
 
 import pyrogram
-from pyrogram import raw, types, utils
+from pyrogram import raw, types, utils, enums
 from .inline_query_result import InlineQueryResult
 
 
@@ -39,6 +39,12 @@ class InlineQueryResultPhoto(InlineQueryResult):
             URL of the thumbnail for the photo.
             Defaults to the value passed in *photo_url*.
 
+        photo_width (``int``, *optional*):
+            Width of the photo.
+
+        photo_height (``int``, *optional*):
+            Height of the photo
+
         id (``str``, *optional*):
             Unique identifier for this result, 1-64 bytes.
             Defaults to a randomly generated UUID4.
@@ -52,15 +58,12 @@ class InlineQueryResultPhoto(InlineQueryResult):
         caption (``str``, *optional*):
             Caption of the photo to be sent, 0-1024 characters.
 
-        parse_mode (``str``, *optional*):
+        parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
             By default, texts are parsed using both Markdown and HTML styles.
             You can combine both syntaxes together.
-            Pass "markdown" or "md" to enable Markdown-style parsing only.
-            Pass "html" to enable HTML-style parsing only.
-            Pass None to completely disable style parsing.
 
         caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
-                List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+            List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
 
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
             An InlineKeyboardMarkup object.
@@ -73,11 +76,13 @@ class InlineQueryResultPhoto(InlineQueryResult):
         self,
         photo_url: str,
         thumb_url: str = None,
+        photo_width: int = 0,
+        photo_height: int = 0,
         id: str = None,
         title: str = None,
         description: str = None,
         caption: str = "",
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
         input_message_content: "types.InputMessageContent" = None
@@ -86,6 +91,8 @@ class InlineQueryResultPhoto(InlineQueryResult):
 
         self.photo_url = photo_url
         self.thumb_url = thumb_url
+        self.photo_width = photo_width
+        self.photo_height = photo_height
         self.title = title
         self.description = description
         self.caption = caption
@@ -99,7 +106,12 @@ class InlineQueryResultPhoto(InlineQueryResult):
             url=self.photo_url,
             size=0,
             mime_type="image/jpeg",
-            attributes=[]
+            attributes=[
+                raw.types.DocumentAttributeImageSize(
+                    w=self.photo_width,
+                    h=self.photo_height
+                )
+            ]
         )
 
         if self.thumb_url is None:

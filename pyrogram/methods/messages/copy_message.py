@@ -17,26 +17,27 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from datetime import datetime
 from typing import Union, List, Optional
 
-from pyrogram import types
-from pyrogram.scaffold import Scaffold
+import pyrogram
+from pyrogram import types, enums
 
 log = logging.getLogger(__name__)
 
 
-class CopyMessage(Scaffold):
+class CopyMessage:
     async def copy_message(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
         message_id: int,
         caption: str = None,
-        parse_mode: Optional[str] = object,
+        parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
-        schedule_date: int = None,
+        schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -69,12 +70,9 @@ class CopyMessage(Scaffold):
                 If not specified, the original caption is kept.
                 Pass "" (empty string) to remove the caption.
 
-            parse_mode (``str``, *optional*):
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
                 You can combine both syntaxes together.
-                Pass "markdown" or "md" to enable Markdown-style parsing only.
-                Pass "html" to enable HTML-style parsing only.
-                Pass None to completely disable style parsing.
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the new caption, which can be specified instead of *parse_mode*.
@@ -86,8 +84,8 @@ class CopyMessage(Scaffold):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
-            schedule_date (``int``, *optional*):
-                Date when the message will be automatically sent. Unix time.
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
@@ -103,7 +101,7 @@ class CopyMessage(Scaffold):
             .. code-block:: python
 
                 # Copy a message
-                app.copy_message("me", "pyrogram", 20)
+                await app.copy_message(to_chat, from_chat, 123)
 
         """
         message: types.Message = await self.get_messages(from_chat_id, message_id)

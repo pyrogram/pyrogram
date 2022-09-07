@@ -18,13 +18,13 @@
 
 from typing import Union
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 
-class GetChatAdminInviteLinksCount(Scaffold):
+class GetChatAdminInviteLinksCount:
     async def get_chat_admin_invite_links_count(
-        self,
+        self: "pyrogram.Client",
         chat_id: Union[int, str],
         admin_id: Union[int, str],
         revoked: bool = False,
@@ -48,7 +48,7 @@ class GetChatAdminInviteLinksCount(Scaffold):
         Returns:
             ``int``: On success, the invite links count is returned.
         """
-        r = await self.send(
+        r = await self.invoke(
             raw.functions.messages.GetExportedChatInvites(
                 peer=await self.resolve_peer(chat_id),
                 admin_id=await self.resolve_peer(admin_id),

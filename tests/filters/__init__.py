@@ -17,9 +17,11 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 class Client:
-    @staticmethod
-    async def get_me():
-        return User("username")
+    def __init__(self):
+        self.me = User("username")
+
+    async def get_me(self):
+        return self.me
 
 
 class User:

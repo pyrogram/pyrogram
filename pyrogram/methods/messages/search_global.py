@@ -18,37 +18,17 @@
 
 from typing import AsyncGenerator, Optional
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.scaffold import Scaffold
 
 
-class Filters:
-    EMPTY = raw.types.InputMessagesFilterEmpty()
-    PHOTO = raw.types.InputMessagesFilterPhotos()
-    VIDEO = raw.types.InputMessagesFilterVideo()
-    PHOTO_VIDEO = raw.types.InputMessagesFilterPhotoVideo()
-    DOCUMENT = raw.types.InputMessagesFilterDocument()
-    URL = raw.types.InputMessagesFilterUrl()
-    ANIMATION = raw.types.InputMessagesFilterGif()
-    VOICE_NOTE = raw.types.InputMessagesFilterVoice()
-    AUDIO = raw.types.InputMessagesFilterMusic()
-    CHAT_PHOTO = raw.types.InputMessagesFilterChatPhotos()
-    AUDIO_VIDEO_NOTE = raw.types.InputMessagesFilterRoundVideo()
-    VIDEO_NOTE = raw.types.InputMessagesFilterRoundVideo()
-    LOCATION = raw.types.InputMessagesFilterGeo()
-    CONTACT = raw.types.InputMessagesFilterContacts()
-
-
-POSSIBLE_VALUES = list(map(lambda x: x.lower(), filter(lambda x: not x.startswith("__"), Filters.__dict__.keys())))
-
-
-class SearchGlobal(Scaffold):
+class SearchGlobal:
     async def search_global(
-        self,
+        self: "pyrogram.Client",
         query: str = "",
-        filter: str = "empty",
+        filter: "enums.MessagesFilter" = enums.MessagesFilter.EMPTY,
         limit: int = 0,
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Search messages globally from all of your chats.
@@ -65,23 +45,9 @@ class SearchGlobal(Scaffold):
                 Text query string.
                 Use "@" to search for mentions.
             
-            filter (``str``, *optional*):
-                Pass a filter in order to search for specific kind of messages only:
-
-                - ``"empty"``: Search for all kind of messages (default).
-                - ``"photo"``: Search for photos.
-                - ``"video"``: Search for video.
-                - ``"photo_video"``: Search for either photo or video.
-                - ``"document"``: Search for documents (generic files).
-                - ``"url"``: Search for messages containing URLs (web links).
-                - ``"animation"``: Search for animations (GIFs).
-                - ``"voice_note"``: Search for voice notes.
-                - ``"audio"``: Search for audio files (music).
-                - ``"chat_photo"``: Search for chat photos.
-                - ``"audio_video_note"``: Search for either audio or video notes.
-                - ``"video_note"``: Search for video notes.
-                - ``"location"``: Search for location messages.
-                - ``"contact"``: Search for contact messages.
+            filter (:obj:`~pyrogram.enums.MessagesFilter`, *optional*):
+                Pass a filter in order to search for specific kind of messages only.
+                Defaults to any message (no filter).
 
             limit (``int``, *optional*):
                 Limits the number of messages to be retrieved.
@@ -93,19 +59,16 @@ class SearchGlobal(Scaffold):
         Example:
             .. code-block:: python
 
+                from pyrogram import enums
+
                 # Search for "pyrogram". Get the first 50 results
-                for message in app.search_global("pyrogram", limit=50):
+                async for message in app.search_global("pyrogram", limit=50):
                     print(message.text)
 
                 # Search for recent photos from Global. Get the first 20 results
-                for message in app.search_global(filter="photo", limit=20):
+                async for message in app.search_global(filter=enums.MessagesFilter.PHOTO, limit=20):
                     print(message.photo)
         """
-        try:
-            filter = Filters.__dict__[filter.upper()]
-        except KeyError:
-            raise ValueError('Invalid filter "{}". Possible values are: {}'.format(
-                filter, ", ".join(f'"{v}"' for v in POSSIBLE_VALUES))) from None
         current = 0
         # There seems to be an hard limit of 10k, beyond which Telegram starts spitting one message at a time.
         total = abs(limit) or (1 << 31)
@@ -118,10 +81,10 @@ class SearchGlobal(Scaffold):
         while True:
             messages = await utils.parse_messages(
                 self,
-                await self.send(
+                await self.invoke(
                     raw.functions.messages.SearchGlobal(
                         q=query,
-                        filter=filter,
+                        filter=filter.value(),
                         min_date=0,
                         max_date=0,
                         offset_rate=offset_date,
@@ -139,9 +102,9 @@ class SearchGlobal(Scaffold):
 
             last = messages[-1]
 
-            offset_date = last.date
+            offset_date = utils.datetime_to_timestamp(last.date)
             offset_peer = await self.resolve_peer(last.chat.id)
-            offset_id = last.message_id
+            offset_id = last.id
 
             for message in messages:
                 yield message

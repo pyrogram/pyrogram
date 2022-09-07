@@ -18,14 +18,16 @@
 
 import logging
 
+import pyrogram
 from pyrogram import raw
-from pyrogram.scaffold import Scaffold
 
 log = logging.getLogger(__name__)
 
 
-class LogOut(Scaffold):
-    async def log_out(self):
+class LogOut:
+    async def log_out(
+        self: "pyrogram.Client",
+    ):
         """Log out from Telegram and delete the *\\*.session* file.
 
         When you log out, the current client is stopped and the storage session deleted.
@@ -40,7 +42,7 @@ class LogOut(Scaffold):
                 # Log out.
                 app.log_out()
         """
-        await self.send(raw.functions.auth.LogOut())
+        await self.invoke(raw.functions.auth.LogOut())
         await self.stop()
         await self.storage.delete()
 

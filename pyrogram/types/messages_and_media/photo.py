@@ -16,10 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
 from typing import List
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 from pyrogram import types
 from pyrogram.file_id import FileId, FileType, FileUniqueId, FileUniqueType, ThumbnailSource
 from ..object import Object
@@ -45,8 +46,8 @@ class Photo(Object):
         file_size (``int``):
             File size.
 
-        date (``int``):
-            Date the photo was sent in Unix time.
+        date (:py:obj:`~datetime.datetime`):
+            Date the photo was sent.
 
         ttl_seconds (``int``, *optional*):
             Time-to-live seconds, for secret photos.
@@ -64,7 +65,7 @@ class Photo(Object):
         width: int,
         height: int,
         file_size: int,
-        date: int,
+        date: datetime,
         ttl_seconds: int = None,
         thumbs: List["types.Thumbnail"] = None
     ):
@@ -122,7 +123,7 @@ class Photo(Object):
                 width=main.w,
                 height=main.h,
                 file_size=main.size,
-                date=photo.date,
+                date=utils.timestamp_to_datetime(photo.date),
                 ttl_seconds=ttl_seconds,
                 thumbs=types.Thumbnail._parse(client, photo),
                 client=client

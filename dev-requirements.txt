@@ -3,3 +3,4 @@
 pytest
 pytest-asyncio
 pytest-cov
+twine

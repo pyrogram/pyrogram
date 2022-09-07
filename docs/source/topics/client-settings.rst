@@ -18,16 +18,7 @@ settings. By default you will see something like the following:
 Set Custom Values
 -----------------
 
-To set custom values, you can either make use of the ``config.ini`` file, this way:
-
-.. code-block:: ini
-
-    [pyrogram]
-    app_version = 1.2.3
-    device_model = PC
-    system_version = Linux
-
-Or, pass the arguments directly in the Client's constructor.
+To set custom values, you can pass the arguments directly in the Client's constructor.
 
 .. code-block:: python
 
@@ -46,11 +37,6 @@ set ``lang_code`` in `ISO 639-1 <https://en.wikipedia.org/wiki/List_of_ISO_639-1
 English).
 
 With the following code we make Telegram know we want it to speak in Italian (it):
-
-.. code-block:: ini
-
-    [pyrogram]
-    lang_code = it
 
 .. code-block:: python
 
