@@ -173,6 +173,16 @@ def pack_inline_message_id(msg_id: "raw.base.InputBotInlineMessageID"):
         )
 
     return base64.urlsafe_b64encode(inline_message_id_packed).decode().rstrip("=")
+    
+
+def parse_phone(phone):
+    """Parses the given phone, or returns `None` if it's invalid."""
+    if isinstance(phone, int):
+        return str(phone)
+    else:
+        phone = re.sub(r'[+()\s-]', '', str(phone))
+        if phone.isdigit():
+            return phone
 
 
 def unpack_inline_message_id(inline_message_id: str) -> "raw.base.InputBotInlineMessageID":
