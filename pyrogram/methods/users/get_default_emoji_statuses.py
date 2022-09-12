@@ -16,27 +16,30 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-__version__ = "2.0.51"
-__license__ = "GNU Lesser General Public License v3.0 (LGPL-3.0)"
-__copyright__ = "Copyright (C) 2017-present Dan <https://github.com/delivrance>"
+from typing import List
 
-from concurrent.futures.thread import ThreadPoolExecutor
-
-
-class StopTransmission(Exception):
-    pass
+import pyrogram
+from pyrogram import raw
+from pyrogram import types
 
 
-class StopPropagation(StopAsyncIteration):
-    pass
+class GetDefaultEmojiStatuses:
+    async def get_default_emoji_statuses(
+        self: "pyrogram.Client",
+    ) -> List["types.EmojiStatus"]:
+        """Get the default emoji statuses.
 
+        Returns:
+            List of :obj:`~pyrogram.types.EmojiStatus`: On success, a list of emoji statuses is returned.
 
-class ContinuePropagation(StopAsyncIteration):
-    pass
+        Example:
+            .. code-block:: python
 
+                default_emoji_statuses = await app.get_default_emoji_statuses()
+                print(default_emoji_statuses)
+        """
+        r = await self.invoke(
+            raw.functions.account.GetDefaultEmojiStatuses(hash=0)
+        )
 
-from . import raw, types, filters, handlers, emoji, enums
-from .client import Client
-from .sync import idle, compose
-
-crypto_executor = ThreadPoolExecutor(1, thread_name_prefix="CryptoWorker")
+        return types.List([types.EmojiStatus._parse(self, i) for i in r.statuses])

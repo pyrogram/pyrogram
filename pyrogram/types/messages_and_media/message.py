@@ -696,12 +696,7 @@ class Message(Object, Update):
                             animation = types.Animation._parse(client, doc, video_attributes, file_name)
                             media_type = enums.MessageMediaType.ANIMATION
                         elif raw.types.DocumentAttributeSticker in attributes:
-                            sticker = await types.Sticker._parse(
-                                client, doc,
-                                attributes.get(raw.types.DocumentAttributeImageSize, None),
-                                attributes[raw.types.DocumentAttributeSticker],
-                                file_name
-                            )
+                            sticker = await types.Sticker._parse(client, doc, attributes)
                             media_type = enums.MessageMediaType.STICKER
                         elif raw.types.DocumentAttributeVideo in attributes:
                             video_attributes = attributes[raw.types.DocumentAttributeVideo]
@@ -747,8 +742,7 @@ class Message(Object, Update):
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
-            reactions = [types.Reaction(emoji=r.reaction, count=r.count, chosen=r.chosen)
-                         for r in message.reactions.results] if message.reactions else None
+            reactions = types.MessageReactions._parse(client, message.reactions)
 
             parsed_message = Message(
                 id=message.id,
@@ -833,7 +827,8 @@ class Message(Object, Update):
                     except MessageIdsEmpty:
                         pass
 
-            client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
+            if not parsed_message.poll:  # Do not cache poll messages
+                client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
 
             return parsed_message
 

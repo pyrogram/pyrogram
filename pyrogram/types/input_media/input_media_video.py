@@ -28,7 +28,7 @@ class InputMediaVideo(InputMedia):
     It is intended to be used with :obj:`~pyrogram.Client.send_media_group`.
 
     Parameters:
-        media (``str``):
+        media (``str`` | ``BinaryIO``):
             Video to send.
             Pass a file_id as string to send a video that exists on the Telegram servers or
             pass a file path as string to upload a new video that exists on your local machine or

@@ -75,6 +75,10 @@ class Parser(HTMLParser):
             else:
                 entity = raw.types.MessageEntityTextUrl
                 extra["url"] = url
+        elif tag == "emoji":
+            entity = raw.types.MessageEntityCustomEmoji
+            custom_emoji_id = int(attrs.get("id"))
+            extra["document_id"] = custom_emoji_id
         else:
             return
 
@@ -145,7 +149,7 @@ class HTML:
 
         return {
             "message": utils.remove_surrogates(parser.text),
-            "entities": sorted(entities, key=lambda e: e.offset)
+            "entities": sorted(entities, key=lambda e: e.offset) or None
         }
 
     @staticmethod
@@ -185,6 +189,10 @@ class HTML:
                 user = entity.user
                 start_tag = f'<a href="tg://user?id={user.id}">'
                 end_tag = "</a>"
+            elif entity_type == MessageEntityType.CUSTOM_EMOJI:
+                custom_emoji_id = entity.custom_emoji_id
+                start_tag = f'<emoji id="{custom_emoji_id}">'
+                end_tag = "</emoji>"
             else:
                 continue
 

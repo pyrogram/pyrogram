@@ -29,7 +29,7 @@ class InputMediaAudio(InputMedia):
     It is intended to be used with :meth:`~pyrogram.Client.send_media_group`.
 
     Parameters:
-        media (``str``):
+        media (``str`` | ``BinaryIO``):
             Audio to send.
             Pass a file_id as string to send an audio that exists on the Telegram servers or
             pass a file path as string to upload a new audio that exists on your local machine or

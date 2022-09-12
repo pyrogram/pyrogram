@@ -159,7 +159,7 @@ class SendMessage:
                 entities=[
                     types.MessageEntity._parse(None, entity, {})
                     for entity in entities
-                ],
+                ] if entities else None,
                 client=self
             )
 
