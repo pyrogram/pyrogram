@@ -44,6 +44,9 @@ app.run()
 framework. It enables you to easily interact with the main Telegram API through a user account (custom client) or a bot
 identity (bot API alternative) using Python.
 
+[![kandi X-Ray](https://kandi.openweaver.com/badges/xray.svg)](https://kandi.openweaver.com/python/pyrogram/pyrogram)
+[![kandi Featured](https://kandi.openweaver.com/badges/featured.svg)](https://kandi.openweaver.com/collections/python/python-telegram-bot)
+
 ### Support
 
 If you'd like to support Pyrogram, you can consider:
