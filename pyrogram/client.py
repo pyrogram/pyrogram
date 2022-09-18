@@ -25,7 +25,6 @@ import platform
 import re
 import shutil
 import sys
-import tempfile
 from concurrent.futures.thread import ThreadPoolExecutor
 from hashlib import sha256
 from importlib import import_module
@@ -726,32 +725,29 @@ class Client(Methods):
 
     async def handle_download(self, packet):
         file_id, directory, file_name, in_memory, file_size, progress, progress_args = packet
-        file = BytesIO() if in_memory else tempfile.NamedTemporaryFile("wb", delete=False)
 
+        os.makedirs(directory, exist_ok=True)
+        temp_file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name))) + ".temp"
+        file = BytesIO() if in_memory else open(temp_file_path, "wb")
+
+        # noinspection PyBroadException
         try:
             async for chunk in self.get_file(file_id, file_size, 0, 0, progress, progress_args):
                 file.write(chunk)
-        except pyrogram.StopTransmission:
+        except BaseException:
             if not in_memory:
                 file.close()
-                os.remove(file.name)
+                os.remove(temp_file_path)
 
             return None
-        except asyncio.CancelledError:
-            if not in_memory:
-                file.close()
-                os.remove(file.name)
-                
-            raise asyncio.CancelledError()
         else:
             if in_memory:
                 file.name = file_name
                 return file
             else:
-                file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name)))
-                os.makedirs(directory, exist_ok=True)
                 file.close()
-                shutil.move(file.name, file_path)
+                file_path = os.path.splitext(temp_file_path)[0]
+                shutil.move(temp_file_path, file_path)
                 return file_path
 
     async def get_file(
