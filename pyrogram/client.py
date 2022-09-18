@@ -737,6 +737,12 @@ class Client(Methods):
                 os.remove(file.name)
 
             return None
+        except asyncio.CancelledError:
+            if not in_memory:
+                file.close()
+                os.remove(file.name)
+                
+            raise asyncio.CancelledError()
         else:
             if in_memory:
                 file.name = file_name
