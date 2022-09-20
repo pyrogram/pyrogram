@@ -726,7 +726,7 @@ class Client(Methods):
     async def handle_download(self, packet):
         file_id, directory, file_name, in_memory, file_size, progress, progress_args = packet
 
-        os.makedirs(directory, exist_ok=True)
+        os.makedirs(directory, exist_ok=True) if not in_memory else None
         temp_file_path = os.path.abspath(re.sub("\\\\", "/", os.path.join(directory, file_name))) + ".temp"
         file = BytesIO() if in_memory else open(temp_file_path, "wb")
 
