@@ -71,4 +71,6 @@ class Start:
             raise
         else:
             await self.initialize()
+            self.me = await self.get_me()
+
             return self
