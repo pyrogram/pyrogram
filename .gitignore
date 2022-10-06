@@ -1,4 +1,5 @@
 # Development
+docs
 *.session
 config.ini
 main.py
