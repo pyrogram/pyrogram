@@ -1,4 +1,0 @@
-sphinx
-furo==2022.6.21
-sphinx_copybutton
-sphinx-autobuild
