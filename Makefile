@@ -1,9 +1,10 @@
 VENV := venv
 PYTHON := $(VENV)/bin/python
+HOST = $(shell ifconfig | grep "inet " | tail -1 | cut -d\  -f2)
 
 RM := rm -rf
 
-.PHONY: venv build docs
+.PHONY: venv clean-build clean-api clean api build
 
 venv:
 	$(RM) $(VENV)
@@ -15,16 +16,11 @@ venv:
 clean-build:
 	$(RM) *.egg-info build dist
 
-clean-docs:
-	$(RM) docs/build
-	$(RM) docs/source/api/bound-methods docs/source/api/methods docs/source/api/types docs/source/telegram
-
 clean-api:
 	$(RM) pyrogram/errors/exceptions pyrogram/raw/all.py pyrogram/raw/base pyrogram/raw/functions pyrogram/raw/types
 
 clean:
 	make clean-build
-	make clean-docs
 	make clean-api
 
 api:
@@ -32,35 +28,7 @@ api:
 	cd compiler/errors && ../../$(PYTHON) compiler.py
 	cd compiler/docs && ../../$(PYTHON) compiler.py
 
-docs-live:
-	make clean
-	make api
-	$(RM) docs/source/telegram
-	$(VENV)/bin/sphinx-autobuild \
-		--host $(shell ifconfig | grep "inet " | grep -v 127.0.0.1 | cut -d\  -f2) \
-		--watch pyrogram --watch docs/resources \
-		-b html "docs/source" "docs/build/html" -j auto
-
-docs-live-full:
-	make clean
-	make api
-	$(VENV)/bin/sphinx-autobuild \
-		--host $(shell ifconfig | grep "inet " | grep -v 127.0.0.1 | cut -d\  -f2) \
-		--watch pyrogram --watch docs/resources \
-		-b html "docs/source" "docs/build/html" -j auto
-
-docs:
-	make clean
-	make api
-	rm -f docs/html.tar.gz
-	$(VENV)/bin/sphinx-build -b html "docs/source" "docs/build/html" -j auto
-	cd docs/scripts && ../../$(PYTHON) sitemap.py && mv sitemap.xml ../build/html
-	cp docs/robots.txt docs/build/html
-	cd docs/build && tar zcf html.tar.gz html && mv html.tar.gz ..
-	make clean-docs
-
 build:
-	make clean-build
-	make clean-api
+	make clean
 	$(PYTHON) setup.py sdist
 	$(PYTHON) setup.py bdist_wheel
