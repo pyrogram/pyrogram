@@ -10,7 +10,7 @@ venv:
 	$(RM) $(VENV)
 	python3 -m venv $(VENV)
 	$(PYTHON) -m pip install -U pip wheel setuptools
-	$(PYTHON) -m pip install -U -r requirements.txt -r dev-requirements.txt -r docs/requirements.txt
+	$(PYTHON) -m pip install -U -r requirements.txt -r dev-requirements.txt
 	@echo "Created venv with $$($(PYTHON) --version)"
 
 clean-build:
