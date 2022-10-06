@@ -26,7 +26,6 @@ clean:
 api:
 	cd compiler/api && ../../$(PYTHON) compiler.py
 	cd compiler/errors && ../../$(PYTHON) compiler.py
-	cd compiler/docs && ../../$(PYTHON) compiler.py
 
 build:
 	make clean
