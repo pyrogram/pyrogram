@@ -38,6 +38,8 @@ class GetChatAdminInviteLinks:
             As an administrator you can only get your own links you have exported.
             As the chat or channel owner you can get everyones links.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup

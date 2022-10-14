@@ -42,6 +42,8 @@ class SendDice:
     ) -> Optional["types.Message"]:
         """Send a dice with a random value from 1 to 6.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

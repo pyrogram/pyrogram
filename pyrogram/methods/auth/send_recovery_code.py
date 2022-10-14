@@ -30,6 +30,8 @@ class SendRecoveryCode:
     ) -> str:
         """Send a code to your email to recover your password.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Returns:
             ``str``: On success, the hidden email pattern is returned and a recovery code is sent to that email.
 

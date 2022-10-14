@@ -31,6 +31,8 @@ class DeleteProfilePhotos:
     ) -> bool:
         """Delete your own profile photos.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             photo_ids (``str`` | List of ``str``):
                 A single :obj:`~pyrogram.types.Photo` id as string or multiple ids as list of strings for deleting

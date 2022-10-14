@@ -36,6 +36,8 @@ class CopyMediaGroup:
     ) -> List["types.Message"]:
         """Copy a media group by providing one of the message ids.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

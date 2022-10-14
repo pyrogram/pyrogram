@@ -49,6 +49,8 @@ class SendMediaGroup:
     ) -> List["types.Message"]:
         """Send a group of photos or videos as an album.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

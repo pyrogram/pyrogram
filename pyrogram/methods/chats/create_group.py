@@ -35,6 +35,8 @@ class CreateGroup:
 
             If you want to create a new supergroup, use :meth:`~pyrogram.Client.create_supergroup` instead.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             title (``str``):
                 The group title.

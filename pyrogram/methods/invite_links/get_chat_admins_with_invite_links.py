@@ -31,7 +31,9 @@ class GetChatAdminsWithInviteLinks:
 
         You must be the owner of a chat for this to work.
 
-        Args:
+        .. include:: /_includes/usable-by/users-bots.rst
+
+        Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
                 (in the format @username).

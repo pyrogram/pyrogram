@@ -30,6 +30,8 @@ class DeclineAllChatJoinRequests:
     ) -> bool:
         """Decline all pending join requests in a chat.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup
