@@ -30,8 +30,10 @@ class DeclineChatJoinRequest:
     ) -> bool:
         """Decline a chat join request.
 
-        The bot must be an administrator in the chat for this to work and must have the *can_invite_users* administrator
+        You must be an administrator in the chat for this to work and must have the *can_invite_users* administrator
         right.
+
+        .. include:: /_includes/usable-by/users-bots.rst
 
         Parameters:
             chat_id (``int`` | ``str``):

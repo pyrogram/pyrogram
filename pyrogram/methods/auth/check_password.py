@@ -33,6 +33,8 @@ class CheckPassword:
     ) -> "types.User":
         """Check your Two-Step Verification password and log in.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             password (``str``):
                 Your Two-Step Verification password.

@@ -32,6 +32,8 @@ class GetGameHighScores:
     ) -> List["types.GameHighScore"]:
         """Get data for high score tables.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

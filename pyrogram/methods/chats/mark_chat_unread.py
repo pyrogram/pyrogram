@@ -29,6 +29,8 @@ class MarkChatUnread:
     ) -> bool:
         """Mark a chat as unread.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

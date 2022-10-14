@@ -32,6 +32,8 @@ class SetSendAsChat:
 
         Use :meth:`~pyrogram.Client.get_send_as_chats` to get all the "send_as" chats available for use.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

@@ -70,6 +70,8 @@ class GetChatMembers:
         A chat can be either a basic group, a supergroup or a channel.
         Requires administrator rights in channels.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

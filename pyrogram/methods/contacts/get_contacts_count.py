@@ -26,6 +26,8 @@ class GetContactsCount:
     ) -> int:
         """Get the total count of contacts from your Telegram address book.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Returns:
             ``int``: On success, the contacts count is returned.
 

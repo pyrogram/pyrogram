@@ -46,6 +46,8 @@ class Invoke:
             :obj:`functions <pyrogram.api.functions>` (i.e: a Telegram API method you wish to use which is not
             available yet in the Client class as an easy-to-use method).
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             query (``RawFunction``):
                 The API Schema function filled with proper arguments.

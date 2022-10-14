@@ -34,6 +34,8 @@ class GetBotCommands:
         The commands passed will overwrite any command set previously.
         This method can be used by the own bot only.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             scope (:obj:`~pyrogram.types.BotCommandScope`, *optional*):
                 An object describing the scope of users for which the commands are relevant.

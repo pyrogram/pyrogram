@@ -50,6 +50,8 @@ class SendCachedMedia:
         It does the same as calling the relevant method for sending media using a file_id, thus saving you from the
         hassle of using the correct method for the media the file_id is pointing to.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

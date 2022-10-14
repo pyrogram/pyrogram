@@ -45,6 +45,8 @@ class EditInlineMedia:
         When the inline message is edited, a new file can't be uploaded. Use a previously uploaded file via its file_id
         or specify a URL.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             inline_message_id (``str``):
                 Required if *chat_id* and *message_id* are not specified.

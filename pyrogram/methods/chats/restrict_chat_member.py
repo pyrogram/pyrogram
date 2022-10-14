@@ -37,6 +37,8 @@ class RestrictChatMember:
         You must be an administrator in the supergroup for this to work and must have the appropriate admin rights.
         Pass True for all permissions to lift restrictions from a user.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

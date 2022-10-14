@@ -32,7 +32,9 @@ class GetMediaGroup:
         message_id: int
     ) -> List["types.Message"]:
         """Get the media group a message belongs to.
-        
+
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

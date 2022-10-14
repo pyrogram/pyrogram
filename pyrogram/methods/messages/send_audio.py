@@ -60,6 +60,8 @@ class SendAudio:
 
         For sending voice messages, use the :meth:`~pyrogram.Client.send_voice` method instead.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
