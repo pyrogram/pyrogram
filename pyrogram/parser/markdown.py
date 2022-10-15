@@ -130,6 +130,12 @@ class Markdown:
                 start_tag = end_tag = STRIKE_DELIM
             elif entity_type == MessageEntityType.CODE:
                 start_tag = end_tag = CODE_DELIM
+            elif entity_type == MessageEntityType.PRE and hasattr(
+                    entity,
+                    "language"
+            ) and entity.language not in [None, ""]:
+                start_tag = f"{PRE_DELIM}{entity.language}\n"
+                end_tag = f"\n{PRE_DELIM}"
             elif entity_type in (MessageEntityType.PRE, MessageEntityType.BLOCKQUOTE):
                 start_tag = end_tag = PRE_DELIM
             elif entity_type == MessageEntityType.SPOILER:
