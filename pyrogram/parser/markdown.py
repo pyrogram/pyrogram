@@ -138,8 +138,8 @@ class Markdown:
                 start_tag = end_tag = CODE_DELIM
             elif entity_type == MessageEntityType.PRE:
                 language = getattr(entity, "language", "") or ""
-                start_tag = f"{PRE_DELIM}{language}"
-                end_tag = f"{PRE_DELIM}"
+                start_tag = f"{PRE_DELIM}{language}\n"
+                end_tag = f"\n{PRE_DELIM}"
             elif entity_type == MessageEntityType.BLOCKQUOTE:
                 start_tag = end_tag = PRE_DELIM
             elif entity_type == MessageEntityType.SPOILER:
