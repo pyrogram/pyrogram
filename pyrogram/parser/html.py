@@ -61,7 +61,7 @@ class Parser(HTMLParser):
             entity = raw.types.MessageEntityCode
         elif tag == "pre":
             entity = raw.types.MessageEntityPre
-            extra["language"] = ""
+            extra["language"] = attrs.get("language", "")
         elif tag == "spoiler":
             entity = raw.types.MessageEntitySpoiler
         elif tag == "a":
