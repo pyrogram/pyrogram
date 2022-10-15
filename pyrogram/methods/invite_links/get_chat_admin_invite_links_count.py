@@ -31,7 +31,7 @@ class GetChatAdminInviteLinksCount:
     ) -> int:
         """Get the count of the invite links created by an administrator in a chat.
 
-        .. include:: /_includes/usable-by/users-bots.rst
+        .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):

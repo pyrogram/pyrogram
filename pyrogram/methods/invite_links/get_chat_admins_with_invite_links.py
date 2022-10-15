@@ -31,7 +31,7 @@ class GetChatAdminsWithInviteLinks:
 
         You must be the owner of a chat for this to work.
 
-        .. include:: /_includes/usable-by/users-bots.rst
+        .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):

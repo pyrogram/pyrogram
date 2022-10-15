@@ -30,7 +30,7 @@ class GetChatInviteLinkJoinersCount:
     ) -> int:
         """Get the count of the members who joined the chat with the invite link.
 
-        .. include:: /_includes/usable-by/users-bots.rst
+        .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):

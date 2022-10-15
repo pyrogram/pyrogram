@@ -30,7 +30,7 @@ class DeleteChatInviteLink:
     ) -> bool:
         """Delete an already revoked invite link.
 
-        .. include:: /_includes/usable-by/users-bots.rst
+        .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):

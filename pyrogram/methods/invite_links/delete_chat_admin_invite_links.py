@@ -30,7 +30,7 @@ class DeleteChatAdminInviteLinks:
     ) -> bool:
         """Delete all revoked invite links of an administrator.
 
-        .. include:: /_includes/usable-by/users-bots.rst
+        .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):
