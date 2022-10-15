@@ -172,16 +172,13 @@ class HTML:
                 name = entity_type.name[0].lower()
                 start_tag = f"<{name}>"
                 end_tag = f"</{name}>"
-            elif entity_type == MessageEntityType.PRE and hasattr(
-                    entity,
-                    "language"
-            ) and entity.language not in [None, ""]:
+            elif entity_type == MessageEntityType.PRE:
                 name = entity_type.name.lower()
-                start_tag = f"<{name} language=\"{entity.language}\">"
+                language = getattr(entity, "language", "") or ""
+                start_tag = f'<{name} language="{language}">' if language else f"<{name}>"
                 end_tag = f"</{name}>"
             elif entity_type in (
                 MessageEntityType.CODE,
-                MessageEntityType.PRE,
                 MessageEntityType.BLOCKQUOTE,
                 MessageEntityType.SPOILER,
             ):
