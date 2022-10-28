@@ -32,6 +32,8 @@ class SendReaction:
     ) -> bool:
         """Send a reaction to a message.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
@@ -63,7 +65,7 @@ class SendReaction:
             raw.functions.messages.SendReaction(
                 peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,
-                reaction=emoji,
+                reaction=[raw.types.ReactionEmoji(emoticon=emoji)] if emoji else None,
                 big=big
             )
         )

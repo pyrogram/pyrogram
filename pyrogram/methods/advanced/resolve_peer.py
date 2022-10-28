@@ -42,6 +42,8 @@ class ResolvePeer:
             :obj:`functions <pyrogram.api.functions>` (i.e: a Telegram API method you wish to use which is not
             available yet in the Client class as an easy-to-use method).
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             peer_id (``int`` | ``str``):
                 The peer id you want to extract the InputPeer from.

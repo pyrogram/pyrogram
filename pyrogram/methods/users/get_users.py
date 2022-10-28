@@ -32,6 +32,8 @@ class GetUsers:
         """Get information about a user.
         You can retrieve up to 200 users at once.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             user_ids (``int`` | ``str`` | Iterable of ``int`` or ``str``):
                 A list of User identifiers (id or username) or a single user id/username.

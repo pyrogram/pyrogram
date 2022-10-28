@@ -18,6 +18,7 @@
 
 import os
 import re
+import io
 from typing import Union
 
 import pyrogram
@@ -40,6 +41,8 @@ class EditMessageMedia:
 
         If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, the
         message type can be changed arbitrarily.
+
+        .. include:: /_includes/usable-by/users-bots.rst
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -89,7 +92,7 @@ class EditMessageMedia:
             message, entities = (await self.parser.parse(caption, parse_mode)).values()
 
         if isinstance(media, types.InputMediaPhoto):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -113,7 +116,7 @@ class EditMessageMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -150,7 +153,7 @@ class EditMessageMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -186,7 +189,7 @@ class EditMessageMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
@@ -224,7 +227,7 @@ class EditMessageMedia:
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
-            if os.path.isfile(media.media):
+            if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),

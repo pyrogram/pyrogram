@@ -34,6 +34,8 @@ class GetChat:
         Information include current name of the user for one-on-one conversations, current username of a user, group or
         channel, etc.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

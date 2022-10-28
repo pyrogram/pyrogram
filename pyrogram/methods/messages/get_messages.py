@@ -42,6 +42,8 @@ class GetMessages:
 
         You can retrieve up to 200 messages at once.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

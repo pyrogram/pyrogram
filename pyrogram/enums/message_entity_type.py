@@ -77,5 +77,8 @@ class MessageEntityType(AutoName):
     BANK_CARD = raw.types.MessageEntityBankCard
     "Bank card text"
 
+    CUSTOM_EMOJI = raw.types.MessageEntityCustomEmoji
+    "Custom emoji"
+
     UNKNOWN = raw.types.MessageEntityUnknown
     "Unknown message entity type"

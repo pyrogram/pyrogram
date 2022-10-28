@@ -32,6 +32,8 @@ class ChangeCloudPassword:
     ) -> bool:
         """Change your Two-Step Verification password (Cloud Password) with a new one.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             current_password (``str``):
                 Your current password.

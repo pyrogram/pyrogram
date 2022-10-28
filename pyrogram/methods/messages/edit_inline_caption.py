@@ -32,6 +32,8 @@ class EditInlineCaption:
     ) -> bool:
         """Edit the caption of inline media messages.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             inline_message_id (``str``):
                 Identifier of the inline message.

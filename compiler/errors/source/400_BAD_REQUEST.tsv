@@ -285,7 +285,9 @@ START_PARAM_EMPTY	The start parameter is empty
 START_PARAM_INVALID	The start parameter is invalid
 START_PARAM_TOO_LONG	The start parameter is too long
 STICKERSET_INVALID	The requested sticker set is invalid
+STICKERSET_NOT_MODIFIED	The sticker set is not modified
 STICKERS_EMPTY	The sticker provided is empty
+STICKERS_TOO_MUCH	Too many stickers in the set
 STICKER_DOCUMENT_INVALID	The sticker document is invalid
 STICKER_EMOJI_INVALID	The sticker emoji is invalid
 STICKER_FILE_INVALID	The sticker file is invalid
@@ -294,6 +296,7 @@ STICKER_INVALID	The provided sticker is invalid
 STICKER_PNG_DIMENSIONS	The sticker png dimensions are invalid
 STICKER_PNG_NOPNG	Stickers must be png files but the provided image was not a png
 STICKER_TGS_NOTGS	A tgs sticker file was expected, but something else was provided
+STICKER_VIDEO_NOWEBM	A webm video file was expected, but something else was provided
 STICKER_THUMB_PNG_NOPNG	A png sticker thumbnail file was expected, but something else was provided
 TAKEOUT_INVALID	The takeout id is invalid
 TAKEOUT_REQUIRED	The method must be invoked inside a takeout session

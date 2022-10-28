@@ -44,8 +44,6 @@ class Initialize:
 
         self.load_plugins()
 
-        self.me = await self.get_me()
-
         await self.dispatcher.start()
 
         self.is_initialized = True

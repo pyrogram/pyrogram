@@ -27,6 +27,8 @@ class GetMe:
     ) -> "types.User":
         """Get your own user identity.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Returns:
             :obj:`~pyrogram.types.User`: Information about the own logged in user/bot.
 

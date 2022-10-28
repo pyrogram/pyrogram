@@ -51,6 +51,8 @@ class CopyMessage:
         The method is analogous to the method :meth:`~Client.forward_messages`, but the copied message doesn't have a
         link to the original message.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
