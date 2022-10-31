@@ -21,7 +21,7 @@ __license__ = "GNU Lesser General Public License v3.0 (LGPL-3.0)"
 __copyright__ = "Copyright (C) 2017-present Dan <https://github.com/delivrance>"
 
 from concurrent.futures.thread import ThreadPoolExecutor
-from client_extension_methods import get_chunk_with_replies
+from .client_extension_methods import get_chunk_with_replies
 
 
 class StopTransmission(Exception):
