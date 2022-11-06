@@ -196,10 +196,7 @@ class Chat(Object):
         self.available_reactions = available_reactions
 
     @staticmethod
-    def _parse_user_chat(client, user: raw.types.User) -> Optional["Chat"]:
-        if user is None:
-            return None
-
+    def _parse_user_chat(client, user: raw.types.User) -> "Chat":
         peer_id = user.id
 
         return Chat(
@@ -220,10 +217,7 @@ class Chat(Object):
         )
 
     @staticmethod
-    def _parse_chat_chat(client, chat: raw.types.Chat) -> Optional["Chat"]:
-        if chat is None:
-            return None
-
+    def _parse_chat_chat(client, chat: raw.types.Chat) -> "Chat":
         peer_id = -chat.id
 
         return Chat(
@@ -240,10 +234,7 @@ class Chat(Object):
         )
 
     @staticmethod
-    def _parse_channel_chat(client, channel: raw.types.Channel) -> Optional["Chat"]:
-        if channel is None:
-            return None
-
+    def _parse_channel_chat(client, channel: raw.types.Channel) -> "Chat":
         peer_id = utils.get_channel_id(channel.id)
         restriction_reason = getattr(channel, "restriction_reason", [])
 
@@ -274,18 +265,18 @@ class Chat(Object):
         users: dict,
         chats: dict,
         is_chat: bool
-    ) -> Optional["Chat"]:
+    ) -> "Chat":
         from_id = utils.get_raw_peer_id(message.from_id)
         peer_id = utils.get_raw_peer_id(message.peer_id)
         chat_id = (peer_id or from_id) if is_chat else (from_id or peer_id)
 
         if isinstance(message.peer_id, raw.types.PeerUser):
-            return Chat._parse_user_chat(client, users.get(chat_id, None))
+            return Chat._parse_user_chat(client, users[chat_id])
 
         if isinstance(message.peer_id, raw.types.PeerChat):
-            return Chat._parse_chat_chat(client, chats.get(chat_id, None))
+            return Chat._parse_chat_chat(client, chats[chat_id])
 
-        return Chat._parse_channel_chat(client, chats.get(chat_id, None))
+        return Chat._parse_channel_chat(client, chats[chat_id])
 
     @staticmethod
     def _parse_dialog(client, peer, users: dict, chats: dict):

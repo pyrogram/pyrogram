@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Callable, Union
+from typing import Callable
 
 import pyrogram
 from pyrogram.filters import Filter
@@ -24,7 +24,7 @@ from pyrogram.filters import Filter
 
 class OnUserStatus:
     def on_user_status(
-        self=None,  # type: Union[Filter, pyrogram.Client]
+        self=None,
         filters=None,
         group: int = 0
     ) -> Callable:

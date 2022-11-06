@@ -1,11 +1,10 @@
-from typing import Any, Callable, Coroutine, TypeVar
+from __future__ import annotations
 
-from .scaffold import Scaffold
-from .types import Update
+from typing import (
+    Any,
+    Callable,
+    Coroutine,
+)
 
-# Unable to use due to circular imports error
-# ClientType = TypeVar('ClientType', bound=Client)
-ScaffoldType = TypeVar('ScaffoldType', bound=Scaffold)
-UpdateType = TypeVar('UpdateType', bound=Update)
-CallNextMiddlewareCallable = Callable[[ScaffoldType, UpdateType], Coroutine[Any, Any, Any]]
-Middleware = Callable[[ScaffoldType, UpdateType, CallNextMiddlewareCallable], Coroutine[Any, Any, Any]]
+CallNextMiddlewareCallable = Callable[['pyrogram.Client', 'pyrogram.types.Update'], Coroutine[Any, Any, Any]]
+Middleware = Callable[['pyrogram.Client', 'pyrogram.types.Update', CallNextMiddlewareCallable], Coroutine[Any, Any, Any]]

@@ -18,11 +18,11 @@
 
 from typing import Callable
 
-from pyrogram.scaffold import Scaffold
+import pyrogram
 
 
-class Middleware(Scaffold):
-    def middleware(self, func: Callable) -> Callable:
+class Middleware:
+    def middleware(self: "pyrogram.Client", func: Callable) -> Callable:
         """Decorator for add middleware.
 
         This does the same thing as :meth:`~pyrogram.Client.add_middleware`

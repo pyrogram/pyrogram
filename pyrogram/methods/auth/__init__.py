@@ -20,7 +20,6 @@ from .accept_terms_of_service import AcceptTermsOfService
 from .check_password import CheckPassword
 from .connect import Connect
 from .disconnect import Disconnect
-from .export_login_token import ExportLoginToken
 from .get_password_hint import GetPasswordHint
 from .initialize import Initialize
 from .log_out import LogOut
@@ -39,7 +38,6 @@ class Auth(
     CheckPassword,
     Connect,
     Disconnect,
-    ExportLoginToken,
     GetPasswordHint,
     Initialize,
     LogOut,

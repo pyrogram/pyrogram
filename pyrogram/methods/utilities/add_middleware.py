@@ -16,12 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.middleware import Middleware
-from pyrogram.scaffold import Scaffold
+import pyrogram
 
 
-class AddMiddleware(Scaffold):
-    def add_middleware(self, middleware: "Middleware"):
+class AddMiddleware:
+    def add_middleware(self: "pyrogram.Client", middleware: "pyrogram.middleware.Middleware"):
         """Register a middleware.
 
         You can register multiple middlewares, they would be called in order you've added them.

@@ -76,6 +76,5 @@ class Update:
     def stop_propagation(self):
         raise pyrogram.StopPropagation
 
-    def continue_propagation(self, data: Dict[str, Any] = None, **kwargs):
-        self.bucket.update(data, **kwargs)
+    def continue_propagation(self):
         raise pyrogram.ContinuePropagation

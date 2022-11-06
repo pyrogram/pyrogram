@@ -16,12 +16,11 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram.middleware import Middleware
-from pyrogram.scaffold import Scaffold
+import pyrogram
 
 
-class RemoveMiddleware(Scaffold):
-    def remove_middleware(self, middleware: "Middleware"):
+class RemoveMiddleware:
+    def remove_middleware(self: "pyrogram.Client", middleware: "pyrogram.middleware.Middleware"):
         """Remove a previously-registered middleware.
 
         Parameters:

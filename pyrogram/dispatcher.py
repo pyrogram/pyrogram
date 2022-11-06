@@ -257,35 +257,6 @@ class Dispatcher:
 
         self.loop.create_task(fn())
 
-    def __prepare_middlewares(self) -> Iterator[Middleware]:
-        yield from reversed(self.middlewares)
-
-    def add_middleware(self, middleware: Middleware):
-        async def fn():
-            for lock in self.locks_list:
-                await lock.acquire()
-
-            try:
-                self.middlewares.append(middleware)
-            finally:
-                for lock in self.locks_list:
-                    lock.release()
-
-        self.loop.create_task(fn())
-
-    def remove_middleware(self, middleware: Middleware):
-        async def fn():
-            for lock in self.locks_list:
-                await lock.acquire()
-
-            try:
-                self.middlewares.remove(middleware)
-            finally:
-                for lock in self.locks_list:
-                    lock.release()
-
-        self.loop.create_task(fn())
-
     async def handle_update(self, update, parsed_update, handler_type, users, chats):
         for group in self.groups.values():
             for handler in group:
@@ -321,6 +292,35 @@ class Dispatcher:
                     continue
 
                 break
+
+    def __prepare_middlewares(self) -> Iterator[Middleware]:
+        yield from reversed(self.middlewares)
+
+    def add_middleware(self, middleware: Middleware):
+        async def fn():
+            for lock in self.locks_list:
+                await lock.acquire()
+
+            try:
+                self.middlewares.append(middleware)
+            finally:
+                for lock in self.locks_list:
+                    lock.release()
+
+        self.loop.create_task(fn())
+
+    def remove_middleware(self, middleware: Middleware):
+        async def fn():
+            for lock in self.locks_list:
+                await lock.acquire()
+
+            try:
+                self.middlewares.remove(middleware)
+            finally:
+                for lock in self.locks_list:
+                    lock.release()
+
+        self.loop.create_task(fn())
 
     async def handle_update_with_middlewares(self, parsed_update, handler_type):
         async def fn(*_, **__):

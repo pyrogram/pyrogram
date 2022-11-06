@@ -16,9 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from base64 import b64encode
 from functools import cached_property
-from struct import pack
 from typing import Union, List, Match, Optional
 from urllib.parse import urlparse, parse_qsl
 
