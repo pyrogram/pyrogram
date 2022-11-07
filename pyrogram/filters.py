@@ -164,7 +164,7 @@ all = create(all_filter)
 
 # region me_filter
 async def me_filter(_, __, m: Message):
-    return bool(m.from_user and m.from_user.is_self or m.outgoing)
+    return bool(m.from_user and m.from_user.is_self or getattr(m, 'outgoing', False))
 
 
 me = create(me_filter)
