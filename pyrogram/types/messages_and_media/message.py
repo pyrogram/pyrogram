@@ -63,6 +63,9 @@ class Message(Object, Update):
         id (``int``):
             Unique message identifier inside this chat.
 
+        message_thread_id (``int``, *optional*):
+            Unique identifier of a message thread to which the message belongs; for supergroups only
+
         from_user (:obj:`~pyrogram.types.User`, *optional*):
             Sender, empty for messages sent to channels.
 
@@ -95,6 +98,9 @@ class Message(Object, Update):
 
         forward_date (:py:obj:`~datetime.datetime`, *optional*):
             For forwarded messages, date the original message was sent.
+
+        is_topic_message (``bool``, *optional*):
+            True, if the message is sent to a forum topic
 
         reply_to_message_id (``int``, *optional*):
             The id of the message which this message directly replied to.
@@ -312,6 +318,7 @@ class Message(Object, Update):
         *,
         client: "pyrogram.Client" = None,
         id: int,
+        message_thread_id: int = None,
         from_user: "types.User" = None,
         sender_chat: "types.Chat" = None,
         date: datetime = None,
@@ -322,6 +329,7 @@ class Message(Object, Update):
         forward_from_message_id: int = None,
         forward_signature: str = None,
         forward_date: datetime = None,
+        is_topic_message: bool = None,
         reply_to_message_id: int = None,
         reply_to_top_message_id: int = None,
         reply_to_message: "Message" = None,
@@ -389,6 +397,7 @@ class Message(Object, Update):
         super().__init__(client)
 
         self.id = id
+        self.message_thread_id = message_thread_id
         self.from_user = from_user
         self.sender_chat = sender_chat
         self.date = date
@@ -399,6 +408,7 @@ class Message(Object, Update):
         self.forward_from_message_id = forward_from_message_id
         self.forward_signature = forward_signature
         self.forward_date = forward_date
+        self.is_topic_message = is_topic_message
         self.reply_to_message_id = reply_to_message_id
         self.reply_to_top_message_id = reply_to_top_message_id
         self.reply_to_message = reply_to_message
@@ -617,6 +627,7 @@ class Message(Object, Update):
             return parsed_message
 
         if isinstance(message, raw.types.Message):
+            message_thread_id = None
             entities = [types.MessageEntity._parse(client, entity, users) for entity in message.entities]
             entities = types.List(filter(lambda x: x is not None, entities))
 
@@ -626,6 +637,7 @@ class Message(Object, Update):
             forward_from_message_id = None
             forward_signature = None
             forward_date = None
+            is_topic_message = None
 
             forward_header = message.fwd_from  # type: raw.types.MessageFwdHeader
 
@@ -760,6 +772,7 @@ class Message(Object, Update):
 
             parsed_message = Message(
                 id=message.id,
+                message_thread_id=message_thread_id,
                 date=utils.timestamp_to_datetime(message.date),
                 chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
@@ -793,6 +806,7 @@ class Message(Object, Update):
                 forward_from_message_id=forward_from_message_id,
                 forward_signature=forward_signature,
                 forward_date=forward_date,
+                is_topic_message=is_topic_message,
                 mentioned=message.mentioned,
                 scheduled=is_scheduled,
                 from_scheduled=message.from_scheduled,
@@ -826,6 +840,13 @@ class Message(Object, Update):
             if message.reply_to:
                 parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
                 parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
+
+                if message.reply_to.forum_topic:
+                    if message.reply_to.reply_to_top_id:
+                        parsed_message.message_thread_id = message.reply_to.reply_to_top_id
+                    else:
+                        parsed_message.message_thread_id = message.reply_to.reply_to_msg_id
+                    parsed_message.is_topic_message = True
 
                 if replies:
                     try:
