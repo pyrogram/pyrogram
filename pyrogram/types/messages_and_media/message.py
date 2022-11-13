@@ -254,6 +254,9 @@ class Message(Object, Update):
 
         views (``int``, *optional*):
             Channel post views.
+	    
+	forwards (``int``, *optional*):
+            Channel post forwards.
 
         via_bot (:obj:`~pyrogram.types.User`):
             The information of the bot that generated the message from an inline query of a user.
