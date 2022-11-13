@@ -254,6 +254,9 @@ class Message(Object, Update):
 
         views (``int``, *optional*):
             Channel post views.
+	    
+	forwards (``int``, *optional*):
+            Channel post forwards.
 
         via_bot (:obj:`~pyrogram.types.User`):
             The information of the bot that generated the message from an inline query of a user.
@@ -361,6 +364,7 @@ class Message(Object, Update):
         pinned_message: "Message" = None,
         game_high_score: int = None,
         views: int = None,
+	forwards: int = None,
         via_bot: "types.User" = None,
         outgoing: bool = None,
         matches: List[Match] = None,
@@ -436,6 +440,7 @@ class Message(Object, Update):
         self.pinned_message = pinned_message
         self.game_high_score = game_high_score
         self.views = views
+        self.forwards = forwards
         self.via_bot = via_bot
         self.outgoing = outgoing
         self.matches = matches
@@ -800,6 +805,7 @@ class Message(Object, Update):
                 poll=poll,
                 dice=dice,
                 views=message.views,
+                forwards=message.forwards,
                 via_bot=types.User._parse(client, users.get(message.via_bot_id, None)),
                 outgoing=message.out,
                 reply_markup=reply_markup,
