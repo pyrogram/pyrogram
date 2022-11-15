@@ -3057,6 +3057,7 @@ class Message(Object, Update):
                 chat_id,
                 text=self.text,
                 entities=self.entities,
+                parse_mode=enums.ParseMode.DISABLED,
                 disable_web_page_preview=not self.web_page,
                 disable_notification=disable_notification,
                 reply_to_message_id=reply_to_message_id,
