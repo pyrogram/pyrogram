@@ -263,8 +263,8 @@ class Message(Object, Update):
 
         views (``int``, *optional*):
             Channel post views.
-	    
-	forwards (``int``, *optional*):
+        
+        forwards (``int``, *optional*):
             Channel post forwards.
 
         via_bot (:obj:`~pyrogram.types.User`):
@@ -284,6 +284,18 @@ class Message(Object, Update):
             A list containing the command and its arguments, if any.
             E.g.: "/start 1 2 3" would produce ["start", "1", "2", "3"].
             Only applicable when using :obj:`~pyrogram.filters.command`.
+
+        forum_topic_created (:obj:`~pyrogram.types.ForumTopicCreated`, *optional*):
+            Service message: forum topic created
+
+        forum_topic_closed (:obj:`~pyrogram.types.ForumTopicClosed`, *optional*):
+            Service message: forum topic closed
+
+        forum_topic_reopened (:obj:`~pyrogram.types.ForumTopicReopened`, *optional*):
+            Service message: forum topic reopened
+
+        forum_topic_edited (:obj:`~pyrogram.types.ForumTopicEdited`, *optional*):
+            Service message: forum topic edited
 
         video_chat_scheduled (:obj:`~pyrogram.types.VideoChatScheduled`, *optional*):
             Service message: voice chat scheduled.
@@ -381,6 +393,10 @@ class Message(Object, Update):
         outgoing: bool = None,
         matches: List[Match] = None,
         command: List[str] = None,
+        forum_topic_created: "types.ForumTopicCreated" = None,
+        forum_topic_closed: "types.ForumTopicClosed" = None,
+        forum_topic_reopened: "types.ForumTopicReopened" = None,
+        forum_topic_edited: "types.ForumTopicEdited" = None,
         video_chat_scheduled: "types.VideoChatScheduled" = None,
         video_chat_started: "types.VideoChatStarted" = None,
         video_chat_ended: "types.VideoChatEnded" = None,
@@ -461,6 +477,10 @@ class Message(Object, Update):
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
+        self.forum_topic_created = forum_topic_created
+        self.forum_topic_closed = forum_topic_closed
+        self.forum_topic_reopened = forum_topic_reopened
+        self.forum_topic_edited = forum_topic_edited
         self.video_chat_scheduled = video_chat_scheduled
         self.video_chat_started = video_chat_started
         self.video_chat_ended = video_chat_ended
@@ -501,6 +521,7 @@ class Message(Object, Update):
                     users.update({i.id: i for i in r})
 
         if isinstance(message, raw.types.MessageService):
+            message_thread_id = None
             action = message.action
 
             new_chat_members = None
@@ -512,6 +533,11 @@ class Message(Object, Update):
             group_chat_created = None
             channel_chat_created = None
             new_chat_photo = None
+            is_topic_message = None
+            forum_topic_created = None
+            forum_topic_closed = None
+            forum_topic_reopened = None
+            forum_topic_edited = None
             video_chat_scheduled = None
             video_chat_started = None
             video_chat_ended = None
@@ -550,6 +576,19 @@ class Message(Object, Update):
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
                 service_type = enums.MessageServiceType.NEW_CHAT_PHOTO
+            elif isinstance(action, raw.types.MessageActionTopicCreate):
+                forum_topic_created = types.ForumTopicCreated._parse(action)
+                service_type = enums.MessageServiceType.FORUM_TOPIC_CREATED
+            elif isinstance(action, raw.types.MessageActionTopicEdit):
+                if action.title:
+                    forum_topic_edited = types.ForumTopicEdited._parse(action)
+                    service_type = enums.MessageServiceType.FORUM_TOPIC_EDITED
+                elif action.closed:
+                    forum_topic_closed = types.ForumTopicClosed()
+                    service_type = enums.MessageServiceType.FORUM_TOPIC_CLOSED
+                else:
+                    forum_topic_reopened = types.ForumTopicReopened()
+                    service_type = enums.MessageServiceType.FORUM_TOPIC_REOPENED
             elif isinstance(action, raw.types.MessageActionGroupCallScheduled):
                 video_chat_scheduled = types.VideoChatScheduled._parse(action)
                 service_type = enums.MessageServiceType.VIDEO_CHAT_SCHEDULED
@@ -572,6 +611,7 @@ class Message(Object, Update):
 
             parsed_message = Message(
                 id=message.id,
+                message_thread_id=message_thread_id,
                 date=utils.timestamp_to_datetime(message.date),
                 chat=types.Chat._parse(client, message, users, chats, is_chat=True),
                 from_user=from_user,
@@ -586,6 +626,11 @@ class Message(Object, Update):
                 migrate_from_chat_id=-migrate_from_chat_id if migrate_from_chat_id else None,
                 group_chat_created=group_chat_created,
                 channel_chat_created=channel_chat_created,
+                is_topic_message=is_topic_message,
+                forum_topic_created=forum_topic_created,
+                forum_topic_closed=forum_topic_closed,
+                forum_topic_reopened=forum_topic_reopened,
+                forum_topic_edited=forum_topic_edited,
                 video_chat_scheduled=video_chat_scheduled,
                 video_chat_started=video_chat_started,
                 video_chat_ended=video_chat_ended,
@@ -623,6 +668,14 @@ class Message(Object, Update):
                         pass
 
             client.message_cache[(parsed_message.chat.id, parsed_message.id)] = parsed_message
+
+            if message.reply_to:
+                if message.reply_to.forum_topic:
+                    if message.reply_to.reply_to_top_id:
+                        parsed_message.message_thread_id = message.reply_to.reply_to_top_id
+                    else:
+                        parsed_message.message_thread_id = message.reply_to.reply_to_msg_id
+                    parsed_message.is_topic_message = True
 
             return parsed_message
 

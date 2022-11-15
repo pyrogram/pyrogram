@@ -57,6 +57,18 @@ class MessageServiceType(AutoName):
     GAME_HIGH_SCORE = auto()
     "Game high score"
 
+    FORUM_TOPIC_CREATED = auto()
+    "a new forum topic created in the chat"
+
+    FORUM_TOPIC_CLOSED = auto()
+    "a new forum topic closed in the chat"
+
+    FORUM_TOPIC_REOPENED = auto()
+    "a new forum topic reopened in the chat"
+
+    FORUM_TOPIC_EDITED = auto()
+    "a new forum topic renamed in the chat"
+
     VIDEO_CHAT_STARTED = auto()
     "Video chat started"
 
