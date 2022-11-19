@@ -75,7 +75,7 @@ class GetChatHistory:
                 By default, no limit is applied and all messages are returned.
 
             offset (``int``, *optional*):
-                Sequential number of the first message to be returned..
+                Sequential number of the first message to be returned.
                 Negative values are also accepted and become useful in case you set offset_id or offset_date.
 
             offset_id (``int``, *optional*):
