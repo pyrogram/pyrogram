@@ -18,7 +18,7 @@
 
 import inspect
 import re
-from typing import Callable, Union, List, Pattern
+from typing import Callable, Union, List, Pattern, Tuple, Set
 
 import pyrogram
 from pyrogram import enums
