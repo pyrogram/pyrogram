@@ -16,12 +16,22 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from functools import cached_property
-from typing import Union, List, Match, Optional
-from urllib.parse import urlparse, parse_qsl
+from typing import (
+    List,
+    Match,
+    Optional,
+    Union,
+)
+from urllib.parse import (
+    parse_qsl,
+    urlparse,
+)
 
 import pyrogram
-from pyrogram import raw, enums
+from pyrogram import (
+    enums,
+    raw,
+)
 from pyrogram import types
 from ..object import Object
 from ..update import Update
@@ -314,7 +324,7 @@ class CallbackQuery(Object, Update):
                 reply_markup=reply_markup
             )
 
-    @cached_property
+    @property
     def params(self) -> dict:
         if not bool(self.data):
             return {}
