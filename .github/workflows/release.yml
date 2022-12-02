@@ -8,7 +8,6 @@ jobs:
   release:
     name: "Build release assets"
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'release' }}
     steps:
       - uses: actions/checkout@v2
 
