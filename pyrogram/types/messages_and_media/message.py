@@ -3079,6 +3079,7 @@ class Message(Object, Update):
         parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
+        message_thread_id: int = None,
         reply_to_message_id: int = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
@@ -3128,6 +3129,10 @@ class Message(Object, Update):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
+            message_thread_id (``int``, *optional*):
+                Unique identifier for the target message thread (topic) of the forum.
+                for forum supergroups only.
+
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
@@ -3165,6 +3170,7 @@ class Message(Object, Update):
                 parse_mode=enums.ParseMode.DISABLED,
                 disable_web_page_preview=not self.web_page,
                 disable_notification=disable_notification,
+                message_thread_id=message_thread_id,
                 reply_to_message_id=reply_to_message_id,
                 schedule_date=schedule_date,
                 protect_content=protect_content,
@@ -3175,6 +3181,7 @@ class Message(Object, Update):
                 self._client.send_cached_media,
                 chat_id=chat_id,
                 disable_notification=disable_notification,
+                message_thread_id=message_thread_id,
                 reply_to_message_id=reply_to_message_id,
                 schedule_date=schedule_date,
                 protect_content=protect_content,
@@ -3205,6 +3212,7 @@ class Message(Object, Update):
                     last_name=self.contact.last_name,
                     vcard=self.contact.vcard,
                     disable_notification=disable_notification,
+                    message_thread_id=message_thread_id,
                     schedule_date=schedule_date
                 )
             elif self.location:
@@ -3213,6 +3221,7 @@ class Message(Object, Update):
                     latitude=self.location.latitude,
                     longitude=self.location.longitude,
                     disable_notification=disable_notification,
+                    message_thread_id=message_thread_id,
                     schedule_date=schedule_date
                 )
             elif self.venue:
@@ -3225,6 +3234,7 @@ class Message(Object, Update):
                     foursquare_id=self.venue.foursquare_id,
                     foursquare_type=self.venue.foursquare_type,
                     disable_notification=disable_notification,
+                    message_thread_id=message_thread_id,
                     schedule_date=schedule_date
                 )
             elif self.poll:
@@ -3233,19 +3243,24 @@ class Message(Object, Update):
                     question=self.poll.question,
                     options=[opt.text for opt in self.poll.options],
                     disable_notification=disable_notification,
+                    message_thread_id=message_thread_id,
                     schedule_date=schedule_date
                 )
             elif self.game:
                 return await self._client.send_game(
                     chat_id,
                     game_short_name=self.game.short_name,
-                    disable_notification=disable_notification
+                    disable_notification=disable_notification,
+                    message_thread_id=message_thread_id
                 )
             else:
                 raise ValueError("Unknown media type")
 
             if self.sticker or self.video_note:  # Sticker and VideoNote should have no caption
-                return await send_media(file_id=file_id)
+                return await send_media(
+                    file_id=file_id,
+                    message_thread_id=message_thread_id
+                )
             else:
                 if caption is None:
                     caption = self.caption or ""
@@ -3255,7 +3270,8 @@ class Message(Object, Update):
                     file_id=file_id,
                     caption=caption,
                     parse_mode=parse_mode,
-                    caption_entities=caption_entities
+                    caption_entities=caption_entities,
+                    message_thread_id=message_thread_id
                 )
         else:
             raise ValueError("Can't copy this message")
