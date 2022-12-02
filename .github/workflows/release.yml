@@ -22,7 +22,6 @@ jobs:
           pip install --upgrade build
           python -m build
 
-      - uses: actions/upload-artifact@v3
+      - uses: softprops/action-gh-release@v1
         with:
-          path: |
-            dist/*
+          files: dist/*
