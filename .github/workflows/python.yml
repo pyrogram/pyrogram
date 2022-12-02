@@ -2,6 +2,7 @@ name: Pyrogram
 
 on:
   push:
+    branches: [ master ]
   pull_request:
   release:
     types: [ published ]
@@ -36,16 +37,26 @@ jobs:
         run: |
           tox
 
+  release:
+    name: "Build release assets"
+    if: ${{ github.event_name == 'release' }}
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
       - name: Build package
-        if: ${{ github.event_name == 'release' }}
         run: |
+          python -m pip install --upgrade pip
           pip install --upgrade build
           python -m build
 
       - name: Attach to Release
-        if: ${{ github.event_name == 'release' }}
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/*
-
-
+          files: |
+            dist/Pyrogram-${{}}.tar.gz
+            dist/Pyrogram-${{}}-py3-none-any.whl
