@@ -1,0 +1,26 @@
+name: Pyrogram
+
+on:
+  release:
+    types: [ published ]
+
+jobs:
+  release:
+    name: "Build release assets"
+    runs-on: ubuntu-latest
+    if: ${{ github.event_name == 'release' }}
+    steps:
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Build package
+        run: |
+          python -m pip install --upgrade pip
+          pip install --upgrade build
+          python -m build
+
+      - uses: actions/upload-artifact@v3
+        with:
+          path: |
+            dist/*
