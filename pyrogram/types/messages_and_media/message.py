@@ -64,7 +64,8 @@ class Message(Object, Update):
             Unique message identifier inside this chat.
 
         message_thread_id (``int``, *optional*):
-            Unique identifier of a message thread to which the message belongs; for supergroups only
+            Unique identifier of a message thread to which the message belongs.
+            for supergroups only
 
         from_user (:obj:`~pyrogram.types.User`, *optional*):
             Sender, empty for messages sent to channels.
@@ -3019,6 +3020,7 @@ class Message(Object, Update):
     async def forward(
         self,
         chat_id: Union[int, str],
+        message_thread_id: int = None,
         disable_notification: bool = None,
         schedule_date: datetime = None
     ) -> Union["types.Message", List["types.Message"]]:
@@ -3045,6 +3047,9 @@ class Message(Object, Update):
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
+            message_thread_id (``int``, *optional*):
+                Unique identifier of a message thread to which the message belongs; for supergroups only
+
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
@@ -3062,6 +3067,7 @@ class Message(Object, Update):
             chat_id=chat_id,
             from_chat_id=self.chat.id,
             message_ids=self.id,
+            message_thread_id=message_thread_id,
             disable_notification=disable_notification,
             schedule_date=schedule_date
         )
