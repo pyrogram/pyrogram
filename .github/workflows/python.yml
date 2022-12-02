@@ -1,18 +1,21 @@
 name: Pyrogram
 
-on: [push, pull_request]
+on:
+  push:
+  pull_request:
+  release:
+    types: [ published ]
 
 jobs:
   build:
-
     runs-on: ${{ matrix.os }}
     strategy:
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        python-version: ["3.7", "3.8", "3.9", "3.10"]
+        os: [ ubuntu-latest, macos-latest ]
+        python-version: [ "3.7", "3.8", "3.9", "3.10", "3.11" ]
 
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Set up Python ${{ matrix.python-version }}
         uses: actions/setup-python@v2
@@ -32,3 +35,17 @@ jobs:
       - name: Run tests
         run: |
           tox
+
+      - name: Build package
+        if: ${{ github.event_name == 'release' }}
+        run: |
+          pip install --upgrade build
+          python -m build
+
+      - name: Attach to Release
+        if: ${{ github.event_name == 'release' }}
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/*
+
+
