@@ -54,9 +54,7 @@ jobs:
           pip install --upgrade build
           python -m build
 
-      - name: Attach to Release
-        uses: softprops/action-gh-release@v1
+      - uses: actions/upload-artifact@v3
         with:
-          files: |
-            dist/Pyrogram-${{}}.tar.gz
-            dist/Pyrogram-${{}}-py3-none-any.whl
+          path: |
+            dist/*
