@@ -118,3 +118,22 @@ def test_html_unparse_mixed():
          pyrogram.types.MessageEntity(type=pyrogram.enums.MessageEntityType.CODE, offset=57, length=10)])
 
     assert HTML.unparse(text=text, entities=entities) == expected
+
+
+def test_html_unparse_escaped():
+    expected = "<b>&lt;b&gt;bold&lt;/b&gt;</b>"
+    text = "<b>bold</b>"
+    entities = pyrogram.types.List(
+        [pyrogram.types.MessageEntity(type=pyrogram.enums.MessageEntityType.BOLD, offset=0, length=11)])
+
+    assert HTML.unparse(text=text, entities=entities) == expected
+
+
+def test_html_unparse_escaped_nested():
+    expected = "<b>&lt;b&gt;bold <u>&lt;u&gt;underline&lt;/u&gt;</u> bold&lt;/b&gt;</b>"
+    text = "<b>bold <u>underline</u> bold</b>"
+    entities = pyrogram.types.List(
+        [pyrogram.types.MessageEntity(type=pyrogram.enums.MessageEntityType.BOLD, offset=0, length=33),
+         pyrogram.types.MessageEntity(type=pyrogram.enums.MessageEntityType.UNDERLINE, offset=8, length=16)])
+
+    assert HTML.unparse(text=text, entities=entities) == expected
