@@ -170,7 +170,7 @@ class User(Object, Update):
         next_offline_date: datetime = None,
         username: str = None,
         language_code: str = None,
-        emoji_status: Optional[str] = None,
+        emoji_status: Optional["types.EmojiStatus"] = None,
         dc_id: int = None,
         phone_number: str = None,
         photo: "types.ChatPhoto" = None,
