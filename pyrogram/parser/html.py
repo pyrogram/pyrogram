@@ -233,10 +233,11 @@ class HTML:
         while i < len(entities):
             i += recursive(i)
 
-        last_offset = entities_offsets[-1][1]
-        # no need to sort, but still add entities starting from the end
-        for entity, offset in reversed(entities_offsets):
-            text = text[:offset] + entity + html.escape(text[offset:last_offset]) + text[last_offset:]
-            last_offset = offset
+        if entities_offsets:
+            last_offset = entities_offsets[-1][1]
+            # no need to sort, but still add entities starting from the end
+            for entity, offset in reversed(entities_offsets):
+                text = text[:offset] + entity + html.escape(text[offset:last_offset]) + text[last_offset:]
+                last_offset = offset
 
         return utils.remove_surrogates(text)

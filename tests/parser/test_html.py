@@ -137,3 +137,11 @@ def test_html_unparse_escaped_nested():
          pyrogram.types.MessageEntity(type=pyrogram.enums.MessageEntityType.UNDERLINE, offset=8, length=16)])
 
     assert HTML.unparse(text=text, entities=entities) == expected
+
+
+def test_html_unparse_no_entities():
+    expected = "text"
+    text = "text"
+    entities = []
+
+    assert HTML.unparse(text=text, entities=entities) == expected
