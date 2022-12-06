@@ -19,6 +19,7 @@
 import html
 import logging
 import re
+from collections import deque
 from html.parser import HTMLParser
 from typing import Optional
 
@@ -157,8 +158,9 @@ class HTML:
     def unparse(text: str, entities: list):
         text = utils.add_surrogates(text)
 
-        entities_offsets = []
+        entities_offsets = deque()
 
+        entities.sort(key=lambda e: e.offset)
         for entity in entities:
             entity_type = entity.type
             start = entity.offset
@@ -201,7 +203,7 @@ class HTML:
             else:
                 continue
 
-            entities_offsets.append((start_tag, start,))
+            entities_offsets.appendleft((start_tag, start,))
             entities_offsets.append((end_tag, end,))
 
         entities_offsets = map(
