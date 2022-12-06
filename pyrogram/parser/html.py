@@ -155,11 +155,10 @@ class HTML:
 
     @staticmethod
     def unparse(text: str, entities: list):
-        text = utils.add_surrogates(text)
-
-        entities_offsets = []
-
-        for entity in entities:
+        def parse_one(entity):
+            """
+            Parses a single entity and returns (start_tag, start), (end_tag, end)
+            """
             entity_type = entity.type
             start = entity.offset
             end = start + entity.length
@@ -199,21 +198,43 @@ class HTML:
                 start_tag = f'<emoji id="{custom_emoji_id}">'
                 end_tag = "</emoji>"
             else:
-                continue
+                return
 
-            entities_offsets.append((start_tag, start,))
-            entities_offsets.append((end_tag, end,))
+            return (start_tag, start), (end_tag, end)
 
-        entities_offsets = map(
-            lambda x: x[1],
-            sorted(
-                enumerate(entities_offsets),
-                key=lambda x: (x[1][1], x[0]),
-                reverse=True
-            )
-        )
+        def recursive(entity_i: int) -> int:
+            """
+            Takes the index of the entity to start parsing from, returns the number of parsed entities inside it.
+            Uses entities_offsets as a stack, pushing (start_tag, start) first, then parsing nested entities,
+            and finally pushing (end_tag, end) to the stack.
+            No need to sort at the end.
+            """
+            this = parse_one(entities[entity_i])
+            if this is None:
+                return 1
+            (start_tag, start), (end_tag, end) = this
+            entities_offsets.append((start_tag, start))
+            internal_i = entity_i + 1
+            # while the next entity is inside the current one, keep parsing
+            while internal_i < len(entities) and entities[internal_i].offset < end:
+                internal_i += recursive(internal_i)
+            entities_offsets.append((end_tag, end))
+            return internal_i - entity_i
 
-        for entity, offset in entities_offsets:
+        text = utils.add_surrogates(text)
+
+        entities_offsets = []
+
+        # probably useless because entities are already sorted by telegram
+        entities.sort(key=lambda e: (e.offset, -e.length))
+
+        # main loop for first-level entities
+        i = 0
+        while i < len(entities):
+            i += recursive(i)
+
+        # no need to sort, but still add entities starting from the end
+        for entity, offset in reversed(entities_offsets):
             text = text[:offset] + entity + text[offset:]
 
         return utils.remove_surrogates(text)
