@@ -364,7 +364,7 @@ class Message(Object, Update):
         pinned_message: "Message" = None,
         game_high_score: int = None,
         views: int = None,
-	forwards: int = None,
+        forwards: int = None,
         via_bot: "types.User" = None,
         outgoing: bool = None,
         matches: List[Match] = None,
@@ -687,16 +687,7 @@ class Message(Object, Update):
                             ), "file_name", None
                         )
 
-                        if raw.types.DocumentAttributeAudio in attributes:
-                            audio_attributes = attributes[raw.types.DocumentAttributeAudio]
-
-                            if audio_attributes.voice:
-                                voice = types.Voice._parse(client, doc, audio_attributes)
-                                media_type = enums.MessageMediaType.VOICE
-                            else:
-                                audio = types.Audio._parse(client, doc, audio_attributes, file_name)
-                                media_type = enums.MessageMediaType.AUDIO
-                        elif raw.types.DocumentAttributeAnimated in attributes:
+                        if raw.types.DocumentAttributeAnimated in attributes:
                             video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
                             animation = types.Animation._parse(client, doc, video_attributes, file_name)
                             media_type = enums.MessageMediaType.ANIMATION
@@ -712,6 +703,15 @@ class Message(Object, Update):
                             else:
                                 video = types.Video._parse(client, doc, video_attributes, file_name, media.ttl_seconds)
                                 media_type = enums.MessageMediaType.VIDEO
+                        elif raw.types.DocumentAttributeAudio in attributes:
+                            audio_attributes = attributes[raw.types.DocumentAttributeAudio]
+
+                            if audio_attributes.voice:
+                                voice = types.Voice._parse(client, doc, audio_attributes)
+                                media_type = enums.MessageMediaType.VOICE
+                            else:
+                                audio = types.Audio._parse(client, doc, audio_attributes, file_name)
+                                media_type = enums.MessageMediaType.AUDIO
                         else:
                             document = types.Document._parse(client, doc, file_name)
                             media_type = enums.MessageMediaType.DOCUMENT
