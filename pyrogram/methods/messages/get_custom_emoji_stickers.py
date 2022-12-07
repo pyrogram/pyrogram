@@ -30,6 +30,8 @@ class GetCustomEmojiStickers:
     ) -> List["types.Sticker"]:
         """Get information about custom emoji stickers by their identifiers.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             custom_emoji_ids (List of ``int``):
                 List of custom emoji identifiers.

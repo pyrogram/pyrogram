@@ -29,6 +29,8 @@ class SetEmojiStatus:
     ) -> bool:
         """Set the emoji status.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             emoji_status (:obj:`~pyrogram.types.EmojiStatus`, *optional*):
                 The emoji status to set. None to remove.

@@ -53,6 +53,8 @@ class SaveFile:
             :obj:`functions <pyrogram.api.functions>` (i.e: a Telegram API method you wish to use which is not
             available yet in the Client class as an easy-to-use method).
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             path (``str`` | ``BinaryIO``):
                 The path of the file you want to upload that exists on your local machine or a binary file-like object

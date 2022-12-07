@@ -33,6 +33,8 @@ class LogOut:
         When you log out, the current client is stopped and the storage session deleted.
         No more API calls can be made until you start the client and re-authorize again.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Returns:
             ``bool``: On success, True is returned.
 

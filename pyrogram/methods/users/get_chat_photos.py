@@ -30,6 +30,8 @@ class GetChatPhotos:
     ) -> Optional[AsyncGenerator["types.Photo", None]]:
         """Get a chat or a user profile photos sequentially.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

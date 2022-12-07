@@ -29,6 +29,8 @@ class GetChatOnlineCount:
     ) -> int:
         """Get the number of members that are currently online in a chat.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

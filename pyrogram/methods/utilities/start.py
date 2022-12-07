@@ -70,5 +70,7 @@ class Start:
             await self.disconnect()
             raise
         else:
+            self.me = await self.get_me()
             await self.initialize()
+
             return self

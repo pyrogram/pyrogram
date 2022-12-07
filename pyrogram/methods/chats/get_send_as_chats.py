@@ -30,6 +30,8 @@ class GetSendAsChats:
     ) -> List["types.Chat"]:
         """Get the list of "send_as" chats available.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

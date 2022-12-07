@@ -254,6 +254,9 @@ class Message(Object, Update):
 
         views (``int``, *optional*):
             Channel post views.
+	    
+	forwards (``int``, *optional*):
+            Channel post forwards.
 
         via_bot (:obj:`~pyrogram.types.User`):
             The information of the bot that generated the message from an inline query of a user.
@@ -361,6 +364,7 @@ class Message(Object, Update):
         pinned_message: "Message" = None,
         game_high_score: int = None,
         views: int = None,
+        forwards: int = None,
         via_bot: "types.User" = None,
         outgoing: bool = None,
         matches: List[Match] = None,
@@ -436,6 +440,7 @@ class Message(Object, Update):
         self.pinned_message = pinned_message
         self.game_high_score = game_high_score
         self.views = views
+        self.forwards = forwards
         self.via_bot = via_bot
         self.outgoing = outgoing
         self.matches = matches
@@ -682,16 +687,7 @@ class Message(Object, Update):
                             ), "file_name", None
                         )
 
-                        if raw.types.DocumentAttributeAudio in attributes:
-                            audio_attributes = attributes[raw.types.DocumentAttributeAudio]
-
-                            if audio_attributes.voice:
-                                voice = types.Voice._parse(client, doc, audio_attributes)
-                                media_type = enums.MessageMediaType.VOICE
-                            else:
-                                audio = types.Audio._parse(client, doc, audio_attributes, file_name)
-                                media_type = enums.MessageMediaType.AUDIO
-                        elif raw.types.DocumentAttributeAnimated in attributes:
+                        if raw.types.DocumentAttributeAnimated in attributes:
                             video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
                             animation = types.Animation._parse(client, doc, video_attributes, file_name)
                             media_type = enums.MessageMediaType.ANIMATION
@@ -707,6 +703,15 @@ class Message(Object, Update):
                             else:
                                 video = types.Video._parse(client, doc, video_attributes, file_name, media.ttl_seconds)
                                 media_type = enums.MessageMediaType.VIDEO
+                        elif raw.types.DocumentAttributeAudio in attributes:
+                            audio_attributes = attributes[raw.types.DocumentAttributeAudio]
+
+                            if audio_attributes.voice:
+                                voice = types.Voice._parse(client, doc, audio_attributes)
+                                media_type = enums.MessageMediaType.VOICE
+                            else:
+                                audio = types.Audio._parse(client, doc, audio_attributes, file_name)
+                                media_type = enums.MessageMediaType.AUDIO
                         else:
                             document = types.Document._parse(client, doc, file_name)
                             media_type = enums.MessageMediaType.DOCUMENT
@@ -800,6 +805,7 @@ class Message(Object, Update):
                 poll=poll,
                 dice=dice,
                 views=message.views,
+                forwards=message.forwards,
                 via_bot=types.User._parse(client, users.get(message.via_bot_id, None)),
                 outgoing=message.out,
                 reply_markup=reply_markup,
@@ -3051,6 +3057,7 @@ class Message(Object, Update):
                 chat_id,
                 text=self.text,
                 entities=self.entities,
+                parse_mode=enums.ParseMode.DISABLED,
                 disable_web_page_preview=not self.web_page,
                 disable_notification=disable_notification,
                 reply_to_message_id=reply_to_message_id,

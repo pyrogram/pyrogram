@@ -36,6 +36,8 @@ class SetGameScore:
         # inline_message_id: str = None):  TODO Add inline_message_id
         """Set the score of the specified user in a game.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
