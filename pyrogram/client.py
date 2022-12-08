@@ -209,6 +209,7 @@ class Client(Methods):
         device_model: str = DEVICE_MODEL,
         system_version: str = SYSTEM_VERSION,
         lang_code: str = LANG_CODE,
+        lang_pack: str = "",
         ipv6: bool = False,
         proxy: dict = None,
         test_mode: bool = False,
@@ -237,7 +238,8 @@ class Client(Methods):
         self.app_version = app_version
         self.device_model = device_model
         self.system_version = system_version
-        self.lang_code = lang_code.lower()
+        self.lang_code = lang_code
+        self.lang_pack = lang_pack
         self.ipv6 = ipv6
         self.proxy = proxy
         self.test_mode = test_mode

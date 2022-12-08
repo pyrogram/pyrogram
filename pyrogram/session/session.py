@@ -127,7 +127,7 @@ class Session:
                                 system_version=self.client.system_version,
                                 system_lang_code=self.client.lang_code,
                                 lang_code=self.client.lang_code,
-                                lang_pack="",
+                                lang_pack=self.client.lang_pack or "",
                                 query=raw.functions.help.GetConfig(),
                             )
                         ),
