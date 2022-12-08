@@ -35,10 +35,13 @@ from .emoji_status import EmojiStatus
 from .invite_link_importer import InviteLinkImporter
 from .restriction import Restriction
 from .user import User
+from .forum_topic import ForumTopic
 from .forum_topic_created import ForumTopicCreated
 from .forum_topic_closed import ForumTopicClosed
 from .forum_topic_reopened import ForumTopicReopened
 from .forum_topic_edited import ForumTopicEdited
+from .peer_channel import PeerChannel
+from .peer_user import PeerUser
 from .video_chat_ended import VideoChatEnded
 from .video_chat_members_invited import VideoChatMembersInvited
 from .video_chat_scheduled import VideoChatScheduled
@@ -58,10 +61,13 @@ __all__ = [
     "ChatInviteLink",
     "InviteLinkImporter",
     "ChatAdminWithInviteLinks",
+    "ForumTopic",
     "ForumTopicCreated",
     "ForumTopicClosed",
     "ForumTopicReopened",
     "ForumTopicEdited",
+    "PeerChannel",
+    "PeerUser",
     "VideoChatStarted",
     "VideoChatEnded",
     "VideoChatMembersInvited",

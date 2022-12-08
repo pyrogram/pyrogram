@@ -82,6 +82,10 @@ class Message(Object, Update):
         chat (:obj:`~pyrogram.types.Chat`, *optional*):
             Conversation the message belongs to.
 
+        topics (:obj:`~pyrogram.types.ForumTopic`, *optional*):
+            Topic the message belongs to.
+            only returned using when client.get_messages.
+
         forward_from (:obj:`~pyrogram.types.User`, *optional*):
             For forwarded messages, sender of the original message.
 
@@ -336,6 +340,7 @@ class Message(Object, Update):
         sender_chat: "types.Chat" = None,
         date: datetime = None,
         chat: "types.Chat" = None,
+        topics: "types.ForumTopic" = None,
         forward_from: "types.User" = None,
         forward_sender_name: str = None,
         forward_from_chat: "types.Chat" = None,
@@ -419,6 +424,7 @@ class Message(Object, Update):
         self.sender_chat = sender_chat
         self.date = date
         self.chat = chat
+        self.topics = topics
         self.forward_from = forward_from
         self.forward_sender_name = forward_sender_name
         self.forward_from_chat = forward_from_chat
@@ -495,6 +501,7 @@ class Message(Object, Update):
         message: raw.base.Message,
         users: dict,
         chats: dict,
+        topics: dict = None,
         is_scheduled: bool = False,
         replies: int = 1
     ):
@@ -615,6 +622,7 @@ class Message(Object, Update):
                 message_thread_id=message_thread_id,
                 date=utils.timestamp_to_datetime(message.date),
                 chat=types.Chat._parse(client, message, users, chats, is_chat=True),
+                topics=None,
                 from_user=from_user,
                 sender_chat=sender_chat,
                 service=service_type,
@@ -829,6 +837,7 @@ class Message(Object, Update):
                 message_thread_id=message_thread_id,
                 date=utils.timestamp_to_datetime(message.date),
                 chat=types.Chat._parse(client, message, users, chats, is_chat=True),
+                topics=None,
                 from_user=from_user,
                 sender_chat=sender_chat,
                 text=(
@@ -897,10 +906,16 @@ class Message(Object, Update):
 
                 if message.reply_to.forum_topic:
                     if message.reply_to.reply_to_top_id:
-                        parsed_message.message_thread_id = message.reply_to.reply_to_top_id
+                        thread_id = message.reply_to.reply_to_top_id
+                        parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
                     else:
-                        parsed_message.message_thread_id = message.reply_to.reply_to_msg_id
-                    parsed_message.is_topic_message = True
+                        thread_id = message.reply_to.reply_to_msg_id
+                    parsed_message.message_thread_id = thread_id
+                    if topics:
+                        parsed_message.topics = types.ForumTopic._parse(topics[thread_id])
+                else:
+                    parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
+                    parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
 
                 if replies:
                     try:
@@ -913,8 +928,8 @@ class Message(Object, Update):
                                 reply_to_message_ids=message.id,
                                 replies=replies - 1
                             )
-
-                        parsed_message.reply_to_message = reply_to_message
+                        if not reply_to_message.forum_topic_created:
+                            parsed_message.reply_to_message = reply_to_message
                     except MessageIdsEmpty:
                         pass
 

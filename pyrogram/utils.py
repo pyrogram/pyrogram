@@ -91,14 +91,14 @@ async def parse_messages(
 ) -> List["types.Message"]:
     users = {i.id: i for i in messages.users}
     chats = {i.id: i for i in messages.chats}
-
+    topics = {i.id: i for i in messages.topics}
     if not messages.messages:
         return types.List()
 
     parsed_messages = []
 
     for message in messages.messages:
-        parsed_messages.append(await types.Message._parse(client, message, users, chats, replies=0))
+        parsed_messages.append(await types.Message._parse(client, message, users, chats, topics, replies=0))
 
     if replies:
         messages_with_replies = {
@@ -127,7 +127,7 @@ async def parse_messages(
                 reply_id = messages_with_replies.get(message.id, None)
 
                 for reply in reply_messages:
-                    if reply.id == reply_id:
+                    if reply.id == reply_id and not reply.forum_topic_created:
                         message.reply_to_message = reply
 
     return types.List(parsed_messages)
