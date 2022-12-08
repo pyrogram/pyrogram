@@ -185,6 +185,7 @@ class Client(Methods):
     SYSTEM_VERSION = f"{platform.system()} {platform.release()}"
 
     LANG_CODE = "en"
+    SYSTEM_LANG_CODE = "en-US"
 
     PARENT_DIR = Path(sys.argv[0]).parent
 
@@ -208,6 +209,7 @@ class Client(Methods):
         app_version: str = APP_VERSION,
         device_model: str = DEVICE_MODEL,
         system_version: str = SYSTEM_VERSION,
+        system_lang_code: str = SYSTEM_LANG_CODE,
         lang_code: str = LANG_CODE,
         lang_pack: str = "",
         ipv6: bool = False,
@@ -238,6 +240,7 @@ class Client(Methods):
         self.app_version = app_version
         self.device_model = device_model
         self.system_version = system_version
+        self.system_lang_code = system_lang_code
         self.lang_code = lang_code
         self.lang_pack = lang_pack
         self.ipv6 = ipv6
