@@ -20,12 +20,17 @@ from .add_chat_members import AddChatMembers
 from .archive_chats import ArchiveChats
 from .ban_chat_member import BanChatMember
 from .create_channel import CreateChannel
+from .create_forum_topic import CreateForumTopic
 from .create_group import CreateGroup
 from .create_supergroup import CreateSupergroup
+from .close_forum_topic import CloseForumTopic
 from .delete_channel import DeleteChannel
 from .delete_chat_photo import DeleteChatPhoto
+from .delete_forum_topic import DeleteForumTopic
 from .delete_supergroup import DeleteSupergroup
 from .delete_user_history import DeleteUserHistory
+from .edit_forum_topic import EditForumTopic
+from .reopen_forum_topic import ReopenForumTopic
 from .get_chat import GetChat
 from .get_chat_event_log import GetChatEventLog
 from .get_chat_member import GetChatMember
@@ -83,9 +88,14 @@ class Chats(
     CreateGroup,
     CreateSupergroup,
     CreateChannel,
+    CreateForumTopic,
+    CloseForumTopic,
     AddChatMembers,
     DeleteChannel,
+    DeleteForumTopic,
     DeleteSupergroup,
+    EditForumTopic,
+    ReopenForumTopic,
     GetNearbyChats,
     SetAdministratorTitle,
     SetSlowMode,
