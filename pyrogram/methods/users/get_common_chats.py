@@ -30,6 +30,8 @@ class GetCommonChats:
     ) -> List["types.Chat"]:
         """Get the common chats you have with a user.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             user_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

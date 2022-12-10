@@ -30,6 +30,8 @@ class GetBotDefaultPrivileges:
     ) -> Optional["types.ChatPrivileges"]:
         """Get the current default privileges of the bot.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             for_channels (``bool``, *optional*):
                 Pass True to get default privileges of the bot in channels. Otherwise, default privileges of the bot

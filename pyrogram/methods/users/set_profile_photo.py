@@ -39,6 +39,8 @@ class SetProfilePhoto:
             This method only works for Users.
             Bots profile photos must be set using BotFather.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             photo (``str`` | ``BinaryIO``, *optional*):
                 Profile photo to set.

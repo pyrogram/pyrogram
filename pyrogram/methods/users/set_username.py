@@ -33,6 +33,8 @@ class SetUsername:
         them from scratch using BotFather. To set a channel or supergroup username you can use
         :meth:`~pyrogram.Client.set_chat_username`.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             username (``str`` | ``None``):
                 Username to set. "" (empty string) or None to remove it.

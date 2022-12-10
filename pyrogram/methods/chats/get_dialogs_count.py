@@ -27,9 +27,12 @@ class GetDialogsCount:
     ) -> int:
         """Get the total count of your dialogs.
 
-        pinned_only (``bool``, *optional*):
-            Pass True if you want to count only pinned dialogs.
-            Defaults to False.
+        .. include:: /_includes/usable-by/users.rst
+
+        Parameters:
+            pinned_only (``bool``, *optional*):
+                Pass True if you want to count only pinned dialogs.
+                Defaults to False.
 
         Returns:
             ``int``: On success, the dialogs count is returned.

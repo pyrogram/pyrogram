@@ -30,6 +30,8 @@ class AnswerWebAppQuery:
         """Set the result of an interaction with a `Web App <https://core.telegram.org/bots/webapps>`_ and send a
         corresponding message on behalf of the user to the chat from which the query originated.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             web_app_query_id (``str``):
                 Unique identifier for the answered query.

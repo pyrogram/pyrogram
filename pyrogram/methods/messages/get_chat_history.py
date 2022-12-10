@@ -62,6 +62,8 @@ class GetChatHistory:
 
         The messages are returned in reverse chronological order.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

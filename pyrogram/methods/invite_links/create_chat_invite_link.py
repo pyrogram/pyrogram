@@ -39,6 +39,8 @@ class CreateChatInviteLink:
 
         The link can be revoked using the method :meth:`~pyrogram.Client.revoke_chat_invite_link`.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup

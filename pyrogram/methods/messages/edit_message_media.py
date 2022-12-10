@@ -42,6 +42,8 @@ class EditMessageMedia:
         If a message is a part of a message album, then it can be edited only to a photo or a video. Otherwise, the
         message type can be changed arbitrarily.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

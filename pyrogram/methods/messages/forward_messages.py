@@ -36,6 +36,8 @@ class ForwardMessages:
     ) -> Union["types.Message", List["types.Message"]]:
         """Forward messages of any kind.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
