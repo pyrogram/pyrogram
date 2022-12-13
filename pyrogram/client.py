@@ -485,7 +485,10 @@ class Client(Methods):
 
     async def handle_updates(self, updates):
         if isinstance(updates, (raw.types.Updates, raw.types.UpdatesCombined)):
-            is_min = (await self.fetch_peers(updates.users)) or (await self.fetch_peers(updates.chats))
+            is_min = any((
+                await self.fetch_peers(updates.users),
+                await self.fetch_peers(updates.chats),
+            ))
 
             users = {u.id: u for u in updates.users}
             chats = {c.id: c for c in updates.chats}
