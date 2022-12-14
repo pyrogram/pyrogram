@@ -84,7 +84,6 @@ class Message(Object, Update):
 
         topics (:obj:`~pyrogram.types.ForumTopic`, *optional*):
             Topic the message belongs to.
-            only returned using when client.get_messages.
 
         forward_from (:obj:`~pyrogram.types.User`, *optional*):
             For forwarded messages, sender of the original message.
@@ -901,9 +900,6 @@ class Message(Object, Update):
             )
 
             if message.reply_to:
-                parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
-                parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
-
                 if message.reply_to.forum_topic:
                     if message.reply_to.reply_to_top_id:
                         thread_id = message.reply_to.reply_to_top_id
@@ -913,6 +909,10 @@ class Message(Object, Update):
                     parsed_message.message_thread_id = thread_id
                     if topics:
                         parsed_message.topics = types.ForumTopic._parse(topics[thread_id])
+                    else:
+                        msg = await client.get_messages(parsed_message.chat.id,message.id)
+                        if getattr(msg, "topics"):
+                            parsed_message.topics = msg.topics
                 else:
                     parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
                     parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id

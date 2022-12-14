@@ -130,8 +130,9 @@ async def parse_messages(
                 reply_id = messages_with_replies.get(message.id, None)
 
                 for reply in reply_messages:
-                    if reply.id == reply_id and not reply.forum_topic_created:
-                        message.reply_to_message = reply
+                    if reply.id == reply_id:
+                        if not reply.forum_topic_created:
+                            message.reply_to_message = reply
 
     return types.List(parsed_messages)
 
