@@ -907,12 +907,16 @@ class Message(Object, Update):
                     else:
                         thread_id = message.reply_to.reply_to_msg_id
                     parsed_message.message_thread_id = thread_id
+                    parsed_message.is_topic_message = True
                     if topics:
                         parsed_message.topics = types.ForumTopic._parse(topics[thread_id])
                     else:
-                        msg = await client.get_messages(parsed_message.chat.id,message.id)
-                        if getattr(msg, "topics"):
-                            parsed_message.topics = msg.topics
+                        try:
+                            msg = await client.get_messages(parsed_message.chat.id,message.id)
+                            if getattr(msg, "topics"):
+                                parsed_message.topics = msg.topics
+                        except Exception:
+                            pass
                 else:
                     parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
                     parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
