@@ -483,6 +483,34 @@ class Client(Methods):
 
         return is_min
 
+    def __extract_channel_id__from_message(self, update):
+        """
+        Re-implementation extraction `channel_id` logic as is
+        Here we trying to extract it from message
+        """
+        message = getattr(update, "message", None)
+
+        if message is None:
+            return
+
+        peer_id = getattr(message, "peer_id", None)
+
+        if peer_id is None:
+            return
+
+        return getattr(peer_id, "channel_id", None)
+
+    def __extract_channel_id(self, update):
+        """
+        Re-implementation extraction `channel_id` logic as is
+        TODO: maybe it would be easier to check update type?
+        """
+
+        return (
+            self.__extract_channel_id__from_message(update) or
+            getattr(update, "channel_id", None)
+        )
+
     async def handle_updates(self, updates):
         if isinstance(updates, (raw.types.Updates, raw.types.UpdatesCombined)):
             is_min = any((
@@ -494,14 +522,7 @@ class Client(Methods):
             chats = {c.id: c for c in updates.chats}
 
             for update in updates.updates:
-                channel_id = getattr(
-                    getattr(
-                        getattr(
-                            update, "message", None
-                        ), "peer_id", None
-                    ), "channel_id", None
-                ) or getattr(update, "channel_id", None)
-
+                channel_id = self.__extract_channel_id(update)
                 pts = getattr(update, "pts", None)
                 pts_count = getattr(update, "pts_count", None)
 
