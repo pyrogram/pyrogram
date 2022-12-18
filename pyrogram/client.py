@@ -483,7 +483,7 @@ class Client(Methods):
 
         return is_min
 
-    def __extract_channel_id__from_message(self, update):
+    def _handle_updates__extract_channel_id__from_message(self, update):
         """
         Re-implementation extraction `channel_id` logic as is
         Here we trying to extract it from message
@@ -500,83 +500,89 @@ class Client(Methods):
 
         return getattr(peer_id, "channel_id", None)
 
-    def __extract_channel_id(self, update):
+    def _handle_updates__extract_channel_id(self, update):
         """
         Re-implementation extraction `channel_id` logic as is
         TODO: maybe it would be easier to check update type?
         """
 
         return (
-            self.__extract_channel_id__from_message(update) or
+            self._handle_updates__extract_channel_id__from_message(update) or
             getattr(update, "channel_id", None)
         )
 
+    async def _handle_updates__updates(self, updates):
+        is_min = any((
+            await self.fetch_peers(updates.users),
+            await self.fetch_peers(updates.chats),
+        ))
+
+        users = {u.id: u for u in updates.users}
+        chats = {c.id: c for c in updates.chats}
+
+        for update in updates.updates:
+            channel_id = self._handle_updates__extract_channel_id(update)
+            pts = getattr(update, "pts", None)
+            pts_count = getattr(update, "pts_count", None)
+
+            if isinstance(update, raw.types.UpdateChannelTooLong):
+                log.warning(update)
+
+            if isinstance(update, raw.types.UpdateNewChannelMessage) and is_min:
+                message = update.message
+
+                if not isinstance(message, raw.types.MessageEmpty):
+                    try:
+                        diff = await self.invoke(
+                            raw.functions.updates.GetChannelDifference(
+                                channel=await self.resolve_peer(utils.get_channel_id(channel_id)),
+                                filter=raw.types.ChannelMessagesFilter(
+                                    ranges=[raw.types.MessageRange(
+                                        min_id=update.message.id,
+                                        max_id=update.message.id
+                                    )]
+                                ),
+                                pts=pts - pts_count,
+                                limit=pts
+                            )
+                        )
+                    except ChannelPrivate:
+                        pass
+                    else:
+                        if not isinstance(diff, raw.types.updates.ChannelDifferenceEmpty):
+                            users.update({u.id: u for u in diff.users})
+                            chats.update({c.id: c for c in diff.chats})
+
+            self.dispatcher.updates_queue.put_nowait((update, users, chats))
+
+    async def _handle_updates__message(self, updates):
+        diff = await self.invoke(
+            raw.functions.updates.GetDifference(
+                pts=updates.pts - updates.pts_count,
+                date=updates.date,
+                qts=-1
+            )
+        )
+
+        if diff.new_messages:
+            self.dispatcher.updates_queue.put_nowait((
+                raw.types.UpdateNewMessage(
+                    message=diff.new_messages[0],
+                    pts=updates.pts,
+                    pts_count=updates.pts_count
+                ),
+                {u.id: u for u in diff.users},
+                {c.id: c for c in diff.chats}
+            ))
+        else:
+            if diff.other_updates:  # The other_updates list can be empty
+                self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+
     async def handle_updates(self, updates):
         if isinstance(updates, (raw.types.Updates, raw.types.UpdatesCombined)):
-            is_min = any((
-                await self.fetch_peers(updates.users),
-                await self.fetch_peers(updates.chats),
-            ))
-
-            users = {u.id: u for u in updates.users}
-            chats = {c.id: c for c in updates.chats}
-
-            for update in updates.updates:
-                channel_id = self.__extract_channel_id(update)
-                pts = getattr(update, "pts", None)
-                pts_count = getattr(update, "pts_count", None)
-
-                if isinstance(update, raw.types.UpdateChannelTooLong):
-                    log.warning(update)
-
-                if isinstance(update, raw.types.UpdateNewChannelMessage) and is_min:
-                    message = update.message
-
-                    if not isinstance(message, raw.types.MessageEmpty):
-                        try:
-                            diff = await self.invoke(
-                                raw.functions.updates.GetChannelDifference(
-                                    channel=await self.resolve_peer(utils.get_channel_id(channel_id)),
-                                    filter=raw.types.ChannelMessagesFilter(
-                                        ranges=[raw.types.MessageRange(
-                                            min_id=update.message.id,
-                                            max_id=update.message.id
-                                        )]
-                                    ),
-                                    pts=pts - pts_count,
-                                    limit=pts
-                                )
-                            )
-                        except ChannelPrivate:
-                            pass
-                        else:
-                            if not isinstance(diff, raw.types.updates.ChannelDifferenceEmpty):
-                                users.update({u.id: u for u in diff.users})
-                                chats.update({c.id: c for c in diff.chats})
-
-                self.dispatcher.updates_queue.put_nowait((update, users, chats))
+            self._handle_updates__updates(updates)
         elif isinstance(updates, (raw.types.UpdateShortMessage, raw.types.UpdateShortChatMessage)):
-            diff = await self.invoke(
-                raw.functions.updates.GetDifference(
-                    pts=updates.pts - updates.pts_count,
-                    date=updates.date,
-                    qts=-1
-                )
-            )
-
-            if diff.new_messages:
-                self.dispatcher.updates_queue.put_nowait((
-                    raw.types.UpdateNewMessage(
-                        message=diff.new_messages[0],
-                        pts=updates.pts,
-                        pts_count=updates.pts_count
-                    ),
-                    {u.id: u for u in diff.users},
-                    {c.id: c for c in diff.chats}
-                ))
-            else:
-                if diff.other_updates:  # The other_updates list can be empty
-                    self.dispatcher.updates_queue.put_nowait((diff.other_updates[0], {}, {}))
+            self._handle_updates__message(updates)
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):
