@@ -67,8 +67,6 @@ class GetChat:
             if isinstance(r, raw.types.ChatInvite):
                 return types.ChatPreview._parse(self, r)
 
-            await self.fetch_peers([r.chat])
-
             if isinstance(r.chat, raw.types.Chat):
                 chat_id = -r.chat.id
 

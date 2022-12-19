@@ -89,16 +89,14 @@ class ResolvePeer:
             peer_type = utils.get_peer_type(peer_id)
 
             if peer_type == "user":
-                await self.fetch_peers(
-                    await self.invoke(
-                        raw.functions.users.GetUsers(
-                            id=[
-                                raw.types.InputUser(
-                                    user_id=peer_id,
-                                    access_hash=0
-                                )
-                            ]
-                        )
+                await self.invoke(
+                    raw.functions.users.GetUsers(
+                        id=[
+                            raw.types.InputUser(
+                                user_id=peer_id,
+                                access_hash=0
+                            )
+                        ]
                     )
                 )
             elif peer_type == "chat":
