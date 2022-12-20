@@ -60,6 +60,20 @@ from .session.internals import MsgId
 log = logging.getLogger(__name__)
 
 
+def getattr_nested(target, *args: str, default=None):
+    """
+    TODO: move into utils?
+    """
+    result = target
+    for attr in args:
+        if hasattr(result, attr):
+            result = getattr(result, attr)
+        else:
+            return default
+
+    return result
+
+
 class Client(Methods):
     """Pyrogram Client, the main means for interacting with Telegram.
 
@@ -483,23 +497,6 @@ class Client(Methods):
 
         return is_min
 
-    def _handle_updates__extract_channel_id__from_message(self, update):
-        """
-        Re-implementation extraction `channel_id` logic as is
-        Here we trying to extract it from message
-        """
-        message = getattr(update, "message", None)
-
-        if message is None:
-            return
-
-        peer_id = getattr(message, "peer_id", None)
-
-        if peer_id is None:
-            return
-
-        return getattr(peer_id, "channel_id", None)
-
     def _handle_updates__extract_channel_id(self, update):
         """
         Re-implementation extraction `channel_id` logic as is
@@ -507,7 +504,7 @@ class Client(Methods):
         """
 
         return (
-            self._handle_updates__extract_channel_id__from_message(update) or
+            getattr_nested(update, "message", "peer_id", "channel_id") or
             getattr(update, "channel_id", None)
         )
 
