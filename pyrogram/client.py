@@ -379,7 +379,9 @@ class Client(Methods):
             enums.SentCodeType.CALL: "phone call",
             enums.SentCodeType.FLASH_CALL: "phone flash call",
             enums.SentCodeType.FRAGMENT_SMS: "Fragment SMS",
-            enums.SentCodeType.EMAIL_CODE: "email code"
+            enums.SentCodeType.EMAIL_CODE: "email code",
+            enums.SentCodeType.MISSED_CALL: "phone missed call",
+            enums.SentCodeType.SETUP_EMAIL_REQUIRED: "Email required to protect account",
         }
 
         print(f"The confirmation code has been sent via {sent_code_descriptions[sent_code.type]}")
