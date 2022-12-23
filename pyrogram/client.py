@@ -26,6 +26,7 @@ import re
 import shutil
 import sys
 from concurrent.futures.thread import ThreadPoolExecutor
+from datetime import datetime, timedelta
 from hashlib import sha256
 from importlib import import_module
 from io import StringIO, BytesIO
@@ -185,6 +186,9 @@ class Client(Methods):
     WORKERS = min(32, (os.cpu_count() or 0) + 4)  # os.cpu_count() can be None
     WORKDIR = PARENT_DIR
 
+    # Interval of seconds in which the updates watchdog will kick in
+    UPDATES_WATCHDOG_INTERVAL = 5 * 60
+
     mimetypes = MimeTypes()
     mimetypes.readfp(StringIO(mime_types))
 
@@ -273,6 +277,13 @@ class Client(Methods):
 
         self.message_cache = Cache(10000)
 
+        # Sometimes, for some reason, the server will stop sending updates and will only respond to pings.
+        # This watchdog will invoke updates.GetState in order to wake up the server and enable it sending updates again
+        # after some idle time has been detected.
+        self.updates_watchdog_task = None
+        self.updates_watchdog_event = asyncio.Event()
+        self.last_update_time = datetime.now()
+
         self.loop = asyncio.get_event_loop()
 
     def __enter__(self):
@@ -292,6 +303,18 @@ class Client(Methods):
             await self.stop()
         except ConnectionError:
             pass
+
+    async def updates_watchdog(self):
+        while True:
+            try:
+                await asyncio.wait_for(self.updates_watchdog_event.wait(), self.UPDATES_WATCHDOG_INTERVAL)
+            except asyncio.TimeoutError:
+                pass
+            else:
+                break
+
+            if datetime.now() - self.last_update_time > timedelta(seconds=self.UPDATES_WATCHDOG_INTERVAL):
+                await self.invoke(raw.functions.updates.GetState())
 
     async def authorize(self) -> User:
         if self.bot_token:
@@ -484,6 +507,8 @@ class Client(Methods):
         return is_min
 
     async def handle_updates(self, updates):
+        self.last_update_time = datetime.now()
+
         if isinstance(updates, (raw.types.Updates, raw.types.UpdatesCombined)):
             is_min = any((
                 await self.fetch_peers(updates.users),
