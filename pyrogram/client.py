@@ -356,7 +356,8 @@ class Client(Methods):
             enums.SentCodeType.APP: "Telegram app",
             enums.SentCodeType.SMS: "SMS",
             enums.SentCodeType.CALL: "phone call",
-            enums.SentCodeType.FLASH_CALL: "phone flash call"
+            enums.SentCodeType.FLASH_CALL: "phone flash call",
+            enums.SentCodeType.FRAGMENT_SMS: "Fragment SMS",
         }
 
         print(f"The confirmation code has been sent via {sent_code_descriptions[sent_code.type]}")
