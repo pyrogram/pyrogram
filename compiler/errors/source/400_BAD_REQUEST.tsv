@@ -340,7 +340,7 @@ USER_NOT_MUTUAL_CONTACT	The user is not a mutual contact
 USER_NOT_PARTICIPANT	The user is not a member of this chat
 VIDEO_CONTENT_TYPE_INVALID	The video content type is invalid (i.e.: not streamable)
 VIDEO_FILE_INVALID	The video file is invalid
-VOICE_MESSAGES_FORBIDDEN	User banned internal voice messages
+VOICE_MESSAGES_FORBIDDEN	Voice messages are restricted
 VOLUME_LOC_NOT_FOUND	The volume location can't be found
 WALLPAPER_FILE_INVALID	The provided file cannot be used as a wallpaper
 WALLPAPER_INVALID	The input wallpaper was not valid
