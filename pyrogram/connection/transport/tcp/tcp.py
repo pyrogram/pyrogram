@@ -91,15 +91,17 @@ class TCP:
         try:
             self.writer.close()
         except AttributeError:
-            try:
-                self.socket.shutdown(socket.SHUT_RDWR)
-            except OSError:
-                pass
-            finally:
-                # A tiny sleep placed here helps avoiding .recv(n) hanging until the timeout.
-                # This is a workaround that seems to fix the occasional delayed stop of a client.
-                time.sleep(0.001)
-                self.socket.close()
+            pass
+        
+        try:
+            self.socket.shutdown(socket.SHUT_RDWR)
+        except OSError:
+            pass
+        finally:
+            # A tiny sleep placed here helps avoiding .recv(n) hanging until the timeout.
+            # This is a workaround that seems to fix the occasional delayed stop of a client.
+            time.sleep(0.001)
+            self.socket.close()
 
     async def send(self, data: bytes):
         async with self.lock:
