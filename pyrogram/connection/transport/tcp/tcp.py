@@ -23,15 +23,15 @@ import socket
 import time
 from concurrent.futures import ThreadPoolExecutor
 
-try:
-    import socks
-except ImportError as e:
-    e.msg = (
-        "PySocks is missing and Pyrogram can't run without. "
-        "Please install it using \"pip3 install pysocks\"."
-    )
-
-    raise e
+# try:
+#     import socks
+# except ImportError as e:
+#     e.msg = (
+#         "PySocks is missing and Pyrogram can't run without. "
+#         "Please install it using \"pip3 install pysocks\"."
+#     )
+#
+#     raise e
 
 log = logging.getLogger(__name__)
 
@@ -48,33 +48,34 @@ class TCP:
         self.lock = asyncio.Lock()
         self.loop = asyncio.get_event_loop()
 
-        if proxy:
-            hostname = proxy.get("hostname")
-
-            try:
-                ip_address = ipaddress.ip_address(hostname)
-            except ValueError:
-                self.socket = socks.socksocket(socket.AF_INET)
-            else:
-                if isinstance(ip_address, ipaddress.IPv6Address):
-                    self.socket = socks.socksocket(socket.AF_INET6)
-                else:
-                    self.socket = socks.socksocket(socket.AF_INET)
-
-            self.socket.set_proxy(
-                proxy_type=getattr(socks, proxy.get("scheme").upper()),
-                addr=hostname,
-                port=proxy.get("port", None),
-                username=proxy.get("username", None),
-                password=proxy.get("password", None)
-            )
-
-            log.info(f"Using proxy {hostname}")
-        else:
-            self.socket = socks.socksocket(
-                socket.AF_INET6 if ipv6
-                else socket.AF_INET
-            )
+        # if proxy:
+        #     hostname = proxy.get("hostname")
+        #
+        #     try:
+        #         ip_address = ipaddress.ip_address(hostname)
+        #     except ValueError:
+        #         self.socket = socks.socksocket(socket.AF_INET)
+        #     else:
+        #         if isinstance(ip_address, ipaddress.IPv6Address):
+        #             self.socket = socks.socksocket(socket.AF_INET6)
+        #         else:
+        #             self.socket = socks.socksocket(socket.AF_INET)
+        #
+        #     self.socket.set_proxy(
+        #         proxy_type=getattr(socks, proxy.get("scheme").upper()),
+        #         addr=hostname,
+        #         port=proxy.get("port", None),
+        #         username=proxy.get("username", None),
+        #         password=proxy.get("password", None)
+        #     )
+        #
+        #     log.info(f"Using proxy {hostname}")
+        # else:
+        print("Using Python sockets")
+        self.socket = socket.socket(
+            socket.AF_INET6 if ipv6
+            else socket.AF_INET
+        )
 
         self.socket.settimeout(TCP.TIMEOUT)
 
