@@ -76,7 +76,6 @@ class TCP:
                 else socket.AF_INET
             )
 
-        self.socket.setblocking(False)
         self.socket.settimeout(TCP.TIMEOUT)
 
         self.send_queue = asyncio.Queue()
@@ -86,10 +85,13 @@ class TCP:
         await asyncio.get_event_loop().sock_connect(self.socket, address)
         self.reader, self.writer = await asyncio.open_connection(sock=self.socket)
         self.send_task = asyncio.create_task(self.send_worker())
+        self.socket.setblocking(False)
 
     async def close(self):
         await self.send_queue.put(None)
-        await self.send_task
+
+        if self.send_task is not None:
+            await self.send_task
 
         try:
             self.writer.close()
