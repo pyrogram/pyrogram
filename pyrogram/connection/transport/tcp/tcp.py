@@ -68,7 +68,7 @@ class TCP:
 
             log.info(f"Using proxy {hostname}")
         else:
-            self.socket = socks.socksocket(
+            self.socket = socket.socket(
                 socket.AF_INET6 if ipv6
                 else socket.AF_INET
             )
