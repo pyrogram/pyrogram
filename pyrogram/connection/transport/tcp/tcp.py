@@ -45,9 +45,6 @@ class TCP:
         self.reader = None  # type: asyncio.StreamReader
         self.writer = None  # type: asyncio.StreamWriter
 
-        self.lock = asyncio.Lock()
-        self.loop = asyncio.get_event_loop()
-
         if proxy:
             hostname = proxy.get("hostname")
 
