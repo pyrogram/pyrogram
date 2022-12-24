@@ -638,18 +638,64 @@ class Client(Methods):
                         except Exception as e:
                             print(e)
 
-    def load_plugins(self):
-        if self.plugins:
-            plugins = self.plugins.copy()
+    @staticmethod
+    def iterate_handlers(module, name):
+        for handler, group in getattr(module, name).handlers:
+            if isinstance(handler, Handler) and isinstance(group, int):
+                yield handler, group
 
-            for option in ["include", "exclude"]:
-                if plugins.get(option, []):
-                    plugins[option] = [
-                        (i.split()[0], i.split()[1:] or None)
-                        for i in self.plugins[option]
-                    ]
-        else:
+    def parse_handlers(self, root, handlers, exclude=False):
+        count = 0
+        tag = "LOAD" if not exclude else "UNLOAD"
+        for path, handlers in handlers:
+            module_path = root + "." + path
+            warn_non_existent_functions = True
+
+            try:
+                module = import_module(module_path)
+            except ImportError:
+                log.warning(f'[{self.name}] [{tag}] Ignoring non-existent module "{module_path}"')
+                continue
+
+            if "__path__" in dir(module):
+                log.warning(f'[{self.name}] [{tag}] Ignoring namespace "{module_path}"')
+                continue
+
+            if handlers is None:
+                handlers = vars(module).keys()
+                warn_non_existent_functions = False
+
+            for name in handlers:
+                # noinspection PyBroadException
+                try:
+                    for handler, group in self.iterate_handlers(module, name):
+                        if not exclude:
+                            self.add_handler(handler, group)
+                        else:
+                            self.remove_handler(handler, group)
+
+                        log.info('[{}] [{}] {}("{}") in group {} from "{}"'.format(
+                            self.name, tag, type(handler).__name__, name, group, module_path))
+
+                        count += 1
+                except Exception:
+                    if warn_non_existent_functions:
+                        log.warning('[{}] [{}] Ignoring non-existent function "{}" from "{}"'.format(
+                            self.name, tag, name, module_path))
+        return count
+
+    def load_plugins(self):
+        if not self.plugins:
             return
+
+        plugins = self.plugins.copy()
+
+        for option in ["include", "exclude"]:
+            if plugins.get(option, []):
+                plugins[option] = [
+                    (i.split()[0], i.split()[1:] or None)
+                    for i in self.plugins[option]
+                ]
 
         if plugins.get("enabled", True):
             root = plugins["root"]
@@ -666,85 +712,20 @@ class Client(Methods):
                     for name in vars(module).keys():
                         # noinspection PyBroadException
                         try:
-                            for handler, group in getattr(module, name).handlers:
-                                if isinstance(handler, Handler) and isinstance(group, int):
-                                    self.add_handler(handler, group)
+                            for handler, group in self.iterate_handlers(module, name):
+                                self.add_handler(handler, group)
 
-                                    log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                        self.name, type(handler).__name__, name, group, module_path))
+                                log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
+                                    self.name, type(handler).__name__, name, group, module_path))
 
-                                    count += 1
+                                count += 1
                         except Exception:
                             pass
             else:
-                for path, handlers in include:
-                    module_path = root + "." + path
-                    warn_non_existent_functions = True
-
-                    try:
-                        module = import_module(module_path)
-                    except ImportError:
-                        log.warning(f'[{self.name}] [LOAD] Ignoring non-existent module "{module_path}"')
-                        continue
-
-                    if "__path__" in dir(module):
-                        log.warning(f'[{self.name}] [LOAD] Ignoring namespace "{module_path}"')
-                        continue
-
-                    if handlers is None:
-                        handlers = vars(module).keys()
-                        warn_non_existent_functions = False
-
-                    for name in handlers:
-                        # noinspection PyBroadException
-                        try:
-                            for handler, group in getattr(module, name).handlers:
-                                if isinstance(handler, Handler) and isinstance(group, int):
-                                    self.add_handler(handler, group)
-
-                                    log.info('[{}] [LOAD] {}("{}") in group {} from "{}"'.format(
-                                        self.name, type(handler).__name__, name, group, module_path))
-
-                                    count += 1
-                        except Exception:
-                            if warn_non_existent_functions:
-                                log.warning('[{}] [LOAD] Ignoring non-existent function "{}" from "{}"'.format(
-                                    self.name, name, module_path))
+                count += self.parse_handlers(root, include)
 
             if exclude:
-                for path, handlers in exclude:
-                    module_path = root + "." + path
-                    warn_non_existent_functions = True
-
-                    try:
-                        module = import_module(module_path)
-                    except ImportError:
-                        log.warning(f'[{self.name}] [UNLOAD] Ignoring non-existent module "{module_path}"')
-                        continue
-
-                    if "__path__" in dir(module):
-                        log.warning(f'[{self.name}] [UNLOAD] Ignoring namespace "{module_path}"')
-                        continue
-
-                    if handlers is None:
-                        handlers = vars(module).keys()
-                        warn_non_existent_functions = False
-
-                    for name in handlers:
-                        # noinspection PyBroadException
-                        try:
-                            for handler, group in getattr(module, name).handlers:
-                                if isinstance(handler, Handler) and isinstance(group, int):
-                                    self.remove_handler(handler, group)
-
-                                    log.info('[{}] [UNLOAD] {}("{}") from group {} in "{}"'.format(
-                                        self.name, type(handler).__name__, name, group, module_path))
-
-                                    count -= 1
-                        except Exception:
-                            if warn_non_existent_functions:
-                                log.warning('[{}] [UNLOAD] Ignoring non-existent function "{}" from "{}"'.format(
-                                    self.name, name, module_path))
+                count -= self.parse_handlers(root, exclude, exclude=True)
 
             if count > 0:
                 log.info('[{}] Successfully loaded {} plugin{} from "{}"'.format(
@@ -841,16 +822,15 @@ class Client(Methods):
                     user_id=file_id.chat_id,
                     access_hash=file_id.chat_access_hash
                 )
+            elif file_id.chat_access_hash == 0:
+                peer = raw.types.InputPeerChat(
+                    chat_id=-file_id.chat_id
+                )
             else:
-                if file_id.chat_access_hash == 0:
-                    peer = raw.types.InputPeerChat(
-                        chat_id=-file_id.chat_id
-                    )
-                else:
-                    peer = raw.types.InputPeerChannel(
-                        channel_id=utils.get_channel_id(file_id.chat_id),
-                        access_hash=file_id.chat_access_hash
-                    )
+                peer = raw.types.InputPeerChannel(
+                    channel_id=utils.get_channel_id(file_id.chat_id),
+                    access_hash=file_id.chat_access_hash
+                )
 
             location = raw.types.InputPeerPhotoFileLocation(
                 peer=peer,
