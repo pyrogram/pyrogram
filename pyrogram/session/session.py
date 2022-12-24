@@ -157,7 +157,7 @@ class Session:
 
         self.ping_task_event.clear()
 
-        self.connection.close()
+        await self.connection.close()
 
         if self.network_task:
             await self.network_task
