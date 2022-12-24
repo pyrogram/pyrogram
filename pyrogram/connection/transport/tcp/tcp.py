@@ -21,7 +21,7 @@ import ipaddress
 import logging
 import socket
 import time
-from concurrent.futures import ThreadPoolExecutor
+from typing import Optional
 
 try:
     import socks
@@ -76,17 +76,21 @@ class TCP:
                 else socket.AF_INET
             )
 
+        self.socket.setblocking(False)
         self.socket.settimeout(TCP.TIMEOUT)
 
+        self.send_queue = asyncio.Queue()
+        self.send_task = None
+
     async def connect(self, address: tuple):
-        # The socket used by the whole logic is blocking and thus it blocks when connecting.
-        # Offload the task to a thread executor to avoid blocking the main event loop.
-        with ThreadPoolExecutor(1) as executor:
-            await self.loop.run_in_executor(executor, self.socket.connect, address)
-
+        await asyncio.get_event_loop().sock_connect(self.socket, address)
         self.reader, self.writer = await asyncio.open_connection(sock=self.socket)
+        self.send_task = asyncio.create_task(self.send_worker())
 
-    def close(self):
+    async def close(self):
+        await self.send_queue.put(None)
+        await self.send_task
+
         try:
             self.writer.close()
         except AttributeError:
@@ -100,8 +104,16 @@ class TCP:
                 time.sleep(0.001)
                 self.socket.close()
 
-    async def send(self, data: bytes):
-        async with self.lock:
+    async def send(self, data: Optional[bytes]):
+        await self.send_queue.put(data)
+
+    async def send_worker(self):
+        while True:
+            data = await self.send_queue.get()
+
+            if data is None:
+                break
+
             self.writer.write(data)
             await self.writer.drain()
 
