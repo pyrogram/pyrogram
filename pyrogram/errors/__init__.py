@@ -45,21 +45,21 @@ class SecurityError(Exception):
     """Generic security error."""
 
     @classmethod
-    def check(cls, cond: bool):
+    def check(cls, cond: bool, msg: str):
         """Raises this exception if the condition is false"""
         if not cond:
-            raise cls
+            raise cls(f"Check failed: {msg}")
 
 
 class SecurityCheckMismatch(SecurityError):
     """Raised when a security check mismatch occurs."""
 
-    def __init__(self):
-        super().__init__("A security check mismatch has occurred.")
+    def __init__(self, msg: str = None):
+        super().__init__("A security check mismatch has occurred." if msg is None else msg)
 
 
 class CDNFileHashMismatch(SecurityError):
     """Raised when a CDN file hash mismatch occurs."""
 
-    def __init__(self):
-        super().__init__("A CDN file hash mismatch has occurred.")
+    def __init__(self, msg: str = None):
+        super().__init__("A CDN file hash mismatch has occurred." if msg is None else msg)
