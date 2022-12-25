@@ -203,9 +203,6 @@ class Session:
         log.debug(data)
 
         for msg in messages:
-            if msg.seq_no == 0:
-                MsgId.set_server_time(msg.msg_id / (2 ** 32))
-
             if msg.seq_no % 2 != 0:
                 if msg.msg_id in self.pending_acks:
                     continue
