@@ -63,10 +63,7 @@ class FileStorage(SQLiteStorage):
             self.update()
 
         with self.conn:
-            try:  # Python 3.6.0 (exactly this version) is bugged and won't successfully execute the vacuum
-                self.conn.execute("VACUUM")
-            except sqlite3.OperationalError:
-                pass
+            self.conn.execute("VACUUM")
 
     async def delete(self):
         os.remove(self.database)
