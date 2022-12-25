@@ -38,13 +38,13 @@ class FileStorage(SQLiteStorage):
         version = self.version()
 
         if version == 1:
-            with self.lock, self.conn:
+            with self.conn:
                 self.conn.execute("DELETE FROM peers")
 
             version += 1
 
         if version == 2:
-            with self.lock, self.conn:
+            with self.conn:
                 self.conn.execute("ALTER TABLE sessions ADD api_id INTEGER")
 
             version += 1
