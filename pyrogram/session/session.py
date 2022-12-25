@@ -188,7 +188,8 @@ class Session:
                 self.auth_key_id,
                 self.stored_msg_ids
             )
-        except SecurityCheckMismatch:
+        except SecurityCheckMismatch as e:
+            log.info(f"Discarding packet: {e}")
             return
 
         messages = (
