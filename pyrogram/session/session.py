@@ -190,6 +190,7 @@ class Session:
             )
         except SecurityCheckMismatch as e:
             log.info(f"Discarding packet: {e}")
+            await self.connection.close()
             return
 
         messages = (
