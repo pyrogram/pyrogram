@@ -211,33 +211,51 @@ class Auth:
                 # Security checks
                 #######################
 
-                SecurityCheckMismatch.check(dh_prime == prime.CURRENT_DH_PRIME)
+                SecurityCheckMismatch.check(dh_prime == prime.CURRENT_DH_PRIME, "dh_prime == prime.CURRENT_DH_PRIME")
                 log.debug("DH parameters check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#g-a-and-g-b-validation
                 g_b = int.from_bytes(g_b, "big")
-                SecurityCheckMismatch.check(1 < g < dh_prime - 1)
-                SecurityCheckMismatch.check(1 < g_a < dh_prime - 1)
-                SecurityCheckMismatch.check(1 < g_b < dh_prime - 1)
-                SecurityCheckMismatch.check(2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64))
-                SecurityCheckMismatch.check(2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64))
+                SecurityCheckMismatch.check(1 < g < dh_prime - 1, "1 < g < dh_prime - 1")
+                SecurityCheckMismatch.check(1 < g_a < dh_prime - 1, "1 < g_a < dh_prime - 1")
+                SecurityCheckMismatch.check(1 < g_b < dh_prime - 1, "1 < g_b < dh_prime - 1")
+                SecurityCheckMismatch.check(
+                    2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64),
+                    "2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64)"
+                )
+                SecurityCheckMismatch.check(
+                    2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64),
+                    "2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64)"
+                )
                 log.debug("g_a and g_b validation: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#checking-sha1-hash-values
                 answer = server_dh_inner_data.write()  # Call .write() to remove padding
-                SecurityCheckMismatch.check(answer_with_hash[:20] == sha1(answer).digest())
+                SecurityCheckMismatch.check(
+                    answer_with_hash[:20] == sha1(answer).digest(),
+                    "answer_with_hash[:20] == sha1(answer).digest()"
+                )
                 log.debug("SHA1 hash values check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#checking-nonce-server-nonce-and-new-nonce-fields
                 # 1st message
-                SecurityCheckMismatch.check(nonce == res_pq.nonce)
+                SecurityCheckMismatch.check(nonce == res_pq.nonce, "nonce == res_pq.nonce")
                 # 2nd message
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)
-                SecurityCheckMismatch.check(nonce == server_dh_params.nonce)
-                SecurityCheckMismatch.check(server_nonce == server_dh_params.server_nonce)
+                SecurityCheckMismatch.check(nonce == server_dh_params.nonce, "nonce == server_dh_params.nonce")
+                SecurityCheckMismatch.check(
+                    server_nonce == server_dh_params.server_nonce,
+                    "server_nonce == server_dh_params.server_nonce"
+                )
                 # 3rd message
-                SecurityCheckMismatch.check(nonce == set_client_dh_params_answer.nonce)
-                SecurityCheckMismatch.check(server_nonce == set_client_dh_params_answer.server_nonce)
+                SecurityCheckMismatch.check(
+                    nonce == set_client_dh_params_answer.nonce,
+                    "nonce == set_client_dh_params_answer.nonce"
+                )
+                SecurityCheckMismatch.check(
+                    server_nonce == set_client_dh_params_answer.server_nonce,
+                    "server_nonce == set_client_dh_params_answer.server_nonce"
+                )
                 server_nonce = server_nonce.to_bytes(16, "little", signed=True)
                 log.debug("Nonce fields check: OK")
 
@@ -248,6 +266,8 @@ class Auth:
 
                 log.info(f"Done auth key exchange: {set_client_dh_params_answer.__class__.__name__}")
             except Exception as e:
+                log.info(f"Retrying due to {type(e).__name__}: {e}")
+
                 if retries_left:
                     retries_left -= 1
                 else:
