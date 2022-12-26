@@ -20,11 +20,7 @@ import asyncio
 import ipaddress
 import logging
 import socket
-
-try:
-    import socks
-except ImportError:
-    socks = None
+import socks
 
 log = logging.getLogger(__name__)
 
@@ -43,10 +39,7 @@ class TCP:
 
         self.loop = asyncio.get_event_loop()
 
-        if proxy and not socks:
-            log.warning("Can't use proxy because pysocks is not installed")
-
-        if proxy and socks:
+        if proxy:
             hostname = proxy.get("hostname")
 
             try:
