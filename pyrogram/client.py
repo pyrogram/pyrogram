@@ -233,7 +233,7 @@ class Client(Methods):
         self.app_version = app_version
         self.device_model = device_model
         self.system_version = system_version
-        self.lang_code = lang_code
+        self.lang_code = lang_code.lower()
         self.ipv6 = ipv6
         self.proxy = proxy
         self.test_mode = test_mode
@@ -402,7 +402,7 @@ class Client(Methods):
                                     except BadRequest as e:
                                         print(e.MESSAGE)
                                     except Exception as e:
-                                        log.error(e, exc_info=True)
+                                        log.exception(e)
                                         raise
                             else:
                                 self.password = None
@@ -690,11 +690,11 @@ class Client(Methods):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning(f'[{self.name}] [LOAD] Ignoring non-existent module "{module_path}"')
+                        log.warning('[%s] [LOAD] Ignoring non-existent module "%s"', self.name, module_path)
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning(f'[{self.name}] [LOAD] Ignoring namespace "{module_path}"')
+                        log.warning('[%s] [LOAD] Ignoring namespace "%s"', self.name, module_path)
                         continue
 
                     if handlers is None:
@@ -725,11 +725,11 @@ class Client(Methods):
                     try:
                         module = import_module(module_path)
                     except ImportError:
-                        log.warning(f'[{self.name}] [UNLOAD] Ignoring non-existent module "{module_path}"')
+                        log.warning('[%s] [UNLOAD] Ignoring non-existent module "%s"', self.name, module_path)
                         continue
 
                     if "__path__" in dir(module):
-                        log.warning(f'[{self.name}] [UNLOAD] Ignoring namespace "{module_path}"')
+                        log.warning('[%s] [UNLOAD] Ignoring namespace "%s"', self.name, module_path)
                         continue
 
                     if handlers is None:
@@ -756,7 +756,7 @@ class Client(Methods):
                 log.info('[{}] Successfully loaded {} plugin{} from "{}"'.format(
                     self.name, count, "s" if count > 1 else "", root))
             else:
-                log.warning(f'[{self.name}] No plugin loaded from "{root}"')
+                log.warning('[%s] No plugin loaded from "%s"', self.name, root)
 
     async def handle_download(self, packet):
         file_id, directory, file_name, in_memory, file_size, progress, progress_args = packet
@@ -1018,7 +1018,7 @@ class Client(Methods):
         except pyrogram.StopTransmission:
             raise
         except Exception as e:
-            log.error(e, exc_info=True)
+            log.exception(e)
 
     def guess_mime_type(self, filename: str) -> Optional[str]:
         return self.mimetypes.guess_type(filename)[0]
