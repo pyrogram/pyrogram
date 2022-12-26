@@ -20,18 +20,11 @@ import asyncio
 import ipaddress
 import logging
 import socket
-import time
-from typing import Optional
 
 try:
     import socks
-except ImportError as e:
-    e.msg = (
-        "PySocks is missing and Pyrogram can't run without. "
-        "Please install it using \"pip3 install pysocks\"."
-    )
-
-    raise e
+except ImportError:
+    socks = None
 
 log = logging.getLogger(__name__)
 
@@ -50,7 +43,10 @@ class TCP:
 
         self.loop = asyncio.get_event_loop()
 
-        if proxy:
+        if proxy and not socks:
+            log.warning("Can't use proxy because pysocks is not installed")
+
+        if proxy and socks:
             hostname = proxy.get("hostname")
 
             try:
@@ -71,7 +67,7 @@ class TCP:
                 password=proxy.get("password", None)
             )
 
-            log.info(f"Using proxy {hostname}")
+            log.info("Using proxy %s", hostname)
         else:
             self.socket = socket.socket(
                 socket.AF_INET6 if ipv6
