@@ -156,10 +156,13 @@ class Session:
 
         self.ping_task_event.clear()
 
-        await self.connection.close()
+        self.connection.close()
 
         if self.recv_task:
             await self.recv_task
+
+        for i in self.results.values():
+            i.event.set()
 
         if not self.is_media and callable(self.client.disconnect_handler):
             try:
@@ -185,8 +188,7 @@ class Session:
                 self.stored_msg_ids
             )
         except SecurityCheckMismatch as e:
-            log.info("Discarding packet: %s", e)
-            await self.connection.close()
+            log.warning("Discarding packet: %s", e)
             return
 
         messages = (
@@ -282,6 +284,9 @@ class Session:
         message = self.msg_factory(data)
         msg_id = message.msg_id
 
+        if wait_response:
+            self.results[msg_id] = Result()
+
         log.debug("Sent: %s", message)
 
         payload = await self.loop.run_in_executor(
@@ -294,35 +299,34 @@ class Session:
             self.auth_key_id
         )
 
-        await self.connection.send(payload)
+        try:
+            await self.connection.send(payload)
+        except OSError as e:
+            self.results.pop(msg_id, None)
+            raise e
 
         if wait_response:
-            self.results[msg_id] = Result()
-
             try:
                 await asyncio.wait_for(self.results[msg_id].event.wait(), timeout)
             except asyncio.TimeoutError:
                 pass
-
-            result = self.results.pop(msg_id).value
+            finally:
+                result = self.results.pop(msg_id).value
 
             if result is None:
                 raise TimeoutError("Request timed out")
-
-            if isinstance(result, raw.types.RpcError):
+            elif isinstance(result, raw.types.RpcError):
                 if isinstance(data, (raw.functions.InvokeWithoutUpdates, raw.functions.InvokeWithTakeout)):
                     data = data.query
 
                 RPCError.raise_it(result, type(data))
-
-            if isinstance(result, raw.types.BadMsgNotification):
+            elif isinstance(result, raw.types.BadMsgNotification):
                 raise BadMsgNotification(result.error_code)
-
-            if isinstance(result, raw.types.BadServerSalt):
+            elif isinstance(result, raw.types.BadServerSalt):
                 self.salt = result.new_server_salt
                 return await self.send(data, wait_response, timeout)
-
-            return result
+            else:
+                return result
 
     async def invoke(
         self,
