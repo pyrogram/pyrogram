@@ -93,19 +93,13 @@ class TCP:
             await self.send_task
 
         try:
-            self.writer.close()
-        except AttributeError:
-            try:
-                self.socket.shutdown(socket.SHUT_RDWR)
-            except OSError:
-                pass
-            finally:
-                # A tiny sleep placed here helps avoiding .recv(n) hanging until the timeout.
-                # This is a workaround that seems to fix the occasional delayed stop of a client.
-                time.sleep(0.001)
-                self.socket.close()
+            if self.writer is not None:
+                self.writer.close()
+                await asyncio.wait_for(self.writer.wait_closed(), TCP.TIMEOUT)
+        except Exception as e:
+            log.info("Close exception: %s %s", type(e).__name__, e)
 
-    async def send(self, data: Optional[bytes]):
+    async def send(self, data: bytes):
         await self.send_queue.put(data)
 
     async def send_worker(self):
@@ -115,8 +109,11 @@ class TCP:
             if data is None:
                 break
 
-            self.writer.write(data)
-            await self.writer.drain()
+            try:
+                self.writer.write(data)
+                await self.writer.drain()
+            except Exception as e:
+                log.info("Send exception: %s %s", type(e).__name__, e)
 
     async def recv(self, length: int = 0):
         data = b""
