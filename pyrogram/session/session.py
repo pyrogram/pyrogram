@@ -307,7 +307,7 @@ class Session:
             result = self.results.pop(msg_id).value
 
             if result is None:
-                raise TimeoutError("Response timed out")
+                raise TimeoutError("Request timed out")
 
             if isinstance(result, raw.types.RpcError):
                 if isinstance(data, (raw.functions.InvokeWithoutUpdates, raw.functions.InvokeWithTakeout)):
