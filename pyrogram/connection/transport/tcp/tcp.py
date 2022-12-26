@@ -42,8 +42,11 @@ class TCP:
     def __init__(self, ipv6: bool, proxy: dict):
         self.socket = None
 
-        self.reader = None  # type: asyncio.StreamReader
-        self.writer = None  # type: asyncio.StreamWriter
+        self.reader = None
+        self.writer = None
+
+        self.send_queue = asyncio.Queue()
+        self.send_task = None
 
         self.loop = asyncio.get_event_loop()
 
@@ -75,16 +78,16 @@ class TCP:
                 else socket.AF_INET
             )
 
-        self.socket.settimeout(TCP.TIMEOUT)
-
-        self.send_queue = asyncio.Queue()
-        self.send_task = None
+        self.socket.setblocking(False)
 
     async def connect(self, address: tuple):
-        await asyncio.get_event_loop().sock_connect(self.socket, address)
+        try:
+            await asyncio.wait_for(asyncio.get_event_loop().sock_connect(self.socket, address), TCP.TIMEOUT)
+        except asyncio.TimeoutError:  # Re-raise as TimeoutError. asyncio.TimeoutError is deprecated in 3.11
+            raise TimeoutError("Connection timed out")
+
         self.reader, self.writer = await asyncio.open_connection(sock=self.socket)
         self.send_task = asyncio.create_task(self.send_worker())
-        self.socket.setblocking(False)
 
     async def close(self):
         await self.send_queue.put(None)
