@@ -103,7 +103,7 @@ class Parser(HTMLParser):
             line, offset = self.getpos()
             offset += 1
 
-            log.debug(f"Unmatched closing tag </{tag}> at line {line}:{offset}")
+            log.debug("Unmatched closing tag </%s> at line %s:%s", tag, line, offset)
         else:
             if not self.tag_entities[tag]:
                 self.tag_entities.pop(tag)
@@ -131,7 +131,7 @@ class HTML:
             for tag, entities in parser.tag_entities.items():
                 unclosed_tags.append(f"<{tag}> (x{len(entities)})")
 
-            log.warning(f"Unclosed tags: {', '.join(unclosed_tags)}")
+            log.warning("Unclosed tags: %s", ", ".join(unclosed_tags))
 
         entities = []
 
