@@ -19,6 +19,7 @@
 import inspect
 import sqlite3
 import time
+from threading import Lock
 from typing import List, Tuple, Any
 
 from pyrogram import raw
@@ -97,9 +98,10 @@ class SQLiteStorage(Storage):
         super().__init__(name)
 
         self.conn = None  # type: sqlite3.Connection
+        self.lock = Lock()
 
     def create(self):
-        with self.conn:
+        with self.lock, self.conn:
             self.conn.executescript(SCHEMA)
 
             self.conn.execute(
@@ -117,20 +119,24 @@ class SQLiteStorage(Storage):
 
     async def save(self):
         await self.date(int(time.time()))
-        self.conn.commit()
+
+        with self.lock:
+            self.conn.commit()
 
     async def close(self):
-        self.conn.close()
+        with self.lock:
+            self.conn.close()
 
     async def delete(self):
         raise NotImplementedError
 
     async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
-        self.conn.executemany(
-            "REPLACE INTO peers (id, access_hash, type, username, phone_number)"
-            "VALUES (?, ?, ?, ?, ?)",
-            peers
-        )
+        with self.lock:
+            self.conn.executemany(
+                "REPLACE INTO peers (id, access_hash, type, username, phone_number)"
+                "VALUES (?, ?, ?, ?, ?)",
+                peers
+            )
 
     async def get_peer_by_id(self, peer_id: int):
         r = self.conn.execute(
@@ -179,7 +185,7 @@ class SQLiteStorage(Storage):
     def _set(self, value: Any):
         attr = inspect.stack()[2].function
 
-        with self.conn:
+        with self.lock, self.conn:
             self.conn.execute(
                 f"UPDATE sessions SET {attr} = ?",
                 (value,)
@@ -215,7 +221,7 @@ class SQLiteStorage(Storage):
                 "SELECT number FROM version"
             ).fetchone()[0]
         else:
-            with self.conn:
+            with self.lock, self.conn:
                 self.conn.execute(
                     "UPDATE version SET number = ?",
                     (value,)
