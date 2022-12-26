@@ -227,7 +227,7 @@ class Client(Methods):
         self.app_version = app_version
         self.device_model = device_model
         self.system_version = system_version
-        self.lang_code = lang_code
+        self.lang_code = lang_code.lower()
         self.ipv6 = ipv6
         self.proxy = proxy
         self.test_mode = test_mode
