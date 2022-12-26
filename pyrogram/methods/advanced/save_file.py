@@ -107,7 +107,7 @@ class SaveFile:
                 try:
                     await session.invoke(data)
                 except Exception as e:
-                    log.error(e)
+                    log.exception(e)
 
         part_size = 512 * 1024
 
@@ -201,7 +201,7 @@ class SaveFile:
         except StopTransmission:
             raise
         except Exception as e:
-            log.error(e, exc_info=True)
+            log.exception(e)
         else:
             if is_big:
                 return raw.types.InputFileBig(
