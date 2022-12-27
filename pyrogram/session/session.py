@@ -44,11 +44,11 @@ class Result:
 
 
 class Session:
-    START_TIMEOUT = 1
+    START_TIMEOUT = 5
     WAIT_TIMEOUT = 15
     SLEEP_THRESHOLD = 10
-    MAX_RETRIES = 5
-    ACKS_THRESHOLD = 8
+    MAX_RETRIES = 10
+    ACKS_THRESHOLD = 10
     PING_INTERVAL = 5
 
     def __init__(
@@ -156,13 +156,10 @@ class Session:
 
         self.ping_task_event.clear()
 
-        self.connection.close()
+        await self.connection.close()
 
         if self.recv_task:
             await self.recv_task
-
-        for i in self.results.values():
-            i.event.set()
 
         if not self.is_media and callable(self.client.disconnect_handler):
             try:
@@ -189,6 +186,7 @@ class Session:
             )
         except SecurityCheckMismatch as e:
             log.warning("Discarding packet: %s", e)
+            await self.connection.close()
             return
 
         messages = (
@@ -284,9 +282,6 @@ class Session:
         message = self.msg_factory(data)
         msg_id = message.msg_id
 
-        if wait_response:
-            self.results[msg_id] = Result()
-
         log.debug("Sent: %s", message)
 
         payload = await self.loop.run_in_executor(
@@ -299,34 +294,35 @@ class Session:
             self.auth_key_id
         )
 
-        try:
-            await self.connection.send(payload)
-        except OSError as e:
-            self.results.pop(msg_id, None)
-            raise e
+        await self.connection.send(payload)
 
         if wait_response:
+            self.results[msg_id] = Result()
+
             try:
                 await asyncio.wait_for(self.results[msg_id].event.wait(), timeout)
             except asyncio.TimeoutError:
                 pass
-            finally:
-                result = self.results.pop(msg_id).value
+
+            result = self.results.pop(msg_id).value
 
             if result is None:
                 raise TimeoutError("Request timed out")
-            elif isinstance(result, raw.types.RpcError):
+
+            if isinstance(result, raw.types.RpcError):
                 if isinstance(data, (raw.functions.InvokeWithoutUpdates, raw.functions.InvokeWithTakeout)):
                     data = data.query
 
                 RPCError.raise_it(result, type(data))
-            elif isinstance(result, raw.types.BadMsgNotification):
+
+            if isinstance(result, raw.types.BadMsgNotification):
                 raise BadMsgNotification(result.error_code)
-            elif isinstance(result, raw.types.BadServerSalt):
+
+            if isinstance(result, raw.types.BadServerSalt):
                 self.salt = result.new_server_salt
                 return await self.send(data, wait_response, timeout)
-            else:
-                return result
+
+            return result
 
     async def invoke(
         self,
