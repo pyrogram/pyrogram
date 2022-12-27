@@ -282,6 +282,9 @@ class Session:
         message = self.msg_factory(data)
         msg_id = message.msg_id
 
+        if wait_response:
+            self.results[msg_id] = Result()
+
         log.debug("Sent: %s", message)
 
         payload = await self.loop.run_in_executor(
@@ -297,8 +300,6 @@ class Session:
         await self.connection.send(payload)
 
         if wait_response:
-            self.results[msg_id] = Result()
-
             try:
                 await asyncio.wait_for(self.results[msg_id].event.wait(), timeout)
             except asyncio.TimeoutError:
