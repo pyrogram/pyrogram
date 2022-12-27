@@ -20,6 +20,7 @@ import asyncio
 import ipaddress
 import logging
 import socket
+
 import socks
 
 log = logging.getLogger(__name__)
@@ -58,6 +59,8 @@ class TCP:
                 password=proxy.get("password", None)
             )
 
+            self.socket.settimeout(TCP.TIMEOUT)
+
             log.info("Using proxy %s", hostname)
         else:
             self.socket = socket.socket(
@@ -65,7 +68,7 @@ class TCP:
                 else socket.AF_INET
             )
 
-        self.socket.setblocking(False)
+            self.socket.setblocking(False)
 
     async def connect(self, address: tuple):
         try:
