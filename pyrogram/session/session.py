@@ -297,7 +297,11 @@ class Session:
             self.auth_key_id
         )
 
-        await self.connection.send(payload)
+        try:
+            await self.connection.send(payload)
+        except OSError as e:
+            self.results.pop(msg_id, None)
+            raise e
 
         if wait_response:
             try:
