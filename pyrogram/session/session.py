@@ -149,6 +149,8 @@ class Session:
     async def stop(self):
         self.is_started.clear()
 
+        self.stored_msg_ids.clear()
+
         self.ping_task_event.set()
 
         if self.ping_task is not None:
