@@ -231,6 +231,7 @@ class Client(Methods):
         hide_password: bool = False,
         max_concurrent_transmissions: int = MAX_CONCURRENT_TRANSMISSIONS,
         ignore_channel_updates_except: List[int] = None,
+        message_cache_size: int = 10000,
     ):
         super().__init__()
 
@@ -294,7 +295,7 @@ class Client(Methods):
 
         self.me: Optional[User] = None
 
-        self.message_cache = Cache(10000)
+        self.message_cache = Cache(message_cache_size)
 
         # Sometimes, for some reason, the server will stop sending updates and will only respond to pings.
         # This watchdog will invoke updates.GetState in order to wake up the server and enable it sending updates again
