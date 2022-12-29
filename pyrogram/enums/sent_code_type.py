@@ -37,3 +37,6 @@ class SentCodeType(AutoName):
 
     SMS = raw.types.auth.SentCodeTypeSms
     "The code was sent via SMS."
+
+    FRAGMENT_SMS = raw.types.auth.SentCodeTypeFragmentSms
+    "The code was sent via Fragment SMS."

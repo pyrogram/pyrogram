@@ -1,6 +1,7 @@
 VENV := venv
 PYTHON := $(VENV)/bin/python
 HOST = $(shell ifconfig | grep "inet " | tail -1 | cut -d\  -f2)
+TAG = v$(shell grep -E '__version__ = ".*"' pyrogram/__init__.py | cut -d\" -f2)
 
 RM := rm -rf
 
@@ -31,3 +32,11 @@ build:
 	make clean
 	$(PYTHON) setup.py sdist
 	$(PYTHON) setup.py bdist_wheel
+
+tag:
+	git tag $(TAG)
+	git push origin $(TAG)
+
+dtag:
+	git tag -d $(TAG)
+	git push origin -d $(TAG)

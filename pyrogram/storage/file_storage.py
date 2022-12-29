@@ -38,13 +38,13 @@ class FileStorage(SQLiteStorage):
         version = self.version()
 
         if version == 1:
-            with self.lock, self.conn:
+            with self.conn:
                 self.conn.execute("DELETE FROM peers")
 
             version += 1
 
         if version == 2:
-            with self.lock, self.conn:
+            with self.conn:
                 self.conn.execute("ALTER TABLE sessions ADD api_id INTEGER")
 
             version += 1
@@ -63,10 +63,7 @@ class FileStorage(SQLiteStorage):
             self.update()
 
         with self.conn:
-            try:  # Python 3.6.0 (exactly this version) is bugged and won't successfully execute the vacuum
-                self.conn.execute("VACUUM")
-            except sqlite3.OperationalError:
-                pass
+            self.conn.execute("VACUUM")
 
     async def delete(self):
         os.remove(self.database)
