@@ -53,6 +53,12 @@ class Session:
     PING_INTERVAL = 5
     STORED_MSG_IDS_MAX_SIZE = 1000 * 2
 
+    TRANSPORT_ERRORS = {
+        404: "auth key not found",
+        429: "transport flood",
+        444: "invalid DC"
+    }
+
     def __init__(
         self,
         client: "pyrogram.Client",
@@ -292,7 +298,12 @@ class Session:
 
             if packet is None or len(packet) == 4:
                 if packet:
-                    log.warning('Server sent "%s"', Int.read(BytesIO(packet)))
+                    error_code = -Int.read(BytesIO(packet))
+
+                    log.warning(
+                        "Server sent transport error: %s (%s)",
+                        error_code, Session.TRANSPORT_ERRORS.get(error_code, "unknown error")
+                    )
 
                 if self.is_started.is_set():
                     self.loop.create_task(self.restart())
