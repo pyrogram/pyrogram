@@ -24,13 +24,18 @@ from .create_forum_topic import CreateForumTopic
 from .create_group import CreateGroup
 from .create_supergroup import CreateSupergroup
 from .close_forum_topic import CloseForumTopic
+from .close_general_topic import CloseGeneralTopic
 from .delete_channel import DeleteChannel
 from .delete_chat_photo import DeleteChatPhoto
 from .delete_forum_topic import DeleteForumTopic
 from .delete_supergroup import DeleteSupergroup
 from .delete_user_history import DeleteUserHistory
 from .edit_forum_topic import EditForumTopic
+from .edit_general_topic import EditGeneralTopic
 from .reopen_forum_topic import ReopenForumTopic
+from .reopen_general_topic import ReopenGeneralTopic
+from .hide_general_topic import HideGeneralTopic
+from .unhide_general_topic import UnhideGeneralTopic
 from .get_chat import GetChat
 from .get_chat_event_log import GetChatEventLog
 from .get_chat_member import GetChatMember
@@ -90,12 +95,17 @@ class Chats(
     CreateChannel,
     CreateForumTopic,
     CloseForumTopic,
+    CloseGeneralTopic,
     AddChatMembers,
     DeleteChannel,
     DeleteForumTopic,
     DeleteSupergroup,
     EditForumTopic,
+    EditGeneralTopic,
     ReopenForumTopic,
+    ReopenGeneralTopic,
+    HideGeneralTopic,
+    UnhideGeneralTopic,
     GetNearbyChats,
     SetAdministratorTitle,
     SetSlowMode,

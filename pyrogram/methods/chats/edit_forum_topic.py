@@ -54,16 +54,12 @@ class EditForumTopic:
 
                 await app.edit_forum_topic(chat_id,topic_id,"New Topic Title")
         """
-        try:
-            await self.invoke(
-                raw.functions.channels.EditForumTopic(
-                    channel=await self.resolve_peer(chat_id),
-                    topic_id=topic_id,
-                    title=title,
-                    icon_emoji_id=icon_emoji_id
-                )
+        await self.invoke(
+            raw.functions.channels.EditForumTopic(
+                channel=await self.resolve_peer(chat_id),
+                topic_id=topic_id,
+                title=title,
+                icon_emoji_id=icon_emoji_id
             )
-        except Exception as e:
-            print(e)
-            return False
+        )
         return True

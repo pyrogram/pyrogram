@@ -46,15 +46,11 @@ class ReopenForumTopic:
 
                 await app.reopen_forum_topic(chat_id, topic_id)
         """
-        try:
-            await self.invoke(
-                raw.functions.channels.EditForumTopic(
-                    channel=await self.resolve_peer(chat_id),
-                    topic_id=topic_id,
-                    closed=False
-                )
+        await self.invoke(
+            raw.functions.channels.EditForumTopic(
+                channel=await self.resolve_peer(chat_id),
+                topic_id=topic_id,
+                closed=False
             )
-        except Exception as e:
-            print(e)
-            return False
+        )
         return True
