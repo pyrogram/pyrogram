@@ -69,6 +69,12 @@ class MessageServiceType(AutoName):
     FORUM_TOPIC_EDITED = auto()
     "a new forum topic renamed in the chat"
 
+    GENERAL_TOPIC_HIDDEN = auto()
+    "a forum general topic hidden in the chat"
+
+    GENERAL_TOPIC_UNHIDDEN = auto()
+    "a forum general topic unhidden in the chat"
+
     VIDEO_CHAT_STARTED = auto()
     "Video chat started"
 

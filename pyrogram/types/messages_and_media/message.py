@@ -301,6 +301,12 @@ class Message(Object, Update):
         forum_topic_edited (:obj:`~pyrogram.types.ForumTopicEdited`, *optional*):
             Service message: forum topic edited
 
+        general_topic_hidden (:obj:`~pyrogram.types.GeneralForumTopicHidden`, *optional*):
+            Service message: forum general topic hidden
+
+        general_topic_unhidden (:obj:`~pyrogram.types.GeneralForumTopicUnhidden`, *optional*):
+            Service message: forum general topic unhidden
+
         video_chat_scheduled (:obj:`~pyrogram.types.VideoChatScheduled`, *optional*):
             Service message: voice chat scheduled.
 
@@ -402,6 +408,8 @@ class Message(Object, Update):
         forum_topic_closed: "types.ForumTopicClosed" = None,
         forum_topic_reopened: "types.ForumTopicReopened" = None,
         forum_topic_edited: "types.ForumTopicEdited" = None,
+        general_topic_hidden: "types.GeneralForumTopicHidden" = None,
+        general_topic_unhidden: "types.GeneralForumTopicUnhidden" = None,
         video_chat_scheduled: "types.VideoChatScheduled" = None,
         video_chat_started: "types.VideoChatStarted" = None,
         video_chat_ended: "types.VideoChatEnded" = None,
@@ -487,6 +495,8 @@ class Message(Object, Update):
         self.forum_topic_closed = forum_topic_closed
         self.forum_topic_reopened = forum_topic_reopened
         self.forum_topic_edited = forum_topic_edited
+        self.general_topic_hidden = general_topic_hidden
+        self.general_topic_unhidden = general_topic_unhidden
         self.video_chat_scheduled = video_chat_scheduled
         self.video_chat_started = video_chat_started
         self.video_chat_ended = video_chat_ended
@@ -545,6 +555,8 @@ class Message(Object, Update):
             forum_topic_closed = None
             forum_topic_reopened = None
             forum_topic_edited = None
+            general_topic_hidden = None
+            general_topic_unhidden = None
             video_chat_scheduled = None
             video_chat_started = None
             video_chat_ended = None
@@ -590,12 +602,19 @@ class Message(Object, Update):
                 if action.title:
                     forum_topic_edited = types.ForumTopicEdited._parse(action)
                     service_type = enums.MessageServiceType.FORUM_TOPIC_EDITED
+                elif action.hidden:
+                    general_topic_hidden = types.GeneralTopicHidden()
+                    service_type = enums.MessageServiceType.GENERAL_TOPIC_HIDDEN
                 elif action.closed:
                     forum_topic_closed = types.ForumTopicClosed()
                     service_type = enums.MessageServiceType.FORUM_TOPIC_CLOSED
                 else:
-                    forum_topic_reopened = types.ForumTopicReopened()
-                    service_type = enums.MessageServiceType.FORUM_TOPIC_REOPENED
+                    if hasattr(action, "hidden"):
+                        general_topic_unhidden = types.GeneralTopicUnhidden()
+                        service_type = enums.MessageServiceType.GENERAL_TOPIC_UNHIDDEN
+                    else:
+                        forum_topic_reopened = types.ForumTopicReopened()
+                        service_type = enums.MessageServiceType.FORUM_TOPIC_REOPENED
             elif isinstance(action, raw.types.MessageActionGroupCallScheduled):
                 video_chat_scheduled = types.VideoChatScheduled._parse(action)
                 service_type = enums.MessageServiceType.VIDEO_CHAT_SCHEDULED
@@ -639,6 +658,8 @@ class Message(Object, Update):
                 forum_topic_closed=forum_topic_closed,
                 forum_topic_reopened=forum_topic_reopened,
                 forum_topic_edited=forum_topic_edited,
+                general_topic_hidden=general_topic_hidden,
+                general_topic_unhidden=general_topic_unhidden,
                 video_chat_scheduled=video_chat_scheduled,
                 video_chat_started=video_chat_started,
                 video_chat_ended=video_chat_ended,
