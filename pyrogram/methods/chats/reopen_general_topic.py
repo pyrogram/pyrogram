@@ -26,7 +26,7 @@ class ReopenGeneralTopic:
         self: "pyrogram.Client",
         chat_id: Union[int, str]
     ) -> bool:
-        """Reopen a forum topic.
+        """Reopen a general forum topic.
 
         .. include:: /_includes/usable-by/users-bots.rst
 
@@ -35,12 +35,12 @@ class ReopenGeneralTopic:
                 Unique identifier (int) or username (str) of the target chat.
 
         Returns:
-            `bool`: On success, a Boolean is returned.
+            `bool`: On success, a True is returned.
 
         Example:
             .. code-block:: python
 
-                await app.reopen_forum_topic(chat_id, topic_id)
+                await app.reopen_general_topic(chat_id, topic_id)
         """
         await self.invoke(
             raw.functions.channels.EditForumTopic(

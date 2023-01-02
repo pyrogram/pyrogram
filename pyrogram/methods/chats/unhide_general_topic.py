@@ -35,12 +35,12 @@ class UnhideGeneralTopic:
                 Unique identifier (int) or username (str) of the target chat.
 
         Returns:
-            `bool`: On success, a Boolean is returned.
+            `bool`: On success, a True is returned.
 
         Example:
             .. code-block:: python
 
-                await app.close_forum_topic(chat_id, topic_id)
+                await app.unhide_general_topic(chat_id)
         """
         await self.invoke(
             raw.functions.channels.EditForumTopic(

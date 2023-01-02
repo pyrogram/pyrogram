@@ -39,12 +39,12 @@ class EditGeneralTopic:
                 The general forum topic title.
 
         Returns:
-            `bool`: On success, a Boolean is returned.
+            `bool`: On success, a True is returned.
 
         Example:
             .. code-block:: python
 
-                await app.edit_forum_topic(chat_id,topic_id,"New Topic Title")
+                await app.edit_general_topic(chat_id,"New Topic Title")
         """
         await self.invoke(
             raw.functions.channels.EditForumTopic(
