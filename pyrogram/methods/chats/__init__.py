@@ -44,6 +44,8 @@ from .get_chat_members_count import GetChatMembersCount
 from .get_chat_online_count import GetChatOnlineCount
 from .get_dialogs import GetDialogs
 from .get_dialogs_count import GetDialogsCount
+from .get_forum_topics import GetForumTopics
+from .get_forum_topics_by_id import GetForumTopicsByID
 from .get_nearby_chats import GetNearbyChats
 from .get_send_as_chats import GetSendAsChats
 from .join_chat import JoinChat
@@ -88,6 +90,8 @@ class Chats(
     SetChatUsername,
     SetChatPermissions,
     GetDialogsCount,
+    GetForumTopics,
+    GetForumTopicsByID,
     ArchiveChats,
     UnarchiveChats,
     CreateGroup,
