@@ -301,10 +301,10 @@ class Message(Object, Update):
         forum_topic_edited (:obj:`~pyrogram.types.ForumTopicEdited`, *optional*):
             Service message: forum topic edited
 
-        general_topic_hidden (:obj:`~pyrogram.types.GeneralForumTopicHidden`, *optional*):
+        general_topic_hidden (:obj:`~pyrogram.types.GeneralTopicHidden`, *optional*):
             Service message: forum general topic hidden
 
-        general_topic_unhidden (:obj:`~pyrogram.types.GeneralForumTopicUnhidden`, *optional*):
+        general_topic_unhidden (:obj:`~pyrogram.types.GeneralTopicUnhidden`, *optional*):
             Service message: forum general topic unhidden
 
         video_chat_scheduled (:obj:`~pyrogram.types.VideoChatScheduled`, *optional*):
@@ -408,8 +408,8 @@ class Message(Object, Update):
         forum_topic_closed: "types.ForumTopicClosed" = None,
         forum_topic_reopened: "types.ForumTopicReopened" = None,
         forum_topic_edited: "types.ForumTopicEdited" = None,
-        general_topic_hidden: "types.GeneralForumTopicHidden" = None,
-        general_topic_unhidden: "types.GeneralForumTopicUnhidden" = None,
+        general_topic_hidden: "types.GeneralTopicHidden" = None,
+        general_topic_unhidden: "types.GeneralTopicUnhidden" = None,
         video_chat_scheduled: "types.VideoChatScheduled" = None,
         video_chat_started: "types.VideoChatStarted" = None,
         video_chat_ended: "types.VideoChatEnded" = None,
