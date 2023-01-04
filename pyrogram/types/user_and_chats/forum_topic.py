@@ -22,6 +22,9 @@ from ..object import Object
 
 
 class ForumTopic(Object):
+    # todo
+    # notify_settings: `~pyrogram.types.PeerNotifySettings`
+    # draft: `~pyrogram.types.DraftMessage`
     """A forum topic.
 
 
@@ -56,11 +59,8 @@ class ForumTopic(Object):
         unread_reactions_count (``Integer``):
             N/A
 
-        from_id (:obj:``~pyrogram.Union[types.PeerChannel``|:obj:``~pyrogram.types.PeerUser``):
+        from_id (:obj:`~pyrogram.types.PeerChannel` | :obj:`~pyrogram.types.PeerUser`):
             Topic creator.
-
-        #notify_settings (:obj:``~pyrogram.types.PeerNotifySettings``): //todo
-            N/A
 
         my (``Boolean``, *optional*):
             N/A
@@ -76,10 +76,6 @@ class ForumTopic(Object):
 
         icon_emoji_id (``Integer``, *optional*):
             Unique identifier of the custom emoji shown as the topic icon
-
-        #draft (:obj:``~pyrogram.types.DraftMessage``, *optional*): //todo
-            N/A
-
     """
 
     def __init__(

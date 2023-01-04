@@ -33,15 +33,13 @@ class GetForumTopics:
         chat_id: Union[int, str],
         limit: int = 0
     ) -> Optional[AsyncGenerator["types.ForumTopic", None]]:
-        """Get one or more topic from a chat by using topic identifiers.
+        """Get one or more topic from a chat.
 
         .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
-                For your personal cloud (Saved topics) you can simply use "me" or "self".
-                For a contact that exists in your Telegram address book you can use his phone number (str).
 
             limit (``int``, *optional*):
                 Limits the number of topics to be retrieved.

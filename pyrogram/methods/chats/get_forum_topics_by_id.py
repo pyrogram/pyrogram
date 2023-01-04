@@ -40,8 +40,6 @@ class GetForumTopicsByID:
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
-                For your personal cloud (Saved topics) you can simply use "me" or "self".
-                For a contact that exists in your Telegram address book you can use his phone number (str).
 
             topic_ids (``int`` | Iterable of ``int``, *optional*):
                 Pass a single topic identifier or an iterable of topic ids (as integers) to get the information of the
