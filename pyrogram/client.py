@@ -40,12 +40,15 @@ from pyrogram import enums
 from pyrogram import raw
 from pyrogram import utils
 from pyrogram.crypto import aes
-from pyrogram.errors import CDNFileHashMismatch
 from pyrogram.errors import (
+    AuthBytesInvalid,
+    BadRequest,
+    ChannelPrivate,
     SessionPasswordNeeded,
     VolumeLocNotFound, ChannelPrivate,
     BadRequest
 )
+from pyrogram.errors import CDNFileHashMismatch
 from pyrogram.handlers.handler import Handler
 from pyrogram.handlers.raw_update_handler import RawUpdateHandler
 from pyrogram.methods import Methods
