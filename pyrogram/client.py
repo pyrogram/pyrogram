@@ -44,7 +44,7 @@ from pyrogram.errors import CDNFileHashMismatch
 from pyrogram.errors import (
     SessionPasswordNeeded,
     VolumeLocNotFound, ChannelPrivate,
-    AuthBytesInvalid, BadRequest
+    BadRequest
 )
 from pyrogram.handlers.handler import Handler
 from pyrogram.methods import Methods
@@ -265,6 +265,9 @@ class Client(Methods):
 
         self.media_sessions = {}
         self.media_sessions_lock = asyncio.Lock()
+
+        self.save_file_lock = asyncio.Lock()
+        self.get_file_lock = asyncio.Lock()
 
         self.is_connected = None
         self.is_initialized = None
@@ -795,204 +798,93 @@ class Client(Methods):
         progress: Callable = None,
         progress_args: tuple = ()
     ) -> Optional[AsyncGenerator[bytes, None]]:
-        dc_id = file_id.dc_id
+        async with self.get_file_lock:
+            file_type = file_id.file_type
 
-        async with self.media_sessions_lock:
-            session = self.media_sessions.get(dc_id, None)
-
-            if session is None:
-                if dc_id != await self.storage.dc_id():
-                    session = Session(
-                        self, dc_id, await Auth(self, dc_id, await self.storage.test_mode()).create(),
-                        await self.storage.test_mode(), is_media=True
-                    )
-                    await session.start()
-
-                    for _ in range(3):
-                        exported_auth = await self.invoke(
-                            raw.functions.auth.ExportAuthorization(
-                                dc_id=dc_id
-                            )
-                        )
-
-                        try:
-                            await session.invoke(
-                                raw.functions.auth.ImportAuthorization(
-                                    id=exported_auth.id,
-                                    bytes=exported_auth.bytes
-                                )
-                            )
-                        except AuthBytesInvalid:
-                            continue
-                        else:
-                            break
-                    else:
-                        await session.stop()
-                        raise AuthBytesInvalid
-                else:
-                    session = Session(
-                        self, dc_id, await self.storage.auth_key(),
-                        await self.storage.test_mode(), is_media=True
-                    )
-                    await session.start()
-
-                self.media_sessions[dc_id] = session
-
-        file_type = file_id.file_type
-
-        if file_type == FileType.CHAT_PHOTO:
-            if file_id.chat_id > 0:
-                peer = raw.types.InputPeerUser(
-                    user_id=file_id.chat_id,
-                    access_hash=file_id.chat_access_hash
-                )
-            else:
-                if file_id.chat_access_hash == 0:
-                    peer = raw.types.InputPeerChat(
-                        chat_id=-file_id.chat_id
-                    )
-                else:
-                    peer = raw.types.InputPeerChannel(
-                        channel_id=utils.get_channel_id(file_id.chat_id),
+            if file_type == FileType.CHAT_PHOTO:
+                if file_id.chat_id > 0:
+                    peer = raw.types.InputPeerUser(
+                        user_id=file_id.chat_id,
                         access_hash=file_id.chat_access_hash
                     )
-
-            location = raw.types.InputPeerPhotoFileLocation(
-                peer=peer,
-                photo_id=file_id.media_id,
-                big=file_id.thumbnail_source == ThumbnailSource.CHAT_PHOTO_BIG
-            )
-        elif file_type == FileType.PHOTO:
-            location = raw.types.InputPhotoFileLocation(
-                id=file_id.media_id,
-                access_hash=file_id.access_hash,
-                file_reference=file_id.file_reference,
-                thumb_size=file_id.thumbnail_size
-            )
-        else:
-            location = raw.types.InputDocumentFileLocation(
-                id=file_id.media_id,
-                access_hash=file_id.access_hash,
-                file_reference=file_id.file_reference,
-                thumb_size=file_id.thumbnail_size
-            )
-
-        current = 0
-        total = abs(limit) or (1 << 31) - 1
-        chunk_size = 1024 * 1024
-        offset_bytes = abs(offset) * chunk_size
-
-        try:
-            r = await session.invoke(
-                raw.functions.upload.GetFile(
-                    location=location,
-                    offset=offset_bytes,
-                    limit=chunk_size
-                ),
-                sleep_threshold=30
-            )
-
-            if isinstance(r, raw.types.upload.File):
-                while True:
-                    chunk = r.bytes
-
-                    yield chunk
-
-                    current += 1
-                    offset_bytes += chunk_size
-
-                    if progress:
-                        func = functools.partial(
-                            progress,
-                            min(offset_bytes, file_size)
-                            if file_size != 0
-                            else offset_bytes,
-                            file_size,
-                            *progress_args
+                else:
+                    if file_id.chat_access_hash == 0:
+                        peer = raw.types.InputPeerChat(
+                            chat_id=-file_id.chat_id
+                        )
+                    else:
+                        peer = raw.types.InputPeerChannel(
+                            channel_id=utils.get_channel_id(file_id.chat_id),
+                            access_hash=file_id.chat_access_hash
                         )
 
-                        if inspect.iscoroutinefunction(progress):
-                            await func()
-                        else:
-                            await self.loop.run_in_executor(self.executor, func)
+                location = raw.types.InputPeerPhotoFileLocation(
+                    peer=peer,
+                    photo_id=file_id.media_id,
+                    big=file_id.thumbnail_source == ThumbnailSource.CHAT_PHOTO_BIG
+                )
+            elif file_type == FileType.PHOTO:
+                location = raw.types.InputPhotoFileLocation(
+                    id=file_id.media_id,
+                    access_hash=file_id.access_hash,
+                    file_reference=file_id.file_reference,
+                    thumb_size=file_id.thumbnail_size
+                )
+            else:
+                location = raw.types.InputDocumentFileLocation(
+                    id=file_id.media_id,
+                    access_hash=file_id.access_hash,
+                    file_reference=file_id.file_reference,
+                    thumb_size=file_id.thumbnail_size
+                )
 
-                    if len(chunk) < chunk_size or current >= total:
-                        break
+            current = 0
+            total = abs(limit) or (1 << 31) - 1
+            chunk_size = 1024 * 1024
+            offset_bytes = abs(offset) * chunk_size
 
-                    r = await session.invoke(
-                        raw.functions.upload.GetFile(
-                            location=location,
-                            offset=offset_bytes,
-                            limit=chunk_size
-                        ),
-                        sleep_threshold=30
+            dc_id = file_id.dc_id
+
+            session = Session(
+                self, dc_id,
+                await Auth(self, dc_id, await self.storage.test_mode()).create()
+                if dc_id != await self.storage.dc_id()
+                else await self.storage.auth_key(),
+                await self.storage.test_mode(),
+                is_media=True
+            )
+
+            try:
+                await session.start()
+
+                if dc_id != await self.storage.dc_id():
+                    exported_auth = await self.invoke(
+                        raw.functions.auth.ExportAuthorization(
+                            dc_id=dc_id
+                        )
                     )
 
-            elif isinstance(r, raw.types.upload.FileCdnRedirect):
-                async with self.media_sessions_lock:
-                    cdn_session = self.media_sessions.get(r.dc_id, None)
-
-                    if cdn_session is None:
-                        cdn_session = Session(
-                            self, r.dc_id, await Auth(self, r.dc_id, await self.storage.test_mode()).create(),
-                            await self.storage.test_mode(), is_media=True, is_cdn=True
+                    await session.invoke(
+                        raw.functions.auth.ImportAuthorization(
+                            id=exported_auth.id,
+                            bytes=exported_auth.bytes
                         )
+                    )
 
-                        await cdn_session.start()
+                r = await session.invoke(
+                    raw.functions.upload.GetFile(
+                        location=location,
+                        offset=offset_bytes,
+                        limit=chunk_size
+                    ),
+                    sleep_threshold=30
+                )
 
-                        self.media_sessions[r.dc_id] = cdn_session
-
-                try:
+                if isinstance(r, raw.types.upload.File):
                     while True:
-                        r2 = await cdn_session.invoke(
-                            raw.functions.upload.GetCdnFile(
-                                file_token=r.file_token,
-                                offset=offset_bytes,
-                                limit=chunk_size
-                            )
-                        )
+                        chunk = r.bytes
 
-                        if isinstance(r2, raw.types.upload.CdnFileReuploadNeeded):
-                            try:
-                                await session.invoke(
-                                    raw.functions.upload.ReuploadCdnFile(
-                                        file_token=r.file_token,
-                                        request_token=r2.request_token
-                                    )
-                                )
-                            except VolumeLocNotFound:
-                                break
-                            else:
-                                continue
-
-                        chunk = r2.bytes
-
-                        # https://core.telegram.org/cdn#decrypting-files
-                        decrypted_chunk = aes.ctr256_decrypt(
-                            chunk,
-                            r.encryption_key,
-                            bytearray(
-                                r.encryption_iv[:-4]
-                                + (offset_bytes // 16).to_bytes(4, "big")
-                            )
-                        )
-
-                        hashes = await session.invoke(
-                            raw.functions.upload.GetCdnFileHashes(
-                                file_token=r.file_token,
-                                offset=offset_bytes
-                            )
-                        )
-
-                        # https://core.telegram.org/cdn#verifying-files
-                        for i, h in enumerate(hashes):
-                            cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
-                            CDNFileHashMismatch.check(
-                                h.hash == sha256(cdn_chunk).digest(),
-                                "h.hash == sha256(cdn_chunk).digest()"
-                            )
-
-                        yield decrypted_chunk
+                        yield chunk
 
                         current += 1
                         offset_bytes += chunk_size
@@ -1000,7 +892,9 @@ class Client(Methods):
                         if progress:
                             func = functools.partial(
                                 progress,
-                                min(offset_bytes, file_size) if file_size != 0 else offset_bytes,
+                                min(offset_bytes, file_size)
+                                if file_size != 0
+                                else offset_bytes,
                                 file_size,
                                 *progress_args
                             )
@@ -1012,12 +906,104 @@ class Client(Methods):
 
                         if len(chunk) < chunk_size or current >= total:
                             break
-                except Exception as e:
-                    raise e
-        except pyrogram.StopTransmission:
-            raise
-        except Exception as e:
-            log.exception(e)
+
+                        r = await session.invoke(
+                            raw.functions.upload.GetFile(
+                                location=location,
+                                offset=offset_bytes,
+                                limit=chunk_size
+                            ),
+                            sleep_threshold=30
+                        )
+
+                elif isinstance(r, raw.types.upload.FileCdnRedirect):
+                    cdn_session = Session(
+                        self, r.dc_id, await Auth(self, r.dc_id, await self.storage.test_mode()).create(),
+                        await self.storage.test_mode(), is_media=True, is_cdn=True
+                    )
+
+                    try:
+                        await cdn_session.start()
+
+                        while True:
+                            r2 = await cdn_session.invoke(
+                                raw.functions.upload.GetCdnFile(
+                                    file_token=r.file_token,
+                                    offset=offset_bytes,
+                                    limit=chunk_size
+                                )
+                            )
+
+                            if isinstance(r2, raw.types.upload.CdnFileReuploadNeeded):
+                                try:
+                                    await session.invoke(
+                                        raw.functions.upload.ReuploadCdnFile(
+                                            file_token=r.file_token,
+                                            request_token=r2.request_token
+                                        )
+                                    )
+                                except VolumeLocNotFound:
+                                    break
+                                else:
+                                    continue
+
+                            chunk = r2.bytes
+
+                            # https://core.telegram.org/cdn#decrypting-files
+                            decrypted_chunk = aes.ctr256_decrypt(
+                                chunk,
+                                r.encryption_key,
+                                bytearray(
+                                    r.encryption_iv[:-4]
+                                    + (offset_bytes // 16).to_bytes(4, "big")
+                                )
+                            )
+
+                            hashes = await session.invoke(
+                                raw.functions.upload.GetCdnFileHashes(
+                                    file_token=r.file_token,
+                                    offset=offset_bytes
+                                )
+                            )
+
+                            # https://core.telegram.org/cdn#verifying-files
+                            for i, h in enumerate(hashes):
+                                cdn_chunk = decrypted_chunk[h.limit * i: h.limit * (i + 1)]
+                                CDNFileHashMismatch.check(
+                                    h.hash == sha256(cdn_chunk).digest(),
+                                    "h.hash == sha256(cdn_chunk).digest()"
+                                )
+
+                            yield decrypted_chunk
+
+                            current += 1
+                            offset_bytes += chunk_size
+
+                            if progress:
+                                func = functools.partial(
+                                    progress,
+                                    min(offset_bytes, file_size) if file_size != 0 else offset_bytes,
+                                    file_size,
+                                    *progress_args
+                                )
+
+                                if inspect.iscoroutinefunction(progress):
+                                    await func()
+                                else:
+                                    await self.loop.run_in_executor(self.executor, func)
+
+                            if len(chunk) < chunk_size or current >= total:
+                                break
+                    except Exception as e:
+                        raise e
+                    finally:
+                        await cdn_session.stop()
+            except pyrogram.StopTransmission:
+                raise
+            except Exception as e:
+                log.exception(e)
+            finally:
+                await session.stop()
 
     def guess_mime_type(self, filename: str) -> Optional[str]:
         return self.mimetypes.guess_type(filename)[0]
