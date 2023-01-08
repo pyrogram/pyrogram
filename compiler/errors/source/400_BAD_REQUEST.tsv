@@ -356,3 +356,4 @@ WEBPAGE_MEDIA_EMPTY	The URL doesn't contain any valid media
 YOU_BLOCKED_USER	You blocked this user
 ENTITY_BOUNDS_INVALID	The message entity bounds are invalid
 BOT_ONESIDE_NOT_AVAIL	Bots can't pin messages for one side only in private chats
+INVITE_REQUEST_SENT	The request to join this chat or channel has been successfully sent
