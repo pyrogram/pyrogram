@@ -229,7 +229,7 @@ class Session:
                         raise SecurityCheckMismatch("The msg_id belongs to over 300 seconds in the past. "
                                                     "Most likely the client time has to be synchronized.")
             except SecurityCheckMismatch as e:
-                log.warning("Discarding packet: %s", e)
+                log.info("Discarding packet: %s", e)
                 await self.connection.close()
                 return
             else:

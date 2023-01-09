@@ -540,7 +540,7 @@ class Client(Methods):
                 pts_count = getattr(update, "pts_count", None)
 
                 if isinstance(update, raw.types.UpdateChannelTooLong):
-                    log.warning(update)
+                    log.info(update)
 
                 if isinstance(update, raw.types.UpdateNewChannelMessage) and is_min:
                     message = update.message
