@@ -140,6 +140,9 @@ class User(Object, Update):
             The list of reasons why this bot might be unavailable to some users.
             This field is available only in case *is_restricted* is True.
 
+        full_name (``str``, *optional*):
+            User's or bot's full name.
+
         mention (``str``, *property*):
             Generate a text mention for this user.
             You can use ``user.mention()`` to mention the user using their first name (styled using html), or
@@ -202,6 +205,10 @@ class User(Object, Update):
         self.phone_number = phone_number
         self.photo = photo
         self.restrictions = restrictions
+
+    @property
+    def full_name(self) -> str:
+        return " ".join(filter(None, [self.first_name, self.last_name])) or None
 
     @property
     def mention(self):
