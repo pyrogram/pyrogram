@@ -38,6 +38,7 @@ BROADCAST_REQUIRED	The request can only be used with a channel
 BUTTON_DATA_INVALID	The button callback data is invalid or too large
 BUTTON_TYPE_INVALID	The type of one of the buttons you provided is invalid
 BUTTON_URL_INVALID	The button url is invalid
+BUTTON_USER_PRIVACY_RESTRICTED	The privacy settings of the user specified in a keyboard button do not allow creating such button
 CALL_ALREADY_ACCEPTED	The call is already accepted
 CALL_ALREADY_DECLINED	The call is already declined
 CALL_PEER_INVALID	The provided call peer object is invalid
