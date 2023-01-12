@@ -172,6 +172,11 @@ class Client(Methods):
             Pass True to hide the password when typing it during the login.
             Defaults to False, because ``getpass`` (the library used) is known to be problematic in some
             terminal environments.
+        
+        max_concurrent_transmissions (``int``, *optional*):
+            Set the maximum amount of files that can be sent concurrently.
+            A large number can result in connection issues.
+            Defaults to 1.
     """
 
     APP_VERSION = f"Pyrogram {__version__}"
@@ -217,7 +222,8 @@ class Client(Methods):
         no_updates: bool = None,
         takeout: bool = None,
         sleep_threshold: int = Session.SLEEP_THRESHOLD,
-        hide_password: bool = False
+        hide_password: bool = False,
+        max_concurrent_transmissions: int = 1
     ):
         super().__init__()
 
@@ -245,6 +251,7 @@ class Client(Methods):
         self.takeout = takeout
         self.sleep_threshold = sleep_threshold
         self.hide_password = hide_password
+        self.max_concurrent_transmissions = max_concurrent_transmissions
 
         self.executor = ThreadPoolExecutor(self.workers, thread_name_prefix="Handler")
 

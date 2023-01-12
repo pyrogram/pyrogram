@@ -144,7 +144,7 @@ class SaveFile:
                 await self.storage.test_mode(), is_media=True
             )
             workers = [self.loop.create_task(worker(session)) for _ in range(workers_count)]
-            queue = asyncio.Queue(1)
+            queue = asyncio.Queue(self.max_concurrent_transmissions)
 
             try:
                 await session.start()
