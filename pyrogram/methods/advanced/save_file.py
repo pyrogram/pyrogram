@@ -94,7 +94,7 @@ class SaveFile:
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        async with self.save_file_lock:
+        async with self.save_file_semaphore:
             if path is None:
                 return None
 
