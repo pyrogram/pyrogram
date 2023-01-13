@@ -1,2 +1,3 @@
 pyaes==1.6.1
+pymediainfo==6.0.1
 pysocks==1.7.1

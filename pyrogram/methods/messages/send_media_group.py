@@ -20,6 +20,7 @@ import logging
 import os
 import re
 from datetime import datetime
+from pymediainfo import MediaInfo
 from typing import Union, List
 
 import pyrogram
@@ -40,7 +41,8 @@ class SendMediaGroup:
             "types.InputMediaPhoto",
             "types.InputMediaVideo",
             "types.InputMediaAudio",
-            "types.InputMediaDocument"
+            "types.InputMediaDocument",
+            "types.InputMediaAnimation"
         ]],
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -57,7 +59,7 @@ class SendMediaGroup:
                 For your personal cloud (Saved Messages) you can simply use "me" or "self".
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
-            media (List of :obj:`~pyrogram.types.InputMediaPhoto`, :obj:`~pyrogram.types.InputMediaVideo`, :obj:`~pyrogram.types.InputMediaAudio` and :obj:`~pyrogram.types.InputMediaDocument`):
+            media (List of :obj:`~pyrogram.types.InputMediaPhoto`, :obj:`~pyrogram.types.InputMediaVideo`, :obj:`~pyrogram.types.InputMediaAudio`, :obj:`~pyrogram.types.InputMediaDocument` and :obj:`~pyrogram.types.InputMediaAnimation`):
                 A list describing photos and videos to be sent, must include 2–10 items.
 
             disable_notification (``bool``, *optional*):
@@ -154,9 +156,17 @@ class SendMediaGroup:
                         ),
                         spoiler=i.has_spoiler
                     )
-            elif isinstance(i, types.InputMediaVideo):
+            elif (
+                isinstance(i, types.InputMediaVideo)
+                or
+                isinstance(i, types.InputMediaAnimation)
+            ):
                 if isinstance(i.media, str):
+                    is_animation = False
                     if os.path.isfile(i.media):
+                        videoInfo = MediaInfo.parse(i.media)
+                        if not any([track.track_type == 'Audio' for track in videoInfo.tracks]):
+                            is_animation = True
                         media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
@@ -165,14 +175,16 @@ class SendMediaGroup:
                                     thumb=await self.save_file(i.thumb),
                                     spoiler=i.has_spoiler,
                                     mime_type=self.guess_mime_type(i.media) or "video/mp4",
+                                    nosound_video=is_animation,
                                     attributes=[
                                         raw.types.DocumentAttributeVideo(
-                                            supports_streaming=i.supports_streaming or None,
+                                            supports_streaming=True if is_animation else (i.supports_streaming or None),
                                             duration=i.duration,
                                             w=i.width,
                                             h=i.height
                                         ),
-                                        raw.types.DocumentAttributeFilename(file_name=os.path.basename(i.media))
+                                        raw.types.DocumentAttributeFilename(file_name=os.path.basename(i.media)),
+                                        raw.types.DocumentAttributeAnimated() if is_animation else None
                                     ]
                                 )
                             )
