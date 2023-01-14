@@ -16,9 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import io
 import os
 import re
-import io
 from typing import Union
 
 import pyrogram
@@ -93,36 +93,40 @@ class EditMessageMedia:
 
         if isinstance(media, types.InputMediaPhoto):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
-                media = await self.invoke(
+                uploaded_media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedPhoto(
-                            file=await self.save_file(media.media)
+                            file=await self.save_file(media.media),
+                            spoiler=media.has_spoiler
                         )
                     )
                 )
 
                 media = raw.types.InputMediaPhoto(
                     id=raw.types.InputPhoto(
-                        id=media.photo.id,
-                        access_hash=media.photo.access_hash,
-                        file_reference=media.photo.file_reference
-                    )
+                        id=uploaded_media.photo.id,
+                        access_hash=uploaded_media.photo.access_hash,
+                        file_reference=uploaded_media.photo.file_reference
+                    ),
+                    spoiler=media.has_spoiler
                 )
             elif re.match("^https?://", media.media):
                 media = raw.types.InputMediaPhotoExternal(
-                    url=media.media
+                    url=media.media,
+                    spoiler=media.has_spoiler
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
-                media = await self.invoke(
+                uploaded_media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
                             thumb=await self.save_file(media.thumb),
+                            spoiler=media.has_spoiler,
                             file=await self.save_file(media.media),
                             attributes=[
                                 raw.types.DocumentAttributeVideo(
@@ -141,14 +145,16 @@ class EditMessageMedia:
 
                 media = raw.types.InputMediaDocument(
                     id=raw.types.InputDocument(
-                        id=media.document.id,
-                        access_hash=media.document.access_hash,
-                        file_reference=media.document.file_reference
-                    )
+                        id=uploaded_media.document.id,
+                        access_hash=uploaded_media.document.access_hash,
+                        file_reference=uploaded_media.document.file_reference
+                    ),
+                    spoiler=media.has_spoiler
                 )
             elif re.match("^https?://", media.media):
                 media = raw.types.InputMediaDocumentExternal(
-                    url=media.media
+                    url=media.media,
+                    spoiler=media.has_spoiler
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
@@ -190,12 +196,13 @@ class EditMessageMedia:
                 media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
-                media = await self.invoke(
+                uploaded_media = await self.invoke(
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
                             mime_type=self.guess_mime_type(media.media) or "video/mp4",
                             thumb=await self.save_file(media.thumb),
+                            spoiler=media.has_spoiler,
                             file=await self.save_file(media.media),
                             attributes=[
                                 raw.types.DocumentAttributeVideo(
@@ -215,14 +222,16 @@ class EditMessageMedia:
 
                 media = raw.types.InputMediaDocument(
                     id=raw.types.InputDocument(
-                        id=media.document.id,
-                        access_hash=media.document.access_hash,
-                        file_reference=media.document.file_reference
-                    )
+                        id=uploaded_media.document.id,
+                        access_hash=uploaded_media.document.access_hash,
+                        file_reference=uploaded_media.document.file_reference
+                    ),
+                    spoiler=media.has_spoiler
                 )
             elif re.match("^https?://", media.media):
                 media = raw.types.InputMediaDocumentExternal(
-                    url=media.media
+                    url=media.media,
+                    spoiler=media.has_spoiler
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)

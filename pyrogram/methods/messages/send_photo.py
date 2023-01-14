@@ -37,6 +37,7 @@ class SendPhoto:
         caption: str = "",
         parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
+        has_spoiler: bool = None,
         ttl_seconds: int = None,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
@@ -77,6 +78,9 @@ class SendPhoto:
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+
+            has_spoiler (``bool``, *optional*):
+                Pass True if the photo needs to be covered with a spoiler animation.
 
             ttl_seconds (``int``, *optional*):
                 Self-Destruct Timer.
@@ -149,12 +153,14 @@ class SendPhoto:
                     file = await self.save_file(photo, progress=progress, progress_args=progress_args)
                     media = raw.types.InputMediaUploadedPhoto(
                         file=file,
-                        ttl_seconds=ttl_seconds
+                        ttl_seconds=ttl_seconds,
+                        spoiler=has_spoiler,
                     )
                 elif re.match("^https?://", photo):
                     media = raw.types.InputMediaPhotoExternal(
                         url=photo,
-                        ttl_seconds=ttl_seconds
+                        ttl_seconds=ttl_seconds,
+                        spoiler=has_spoiler
                     )
                 else:
                     media = utils.get_input_media_from_file_id(photo, FileType.PHOTO, ttl_seconds=ttl_seconds)
@@ -162,7 +168,8 @@ class SendPhoto:
                 file = await self.save_file(photo, progress=progress, progress_args=progress_args)
                 media = raw.types.InputMediaUploadedPhoto(
                     file=file,
-                    ttl_seconds=ttl_seconds
+                    ttl_seconds=ttl_seconds,
+                    spoiler=has_spoiler
                 )
 
             while True:
