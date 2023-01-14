@@ -65,7 +65,7 @@ class Client(Methods):
     """Pyrogram Client, the main means for interacting with Telegram.
 
     Parameters:
-        name (``str``):
+        name (``str``, *optional*):
             A name for the client, e.g.: "my_account".
 
         api_id (``int`` | ``str``, *optional*):
@@ -201,7 +201,7 @@ class Client(Methods):
 
     def __init__(
         self,
-        name: str,
+        name: str = "client",
         api_id: Union[int, str] = None,
         api_hash: str = None,
         app_version: str = APP_VERSION,
