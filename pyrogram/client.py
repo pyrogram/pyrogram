@@ -602,7 +602,8 @@ class Client(Methods):
         elif isinstance(updates, raw.types.UpdateShort):
             self.dispatcher.updates_queue.put_nowait((updates.update, {}, {}))
         elif isinstance(updates, raw.types.UpdatesTooLong):
-            log.info(updates)
+            await self.invoke(raw.functions.updates.GetState())
+            log.warning("UpdatesTooLong, Updates is: %s", updates)
 
     async def load_session(self):
         await self.storage.open()
