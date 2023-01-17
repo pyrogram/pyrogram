@@ -953,7 +953,7 @@ class Message(Object, Update):
                                 reply_to_message_ids=message.id,
                                 replies=replies - 1
                             )
-                        if not reply_to_message.forum_topic_created:
+                        if reply_to_message and not reply_to_message.forum_topic_created:
                             parsed_message.reply_to_message = reply_to_message
                     except MessageIdsEmpty:
                         pass
