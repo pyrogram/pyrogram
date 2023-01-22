@@ -24,6 +24,9 @@ from .handler import Handler
 class ChosenInlineResultHandler(Handler):
     """The ChosenInlineResultHandler handler class. Used to handle chosen inline results coming from inline queries.
     It is intended to be used with :meth:`~pyrogram.Client.add_handler`
+    
+    Please see the official documentation on the [feedback collecting](https://core.telegram.org/bots/inline#collecting-feedback) for details on how to enable these updates for your bot.
+    [This should only be used for statistical purposes, rather than functional](https://core.telegram.org/api/bots/inline#inline-feedback).
 
     For a nicer way to register this handler, have a look at the
     :meth:`~pyrogram.Client.on_chosen_inline_result` decorator.
