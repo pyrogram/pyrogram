@@ -29,6 +29,8 @@ async def get_chunk(
     chat_id: Union[int, str],
     limit: int = 0,
     offset: int = 0,
+    max_id: int = 0,
+    min_id: int = 0,
     from_message_id: int = 0,
     from_date: datetime = utils.zero_datetime()
 ):
@@ -39,8 +41,8 @@ async def get_chunk(
             offset_date=utils.datetime_to_timestamp(from_date),
             add_offset=offset,
             limit=limit,
-            max_id=0,
-            min_id=0,
+            max_id=max_id,
+            min_id=min_id,
             hash=0
         ),
         sleep_threshold=60
@@ -53,9 +55,11 @@ class GetChatHistory:
     async def get_chat_history(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        limit: int = 0,
-        offset: int = 0,
-        offset_id: int = 0,
+        limit: int = 0,        
+        offset: int = 0,        
+        max_id: int = 0,
+        min_id: int = 0,
+        offset_id: int = 0,        
         offset_date: datetime = utils.zero_datetime()
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Get messages from a chat history.
@@ -77,6 +81,12 @@ class GetChatHistory:
             offset (``int``, *optional*):
                 Sequential number of the first message to be returned..
                 Negative values are also accepted and become useful in case you set offset_id or offset_date.
+
+            max_id (``int``, *optional*):
+                 If a positive value was transferred, the method will return only messages with IDs less than max_id
+
+            min_id (``int``, *optional*):
+                 If a positive value was transferred, the method will return only messages with IDs more than min_id
 
             offset_id (``int``, *optional*):
                 Identifier of the first message to be returned.
@@ -103,6 +113,8 @@ class GetChatHistory:
                 chat_id=chat_id,
                 limit=limit,
                 offset=offset,
+                max_id=max_id,
+                min_id=min_id,
                 from_message_id=offset_id,
                 from_date=offset_date
             )
