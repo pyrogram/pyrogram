@@ -41,7 +41,7 @@ class Terminate:
 
         if self.takeout_id:
             await self.invoke(raw.functions.account.FinishTakeoutSession())
-            log.warning("Takeout session %s finished", self.takeout_id)
+            log.info("Takeout session %s finished", self.takeout_id)
 
         await self.storage.save()
         await self.dispatcher.stop()

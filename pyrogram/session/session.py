@@ -45,7 +45,7 @@ class Result:
 
 
 class Session:
-    START_TIMEOUT = 5
+    START_TIMEOUT = 2
     WAIT_TIMEOUT = 15
     SLEEP_THRESHOLD = 10
     MAX_RETRIES = 10
@@ -229,7 +229,7 @@ class Session:
                         raise SecurityCheckMismatch("The msg_id belongs to over 300 seconds in the past. "
                                                     "Most likely the client time has to be synchronized.")
             except SecurityCheckMismatch as e:
-                log.warning("Discarding packet: %s", e)
+                log.info("Discarding packet: %s", e)
                 await self.connection.close()
                 return
             else:
