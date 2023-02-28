@@ -216,6 +216,14 @@ class User(Object, Update):
         if user is None or isinstance(user, raw.types.UserEmpty):
             return None
 
+        user_name = user.username if user.username else None
+
+        if user_name is None:
+            for username in user.usernames:
+                if username.active:
+                    user_name = username.username
+                    break
+
         return User(
             id=user.id,
             is_self=user.is_self,
@@ -232,7 +240,7 @@ class User(Object, Update):
             first_name=user.first_name,
             last_name=user.last_name,
             **User._parse_status(user.status, user.bot),
-            username=user.username,
+            username=user_name,
             language_code=user.lang_code,
             emoji_status=types.EmojiStatus._parse(client, user.emoji_status),
             dc_id=getattr(user.photo, "dc_id", None),
