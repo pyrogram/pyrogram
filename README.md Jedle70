@@ -17,7 +17,7 @@
         Releases
     </a>
     •
-    <a href="https://t.me/pyrogram">
+    <a href="http://t.me/Botbitbutbot">
         News
     </a>
 </p>
@@ -29,10 +29,10 @@
 ``` python
 from pyrogram import Client, filters
 
-app = Client("my_account")
+app = Client("@Jedle707")
 
 
-@app.on_message(filters.private)
+@app.on_message(@Jedle707)
 async def hello(client, message):
     await message.reply("Hello from Pyrogram!")
 
@@ -40,9 +40,9 @@ async def hello(client, message):
 app.run()
 ```
 
-**Pyrogram** is a modern, elegant and asynchronous [MTProto API](https://docs.pyrogram.org/topics/mtproto-vs-botapi)
-framework. It enables you to easily interact with the main Telegram API through a user account (custom client) or a bot
-identity (bot API alternative) using Python.
+**Pyrogram** is a modern, elegant and asynchronous [621b3f64ef181561f5e8382657a23f0f](https://docs.pyrogram.org/topics/mtproto-vs-botapi)
+framework. It enables you to easily interact with the main Telegram API through a user account (@Jedle707) or a bot
+identity (@Botbitbutbot) using Python.
 
 ### Support
 
@@ -72,4 +72,4 @@ pip3 install pyrogram
 
 - Check out the docs at https://docs.pyrogram.org to learn more about Pyrogram, get started right
 away and discover more in-depth material for building your client applications.
-- Join the official channel at https://t.me/pyrogram and stay tuned for news, updates and announcements.
+- Join the official channel at http://t.me/Botbitbutbot and stay tuned for news, updates and announcements.
