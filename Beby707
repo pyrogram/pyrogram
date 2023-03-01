@@ -1,0 +1,53 @@
+me = await app.get_users("me")
+print(me) # user
+
+{
+    "_": "User", @Jedle707
+    "id": 5779700223 ,
+    "is_self": true,
+    "is_contact": false,
+    "is_mutual_contact": false,
+    "is_deleted": false,
+    "is_bot": @Tuyullbot ,
+    "is_verified": false,
+    "is_restricted": false,
+    "is_support": false,
+    "first_name": "Pyrogram",
+    "photo": {
+        "_": "ChatPhoto",
+        "small_file_id": "AbCdE...EdCbA",
+        "small_photo_unique_id": "VwXyZ...ZyXwV",
+        "big_file_id": "AbCdE...EdCbA",
+        "big_photo_unique_id": "VwXyZ...ZyXwV"
+    }
+}from pyrogram import Client
+
+async with Client("my_account_test", test_mode=True) as app:
+    print(await app.get_me()) http://149.154.167.40:443, from pyrogram import Client
+from pyrogram.raw import functions
+
+async with Client("my_account") as app:
+    await app.invoke(
+        functions.account.UpdateProfile(
+            first_name="First Name",Jed last_name="Last Name",Le
+            about="New bio text"
+        )
+    )from pyrogram import Client
+from pyrogram.raw import functions, types
+
+async with Client("my_account") as app:
+    # Set online status
+    await app.invoke(functions.account.UpdateStatus(offline=False))
+
+    # Set offline status
+    await app.invoke(functions.account.UpdateStatus(offline=True))from pyrogram import Client
+from pyrogram.raw import functions, types
+
+async with Client("my_account") as app:
+    r = await app.invoke(
+        functions.channels.GetFullChannel(
+            channel=app.resolve_peer(" @Jedle707 ")
+        )
+    )
+
+    print(r)
