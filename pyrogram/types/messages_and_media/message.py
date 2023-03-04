@@ -136,6 +136,9 @@ class Message(Object, Update):
         has_protected_content (``bool``, *optional*):
             True, if the message can't be forwarded.
 
+        silent (``bool``, *optional*):
+            True, if the message was sent without sound.
+
         has_media_spoiler (``bool``, *optional*):
             True, if the message media is covered by a spoiler animation.
 
@@ -335,6 +338,7 @@ class Message(Object, Update):
         media_group_id: str = None,
         author_signature: str = None,
         has_protected_content: bool = None,
+        silent: bool = None,
         has_media_spoiler: bool = None,
         text: Str = None,
         entities: List["types.MessageEntity"] = None,
@@ -412,6 +416,7 @@ class Message(Object, Update):
         self.media_group_id = media_group_id
         self.author_signature = author_signature
         self.has_protected_content = has_protected_content
+        self.silent = silent
         self.has_media_spoiler = has_media_spoiler
         self.text = text
         self.entities = entities
@@ -786,6 +791,7 @@ class Message(Object, Update):
                 ),
                 author_signature=message.post_author,
                 has_protected_content=message.noforwards,
+                silent=message.silent,
                 has_media_spoiler=has_media_spoiler,
                 forward_from=forward_from,
                 forward_sender_name=forward_sender_name,
