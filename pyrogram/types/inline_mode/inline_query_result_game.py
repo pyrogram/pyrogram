@@ -38,7 +38,7 @@ class InlineQueryResultGame(InlineQueryResult):
 
     def __init__(
         self,
-        short_name: str = "",
+        short_name: str,
         id: str = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
     ):
