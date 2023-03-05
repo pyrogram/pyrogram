@@ -43,6 +43,7 @@ class InlineQueryResult(Object):
     - :obj:`~pyrogram.types.InlineQueryResultVenue`
     - :obj:`~pyrogram.types.InlineQueryResultVideo`
     - :obj:`~pyrogram.types.InlineQueryResultVoice`
+    - :obj:`~pyrogram.types.InlineQueryResultGame`
     """
 
     def __init__(
