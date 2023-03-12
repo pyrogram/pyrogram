@@ -510,7 +510,7 @@ class Client(Methods):
                 peer_id = -peer.id
                 access_hash = 0
                 peer_type = "group"
-            elif isinstance(peer, (raw.types.Channel, raw.types.ChannelForbidden)):
+            elif isinstance(peer, raw.types.Channel):
                 peer_id = utils.get_channel_id(peer.id)
                 access_hash = peer.access_hash
                 username = (
@@ -518,6 +518,10 @@ class Client(Methods):
                     else peer.usernames[0].username.lower() if peer.usernames
                     else None
                 )
+                peer_type = "channel" if peer.broadcast else "supergroup"
+            elif isinstance(peer, raw.types.ChannelForbidden):
+                peer_id = utils.get_channel_id(peer.id)
+                access_hash = peer.access_hash
                 peer_type = "channel" if peer.broadcast else "supergroup"
             else:
                 continue
