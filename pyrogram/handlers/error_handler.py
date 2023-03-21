@@ -59,3 +59,6 @@ class ErrorHandler(Handler):
 
     async def check(self, client: "pyrogram.Client", error: Exception):
         return any(isinstance(error, e) for e in self.errors)
+
+    async def check_remove(self, error: Exception):
+        return self.errors == error or any(isinstance(error, e) for e in self.errors)

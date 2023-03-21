@@ -16,26 +16,20 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .add_handler import AddHandler
-from .export_session_string import ExportSessionString
-from .remove_handler import RemoveHandler
-from .restart import Restart
-from .run import Run
-from .start import Start
-from .stop import Stop
-from .stop_transmission import StopTransmission
-from .remove_error_handler import RemoveErrorHandler
+import pyrogram
 
 
-class Utilities(
-    AddHandler,
-    ExportSessionString,
-    RemoveHandler,
-    RemoveErrorHandler,
-    Restart,
-    Run,
-    Start,
-    Stop,
-    StopTransmission,
-):
-    pass
+class RemoveErrorHandler:
+    def remove_error_handler(
+        self: "pyrogram.Client",
+        error: "Exception | tuple[Exception]" = Exception
+    ):
+        """Remove a previously-registered error handler. (using exception classes)
+
+        Parameters:
+            error (``Exception``):
+                The error(s) for handlers to be removed.
+        """
+        for handler in self.dispatcher.error_handlers:
+            if await handler.check_remove(error):
+                self.dispatcher.error_handlers.remove(handler)
