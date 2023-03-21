@@ -42,6 +42,9 @@ class ErrorHandler(Handler):
 
         error (:obj:`~Exception`):
             The error that was raised.
+
+        update (:obj:`~pyrogram.Update`):
+            The update that caused the error.
     """
 
     def __init__(self, callback: Callable, errors=None):

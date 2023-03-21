@@ -268,15 +268,16 @@ class Dispatcher:
                                     try:
                                         if await error_handler.check(self.client, e):
                                             if inspect.iscoroutinefunction(error_handler.callback):
-                                                await error_handler.callback(self.client, e)
+                                                await error_handler.callback(self.client, e, *args)
                                             else:
                                                 await self.loop.run_in_executor(
                                                     self.client.executor,
                                                     error_handler.callback,
                                                     self.client,
-                                                    e
+                                                    e,
+                                                    *args
                                                 )
-                                            handled_error = True  # If the error is handled, don't log it
+                                            handled_error = True
                                             break
                                     except pyrogram.StopPropagation:
                                         raise
