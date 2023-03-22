@@ -31,5 +31,5 @@ class RemoveErrorHandler:
                 The error(s) for handlers to be removed.
         """
         for handler in self.dispatcher.error_handlers:
-            if await handler.check_remove(error):
+            if handler.check_remove(error):
                 self.dispatcher.error_handlers.remove(handler)
