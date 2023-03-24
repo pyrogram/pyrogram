@@ -35,5 +35,8 @@ class NextCodeType(AutoName):
     SMS = raw.types.auth.CodeTypeSms
     "The code was sent via SMS."
 
+    EMAIL_CODE = raw.types.auth.SentCodeTypeEmailCode
+    "The code was sent via email."
+
     FRAGMENT_SMS = raw.types.auth.CodeTypeFragmentSms
     "The code was sent via Fragment SMS."
