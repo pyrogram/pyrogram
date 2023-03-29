@@ -66,8 +66,8 @@ class InputMediaAudio(InputMedia):
     def __init__(
         self,
         media: Union[str, BinaryIO],
-        thumb: str = None,
-        caption: str = "",
+        thumb: Union[str, BinaryIO] = None,
+        caption: str = None,
         parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List[MessageEntity] = None,
         duration: int = 0,
