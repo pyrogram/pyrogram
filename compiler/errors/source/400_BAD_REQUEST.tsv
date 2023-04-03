@@ -323,6 +323,7 @@ USERNAME_INVALID	The username is invalid
 USERNAME_NOT_MODIFIED	The username was not modified because you tried to edit it using the same one
 USERNAME_NOT_OCCUPIED	The username is not occupied by anyone
 USERNAME_OCCUPIED	The username is already in use by someone else
+USERNAME_PURCHASE_AVAILABLE The username is available for purchase on fragment.com
 USERPIC_UPLOAD_REQUIRED	You are required to upload a profile picture for this action
 USERS_TOO_FEW	Not enough users (to create a chat, for example)
 USERS_TOO_MUCH	The maximum number of users has been exceeded (to create a chat, for example)
