@@ -1,0 +1,29 @@
+---
+# Add 'repo' label to any root file changes
+repo:
+  - ./*
+
+crypto:
+  - pyrogram/crypto/**/*
+
+errors:
+  - pyrogram/errors/**/*
+
+handlers:
+  - pyrogram/handlers/**/*
+
+methods:
+  - pyrogram/methods/**/*
+
+
+parser:
+  - pyrogram/parser/**/*
+
+storage:
+  - pyrogram/storage/**/*
+
+UT:
+  - tests/**/*
+
+compiler:
+  - compiler/**/*
