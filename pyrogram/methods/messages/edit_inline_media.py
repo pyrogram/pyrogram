@@ -78,6 +78,7 @@ class EditInlineMedia:
         """
         caption = media.caption
         parse_mode = media.parse_mode
+        caption_entities = media.caption_entities
 
         is_bytes_io = isinstance(media.media, io.BytesIO)
         is_uploaded_file = is_bytes_io or os.path.isfile(media.media)
@@ -231,7 +232,7 @@ class EditInlineMedia:
                         id=unpacked,
                         media=actual_media,
                         reply_markup=await reply_markup.write(self) if reply_markup else None,
-                        **await self.parser.parse(caption, parse_mode)
+                        **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
                     ),
                     sleep_threshold=self.sleep_threshold
                 )
