@@ -71,7 +71,7 @@ class InputMediaVideo(InputMedia):
     def __init__(
         self,
         media: Union[str, BinaryIO],
-        thumb: str | BinaryIO = None,
+        thumb: Union[str, BinaryIO] = None,
         caption: str = "",
         parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List[MessageEntity] = None,
