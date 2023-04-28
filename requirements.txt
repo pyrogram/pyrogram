@@ -1,3 +1,2 @@
 tgcrypto
 pysocks==1.7.1
-async_lru~=1.0.2
