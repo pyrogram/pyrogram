@@ -4,6 +4,7 @@ body:
   - type: checkboxes
     attributes:
       label: Checklist
+      description: Invalid, incomplete or inadequate issue reports may not be taken into consideration
       options:
         - label: I am sure the error is coming from Pyrogram's code and not elsewhere
           required: true
@@ -34,7 +35,7 @@ body:
   - type: textarea
     attributes:
       label: Code example
-      description: Provide a [minimal, reproducible](https://stackoverflow.com/help/minimal-reproducible-example) and properly formatted example (if applicable)
+      description: Provide a [minimal, complete, consistently reproducible](https://stackoverflow.com/help/minimal-reproducible-example) and properly formatted example involving normal usages (if applicable)
       placeholder: |
         from pyrogram import Client
         ...

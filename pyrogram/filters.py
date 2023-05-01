@@ -427,6 +427,17 @@ dice = create(dice_filter)
 
 # endregion
 
+# region media_spoiler
+async def media_spoiler_filter(_, __, m: Message):
+    return bool(m.has_media_spoiler)
+
+
+media_spoiler = create(media_spoiler_filter)
+"""Filter media messages that contain a spoiler."""
+
+
+# endregion
+
 # region private_filter
 async def private_filter(_, __, m: Message):
     return bool(m.chat and m.chat.type in {enums.ChatType.PRIVATE, enums.ChatType.BOT})
@@ -730,6 +741,7 @@ async def linked_channel_filter(_, __, m: Message):
 
 linked_channel = create(linked_channel_filter)
 """Filter messages that are automatically forwarded from the linked channel to the group chat."""
+
 
 # endregion
 

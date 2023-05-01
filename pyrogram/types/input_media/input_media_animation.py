@@ -59,6 +59,9 @@ class InputMediaAnimation(InputMedia):
 
         duration (``int``, *optional*):
             Animation duration.
+
+        has_spoiler (``bool``, *optional*):
+            Pass True if the photo needs to be covered with a spoiler animation.
     """
 
     def __init__(
@@ -70,7 +73,8 @@ class InputMediaAnimation(InputMedia):
         caption_entities: List[MessageEntity] = None,
         width: int = 0,
         height: int = 0,
-        duration: int = 0
+        duration: int = 0,
+        has_spoiler: bool = None
     ):
         super().__init__(media, caption, parse_mode, caption_entities)
 
@@ -78,3 +82,4 @@ class InputMediaAnimation(InputMedia):
         self.width = width
         self.height = height
         self.duration = duration
+        self.has_spoiler = has_spoiler
