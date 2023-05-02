@@ -122,7 +122,7 @@ class Markdown:
         entities_offsets = []
 
         for entity in entities:
-            entity_type = entity.type
+            entity_type = MessageEntityType(entity.__class__)
             start = entity.offset
             end = start + entity.length
 
