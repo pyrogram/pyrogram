@@ -67,7 +67,7 @@ class JoinChat:
         else:
             chat = await self.invoke(
                 raw.functions.channels.JoinChannel(
-                    channel=await self.resolve_peer(chat_id)
+                    channel=await self.resolve_peer(chat_id.split('/')[-1])
                 )
             )
 
