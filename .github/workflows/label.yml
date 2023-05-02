@@ -1,0 +1,19 @@
+---
+name: "Label PRs from globs"
+on:
+  schedule:
+    - cron: "0 * * * *"
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+
+jobs:
+  execute:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: jpmcb/prow-github-actions@v1.1.3
+        with:
+          jobs: 'pr-labeler'
+          github-token: "${{ secrets.GITHUB_TOKEN }}"
