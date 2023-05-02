@@ -46,6 +46,9 @@ class InlineQueryResultAudio(InlineQueryResult):
             
         audio_duration (``int``, *optional*):
             Audio duration in seconds.
+        
+        description (``str``, *optional*):
+            Short description of the result.
 
         caption (``str``, *optional*):
             Caption of the audio to be sent, 0-1024 characters.
@@ -71,6 +74,7 @@ class InlineQueryResultAudio(InlineQueryResult):
         id: str = None,
         performer: str = "",
         audio_duration: int = 0,
+        description: str = None,
         caption: str = "",
         parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
@@ -83,6 +87,7 @@ class InlineQueryResultAudio(InlineQueryResult):
         self.title = title
         self.performer = performer
         self.audio_duration = audio_duration
+        self.description = description
         self.caption = caption
         self.parse_mode = parse_mode
         self.caption_entities = caption_entities
@@ -107,6 +112,7 @@ class InlineQueryResultAudio(InlineQueryResult):
             id=self.id,
             type=self.type,
             title=self.title,
+            description=self.description,
             content=audio,
             send_message=(
                 await self.input_message_content.write(client, self.reply_markup)
