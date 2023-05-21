@@ -22,10 +22,9 @@ from functools import partial
 
 from pyrogram import types
 from pyrogram.filters import Filter
-from pyrogram.scaffold import Scaffold
 
 
-class WaitForCallbackQuery(Scaffold):
+class WaitForCallbackQuery:
     async def wait_for_callback_query(
         self,
         chat_id: Union[int, str],

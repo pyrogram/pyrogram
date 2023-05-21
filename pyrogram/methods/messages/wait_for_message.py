@@ -22,10 +22,9 @@ from functools import partial
 
 from pyrogram import types
 from pyrogram.filters import Filter
-from pyrogram.scaffold import Scaffold
 
 
-class WaitForMessage(Scaffold):
+class WaitForMessage:
     async def wait_for_message(
         self,
         chat_id: Union[int, str],
