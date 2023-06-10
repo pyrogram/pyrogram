@@ -1,5 +1,5 @@
 #  Pyrogram - Telegram MTProto API Client Library for Python
-#  Copyright (C) 2017-present Dan <https://github.com/delivrance>
+#  Copyright (C) 2017-2021 Dan <https://github.com/delivrance>
 #
 #  This file is part of Pyrogram.
 #
@@ -17,100 +17,90 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
-from typing import Union, Optional, AsyncGenerator
+from typing import Union, List
 
-import pyrogram
-from pyrogram import raw, types, enums
+from pyrogram import raw
+from pyrogram import types
 
 log = logging.getLogger(__name__)
 
 
-async def get_chunk(
-    client: "pyrogram.Client",
-    chat_id: Union[int, str],
-    offset: int,
-    filter: "enums.ChatMembersFilter",
-    limit: int,
-    query: str,
-):
-    is_queryable = filter in [enums.ChatMembersFilter.SEARCH,
-                              enums.ChatMembersFilter.BANNED,
-                              enums.ChatMembersFilter.RESTRICTED]
-
-    filter = filter.value(q=query) if is_queryable else filter.value()
-
-    r = await client.invoke(
-        raw.functions.channels.GetParticipants(
-            channel=await client.resolve_peer(chat_id),
-            filter=filter,
-            offset=offset,
-            limit=limit,
-            hash=0
-        ),
-        sleep_threshold=60
-    )
-
-    members = r.participants
-    users = {u.id: u for u in r.users}
-    chats = {c.id: c for c in r.chats}
-
-    return [types.ChatMember._parse(client, member, users, chats) for member in members]
+class Filters:
+    ALL = "all"
+    BANNED = "banned"
+    RESTRICTED = "restricted"
+    BOTS = "bots"
+    RECENT = "recent"
+    ADMINISTRATORS = "administrators"
 
 
-class GetChatMembers:
+class GetChatMembers():
     async def get_chat_members(
-        self: "pyrogram.Client",
-        chat_id: Union[int, str],
-        query: str = "",
-        limit: int = 0,
-        filter: "enums.ChatMembersFilter" = enums.ChatMembersFilter.SEARCH
-    ) -> Optional[AsyncGenerator["types.ChatMember", None]]:
-        """Get the members list of a chat.
+            self,
+            chat_id: Union[int, str],
+            offset: int = 0,
+            limit: int = 200,
+            query: str = "",
+            filter: str = Filters.RECENT
+    ) -> List["types.ChatMember"]:
+        """Get a chunk of the members list of a chat.
 
+        You can get up to 200 chat members at once.
         A chat can be either a basic group, a supergroup or a channel.
-        Requires administrator rights in channels.
-
-        .. include:: /_includes/usable-by/users-bots.rst
+        You must be admin to retrieve the members list of a channel (also known as "subscribers").
+        For a more convenient way of getting chat members see :meth:`~pyrogram.Client.iter_chat_members`.
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            query (``str``, *optional*):
-                Query string to filter members based on their display names and usernames.
-                Only applicable to supergroups and channels. Defaults to "" (empty string).
-                A query string is applicable only for :obj:`~pyrogram.enums.ChatMembersFilter.SEARCH`,
-                :obj:`~pyrogram.enums.ChatMembersFilter.BANNED` and :obj:`~pyrogram.enums.ChatMembersFilter.RESTRICTED`
-                filters only.
+            offset (``int``, *optional*):
+                Sequential number of the first member to be returned.
+                Only applicable to supergroups and channels. Defaults to 0 [1]_.
 
             limit (``int``, *optional*):
                 Limits the number of members to be retrieved.
+                Only applicable to supergroups and channels.
+                Defaults to 200, which is also the maximum server limit allowed per method call.
 
-            filter (:obj:`~pyrogram.enums.ChatMembersFilter`, *optional*):
+            query (``str``, *optional*):
+                Query string to filter members based on their display names and usernames.
+                Only applicable to supergroups and channels. Defaults to "" (empty string) [2]_.
+
+            filter (``str``, *optional*):
                 Filter used to select the kind of members you want to retrieve. Only applicable for supergroups
-                and channels.
+                and channels. It can be any of the followings:
+                *"all"* - all kind of members,
+                *"banned"* - banned members only,
+                *"restricted"* - restricted members only,
+                *"bots"* - bots only,
+                *"recent"* - recent members only,
+                *"administrators"* - chat administrators only.
+                Only applicable to supergroups and channels.
+                Defaults to *"recent"*.
+
+        .. [1] Server limit: on supergroups, you can get up to 10,000 members for a single query and up to 200 members
+            on channels.
+
+        .. [2] A query string is applicable only for *"all"*, *"banned"* and *"restricted"* filters only.
 
         Returns:
-            ``Generator``: On success, a generator yielding :obj:`~pyrogram.types.ChatMember` objects is returned.
+            List of :obj:`~pyrogram.types.ChatMember`: On success, a list of chat members is returned.
+
+        Raises:
+            ValueError: In case you used an invalid filter or a chat id that belongs to a user.
 
         Example:
             .. code-block:: python
 
-                from pyrogram import enums
+                # Get first 200 recent members
+                app.get_chat_members("pyrogramchat")
 
-                # Get members
-                async for member in app.get_chat_members(chat_id):
-                    print(member)
+                # Get all administrators
+                app.get_chat_members("pyrogramchat", filter="administrators")
 
-                # Get administrators
-                administrators = []
-                async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.ADMINISTRATORS):
-                    administrators.append(m)
-
-                # Get bots
-                bots = []
-                async for m in app.get_chat_members(chat_id, filter=enums.ChatMembersFilter.BOTS):
-                    bots.append(m)
+                # Get all bots
+                app.get_chat_members("pyrogramchat", filter="bots")
         """
         peer = await self.resolve_peer(chat_id)
 
@@ -124,35 +114,40 @@ class GetChatMembers:
             members = getattr(r.full_chat.participants, "participants", [])
             users = {i.id: i for i in r.users}
 
-            for member in members:
-                yield types.ChatMember._parse(self, member, users, {})
+            return types.List(types.ChatMember._parse(self, member, users, {}) for member in members)
+        elif isinstance(peer, raw.types.InputPeerChannel):
+            filter = filter.lower()
 
-            return
+            if filter == Filters.ALL:
+                filter = raw.types.ChannelParticipantsSearch(q=query)
+            elif filter == Filters.BANNED:
+                filter = raw.types.ChannelParticipantsKicked(q=query)
+            elif filter == Filters.RESTRICTED:
+                filter = raw.types.ChannelParticipantsBanned(q=query)
+            elif filter == Filters.BOTS:
+                filter = raw.types.ChannelParticipantsBots()
+            elif filter == Filters.RECENT:
+                filter = raw.types.ChannelParticipantsRecent()
+            elif filter == Filters.ADMINISTRATORS:
+                filter = raw.types.ChannelParticipantsAdmins()
+            else:
+                raise ValueError(f'Invalid filter "{filter}"')
 
-        current = 0
-        offset = 0
-        total = abs(limit) or (1 << 31) - 1
-        limit = min(200, total)
-
-        while True:
-            members = await get_chunk(
-                client=self,
-                chat_id=chat_id,
-                offset=offset,
-                filter=filter,
-                limit=limit,
-                query=query
+            r = await self.invoke(
+                raw.functions.channels.GetParticipants(
+                    channel=peer,
+                    filter=filter,
+                    offset=offset,
+                    limit=limit,
+                    hash=0
+                ),
+                sleep_threshold=60
             )
 
-            if not members:
-                return
+            members = r.participants
+            users = {i.id: i for i in r.users}
+            chats = {i.id: i for i in r.chats}
 
-            offset += len(members)
-
-            for member in members:
-                yield member
-
-                current += 1
-
-                if current >= total:
-                    return
+            return types.List(types.ChatMember._parse(self, member, users, chats) for member in members)
+        else:
+            raise ValueError(f'The chat_id "{chat_id}" belongs to a user')
