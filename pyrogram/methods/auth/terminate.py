@@ -41,7 +41,7 @@ class Terminate:
 
         if self.takeout_id:
             await self.invoke(raw.functions.account.FinishTakeoutSession())
-            log.warning(f"Takeout session {self.takeout_id} finished")
+            log.info("Takeout session %s finished", self.takeout_id)
 
         await self.storage.save()
         await self.dispatcher.stop()
@@ -50,5 +50,12 @@ class Terminate:
             await media_session.stop()
 
         self.media_sessions.clear()
+
+        self.updates_watchdog_event.set()
+
+        if self.updates_watchdog_task is not None:
+            await self.updates_watchdog_task
+
+        self.updates_watchdog_event.clear()
 
         self.is_initialized = False

@@ -79,34 +79,34 @@ class Auth:
             self.connection = Connection(self.dc_id, self.test_mode, self.ipv6, self.proxy)
 
             try:
-                log.info(f"Start creating a new auth key on DC{self.dc_id}")
+                log.info("Start creating a new auth key on DC%s", self.dc_id)
 
                 await self.connection.connect()
 
                 # Step 1; Step 2
                 nonce = int.from_bytes(urandom(16), "little", signed=True)
-                log.debug(f"Send req_pq: {nonce}")
+                log.debug("Send req_pq: %s", nonce)
                 res_pq = await self.invoke(raw.functions.ReqPqMulti(nonce=nonce))
-                log.debug(f"Got ResPq: {res_pq.server_nonce}")
-                log.debug(f"Server public key fingerprints: {res_pq.server_public_key_fingerprints}")
+                log.debug("Got ResPq: %s", res_pq.server_nonce)
+                log.debug("Server public key fingerprints: %s", res_pq.server_public_key_fingerprints)
 
                 for i in res_pq.server_public_key_fingerprints:
                     if i in rsa.server_public_keys:
-                        log.debug(f"Using fingerprint: {i}")
+                        log.debug("Using fingerprint: %s", i)
                         public_key_fingerprint = i
                         break
                     else:
-                        log.debug(f"Fingerprint unknown: {i}")
+                        log.debug("Fingerprint unknown: %s", i)
                 else:
                     raise Exception("Public key not found")
 
                 # Step 3
                 pq = int.from_bytes(res_pq.pq, "big")
-                log.debug(f"Start PQ factorization: {pq}")
+                log.debug("Start PQ factorization: %s", pq)
                 start = time.time()
                 g = prime.decompose(pq)
                 p, q = sorted((g, pq // g))  # p < q
-                log.debug(f"Done PQ factorization ({round(time.time() - start, 3)}s): {p} {q}")
+                log.debug("Done PQ factorization (%ss): %s %s", round(time.time() - start, 3), p, q)
 
                 # Step 4
                 server_nonce = res_pq.server_nonce
@@ -168,7 +168,7 @@ class Auth:
                 dh_prime = int.from_bytes(server_dh_inner_data.dh_prime, "big")
                 delta_time = server_dh_inner_data.server_time - time.time()
 
-                log.debug(f"Delta time: {round(delta_time, 3)}")
+                log.debug("Delta time: %s", round(delta_time, 3))
 
                 # Step 6
                 g = server_dh_inner_data.g
@@ -211,43 +211,63 @@ class Auth:
                 # Security checks
                 #######################
 
-                SecurityCheckMismatch.check(dh_prime == prime.CURRENT_DH_PRIME)
+                SecurityCheckMismatch.check(dh_prime == prime.CURRENT_DH_PRIME, "dh_prime == prime.CURRENT_DH_PRIME")
                 log.debug("DH parameters check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#g-a-and-g-b-validation
                 g_b = int.from_bytes(g_b, "big")
-                SecurityCheckMismatch.check(1 < g < dh_prime - 1)
-                SecurityCheckMismatch.check(1 < g_a < dh_prime - 1)
-                SecurityCheckMismatch.check(1 < g_b < dh_prime - 1)
-                SecurityCheckMismatch.check(2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64))
-                SecurityCheckMismatch.check(2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64))
+                SecurityCheckMismatch.check(1 < g < dh_prime - 1, "1 < g < dh_prime - 1")
+                SecurityCheckMismatch.check(1 < g_a < dh_prime - 1, "1 < g_a < dh_prime - 1")
+                SecurityCheckMismatch.check(1 < g_b < dh_prime - 1, "1 < g_b < dh_prime - 1")
+                SecurityCheckMismatch.check(
+                    2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64),
+                    "2 ** (2048 - 64) < g_a < dh_prime - 2 ** (2048 - 64)"
+                )
+                SecurityCheckMismatch.check(
+                    2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64),
+                    "2 ** (2048 - 64) < g_b < dh_prime - 2 ** (2048 - 64)"
+                )
                 log.debug("g_a and g_b validation: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#checking-sha1-hash-values
                 answer = server_dh_inner_data.write()  # Call .write() to remove padding
-                SecurityCheckMismatch.check(answer_with_hash[:20] == sha1(answer).digest())
+                SecurityCheckMismatch.check(
+                    answer_with_hash[:20] == sha1(answer).digest(),
+                    "answer_with_hash[:20] == sha1(answer).digest()"
+                )
                 log.debug("SHA1 hash values check: OK")
 
                 # https://core.telegram.org/mtproto/security_guidelines#checking-nonce-server-nonce-and-new-nonce-fields
                 # 1st message
-                SecurityCheckMismatch.check(nonce == res_pq.nonce)
+                SecurityCheckMismatch.check(nonce == res_pq.nonce, "nonce == res_pq.nonce")
                 # 2nd message
                 server_nonce = int.from_bytes(server_nonce, "little", signed=True)
-                SecurityCheckMismatch.check(nonce == server_dh_params.nonce)
-                SecurityCheckMismatch.check(server_nonce == server_dh_params.server_nonce)
+                SecurityCheckMismatch.check(nonce == server_dh_params.nonce, "nonce == server_dh_params.nonce")
+                SecurityCheckMismatch.check(
+                    server_nonce == server_dh_params.server_nonce,
+                    "server_nonce == server_dh_params.server_nonce"
+                )
                 # 3rd message
-                SecurityCheckMismatch.check(nonce == set_client_dh_params_answer.nonce)
-                SecurityCheckMismatch.check(server_nonce == set_client_dh_params_answer.server_nonce)
+                SecurityCheckMismatch.check(
+                    nonce == set_client_dh_params_answer.nonce,
+                    "nonce == set_client_dh_params_answer.nonce"
+                )
+                SecurityCheckMismatch.check(
+                    server_nonce == set_client_dh_params_answer.server_nonce,
+                    "server_nonce == set_client_dh_params_answer.server_nonce"
+                )
                 server_nonce = server_nonce.to_bytes(16, "little", signed=True)
                 log.debug("Nonce fields check: OK")
 
                 # Step 9
                 server_salt = aes.xor(new_nonce[:8], server_nonce[:8])
 
-                log.debug(f"Server salt: {int.from_bytes(server_salt, 'little')}")
+                log.debug("Server salt: %s", int.from_bytes(server_salt, "little"))
 
-                log.info(f"Done auth key exchange: {set_client_dh_params_answer.__class__.__name__}")
+                log.info("Done auth key exchange: %s", set_client_dh_params_answer.__class__.__name__)
             except Exception as e:
+                log.info("Retrying due to %s: %s", type(e).__name__, e)
+
                 if retries_left:
                     retries_left -= 1
                 else:
@@ -258,4 +278,4 @@ class Auth:
             else:
                 return auth_key
             finally:
-                self.connection.close()
+                await self.connection.close()

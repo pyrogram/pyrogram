@@ -28,6 +28,7 @@ BOT_INLINE_DISABLED	The inline feature of the bot is disabled
 BOT_INVALID	This is not a valid bot
 BOT_METHOD_INVALID	The method can't be used by bots
 BOT_MISSING	This method can only be run by a bot
+BOT_ONESIDE_NOT_AVAIL	Bots can't pin messages for one side only in private chats
 BOT_PAYMENTS_DISABLED	This method can only be run by a bot
 BOT_POLLS_DISABLED	Sending polls by bots has been disabled
 BOT_RESPONSE_TIMEOUT	The bot did not answer to the callback query in time
@@ -38,6 +39,7 @@ BROADCAST_REQUIRED	The request can only be used with a channel
 BUTTON_DATA_INVALID	The button callback data is invalid or too large
 BUTTON_TYPE_INVALID	The type of one of the buttons you provided is invalid
 BUTTON_URL_INVALID	The button url is invalid
+BUTTON_USER_PRIVACY_RESTRICTED	The privacy settings of the user specified in a keyboard button do not allow creating such button
 CALL_ALREADY_ACCEPTED	The call is already accepted
 CALL_ALREADY_DECLINED	The call is already declined
 CALL_PEER_INVALID	The provided call peer object is invalid
@@ -100,6 +102,7 @@ ENCRYPTION_ALREADY_DECLINED	The secret chat is already declined
 ENCRYPTION_DECLINED	The secret chat was declined
 ENCRYPTION_ID_INVALID	The provided secret chat id is invalid
 ENTITIES_TOO_LONG	The entity provided contains data that is too long, or you passed too many entities to this message
+ENTITY_BOUNDS_INVALID	The message entity bounds are invalid
 ENTITY_MENTION_USER_INVALID	The mentioned entity is not an user
 ERROR_TEXT_EMPTY	The provided error message is empty
 EXPIRE_DATE_INVALID	The expiration date is invalid
@@ -153,6 +156,7 @@ INPUT_USER_DEACTIVATED	The target user has been deleted/deactivated
 INVITE_HASH_EMPTY	The invite hash is empty
 INVITE_HASH_EXPIRED	The chat invite link is no longer valid
 INVITE_HASH_INVALID	The invite link hash is invalid
+INVITE_REQUEST_SENT	The request to join this chat or channel has been successfully sent
 INVITE_REVOKED_MISSING	The action required a chat invite link to be revoked first
 LANG_PACK_INVALID	The provided language pack is invalid
 LASTNAME_INVALID	The last name is invalid
@@ -296,8 +300,8 @@ STICKER_INVALID	The provided sticker is invalid
 STICKER_PNG_DIMENSIONS	The sticker png dimensions are invalid
 STICKER_PNG_NOPNG	Stickers must be png files but the provided image was not a png
 STICKER_TGS_NOTGS	A tgs sticker file was expected, but something else was provided
-STICKER_VIDEO_NOWEBM	A webm video file was expected, but something else was provided
 STICKER_THUMB_PNG_NOPNG	A png sticker thumbnail file was expected, but something else was provided
+STICKER_VIDEO_NOWEBM	A webm video file was expected, but something else was provided
 TAKEOUT_INVALID	The takeout id is invalid
 TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
 TEMP_AUTH_KEY_EMPTY	The temporary auth key provided is empty
@@ -340,6 +344,7 @@ USER_NOT_MUTUAL_CONTACT	The user is not a mutual contact
 USER_NOT_PARTICIPANT	The user is not a member of this chat
 VIDEO_CONTENT_TYPE_INVALID	The video content type is invalid (i.e.: not streamable)
 VIDEO_FILE_INVALID	The video file is invalid
+VOICE_MESSAGES_FORBIDDEN	Voice messages are restricted
 VOLUME_LOC_NOT_FOUND	The volume location can't be found
 WALLPAPER_FILE_INVALID	The provided file cannot be used as a wallpaper
 WALLPAPER_INVALID	The input wallpaper was not valid
@@ -353,4 +358,3 @@ WEBDOCUMENT_URL_INVALID	The web document URL is invalid
 WEBPAGE_CURL_FAILED	Telegram server could not fetch the provided URL
 WEBPAGE_MEDIA_EMPTY	The URL doesn't contain any valid media
 YOU_BLOCKED_USER	You blocked this user
-ENTITY_BOUNDS_INVALID	The message entity bounds are invalid
