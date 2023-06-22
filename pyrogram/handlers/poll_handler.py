@@ -46,5 +46,5 @@ class PollHandler(Handler):
             The received poll.
     """
 
-    def __init__(self, callback: Callable, filters=None):
+    def __init__(self, callback: Callable, filters=None) -> None:
         super().__init__(callback, filters)

@@ -43,5 +43,5 @@ class UserStatusHandler(Handler):
             The user containing the updated status.
     """
 
-    def __init__(self, callback: Callable, filters=None):
+    def __init__(self, callback: Callable, filters=None) -> None:
         super().__init__(callback, filters)

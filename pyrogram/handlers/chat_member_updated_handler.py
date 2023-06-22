@@ -45,5 +45,5 @@ class ChatMemberUpdatedHandler(Handler):
             The received chat member update.
     """
 
-    def __init__(self, callback: Callable, filters=None):
+    def __init__(self, callback: Callable, filters=None) -> None:
         super().__init__(callback, filters)

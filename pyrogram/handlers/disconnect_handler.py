@@ -39,5 +39,5 @@ class DisconnectHandler(Handler):
             is established.
     """
 
-    def __init__(self, callback: Callable):
+    def __init__(self, callback: Callable) -> None:
         super().__init__(callback)
