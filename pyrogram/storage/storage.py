@@ -29,55 +29,55 @@ class Storage:
 
     SESSION_STRING_FORMAT = ">BI?256sQ?"
 
-    def __init__(self, name: str):
+    def __init__(self, name: str) -> None:
         self.name = name
 
-    async def open(self):
+    async def open(self) -> None:
         raise NotImplementedError
 
-    async def save(self):
+    async def save(self) -> None:
         raise NotImplementedError
 
-    async def close(self):
+    async def close(self) -> None:
         raise NotImplementedError
 
-    async def delete(self):
+    async def delete(self) -> None:
         raise NotImplementedError
 
-    async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
+    async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]) -> None:
         raise NotImplementedError
 
-    async def get_peer_by_id(self, peer_id: int):
+    async def get_peer_by_id(self, peer_id: int) -> None:
         raise NotImplementedError
 
-    async def get_peer_by_username(self, username: str):
+    async def get_peer_by_username(self, username: str) -> None:
         raise NotImplementedError
 
-    async def get_peer_by_phone_number(self, phone_number: str):
+    async def get_peer_by_phone_number(self, phone_number: str) -> None:
         raise NotImplementedError
 
-    async def dc_id(self, value: int = object):
+    async def dc_id(self, value: int = object) -> None:
         raise NotImplementedError
 
-    async def api_id(self, value: int = object):
+    async def api_id(self, value: int = object) -> None:
         raise NotImplementedError
 
-    async def test_mode(self, value: bool = object):
+    async def test_mode(self, value: bool = object) -> None:
         raise NotImplementedError
 
-    async def auth_key(self, value: bytes = object):
+    async def auth_key(self, value: bytes = object) -> None:
         raise NotImplementedError
 
-    async def date(self, value: int = object):
+    async def date(self, value: int = object) -> None:
         raise NotImplementedError
 
-    async def user_id(self, value: int = object):
+    async def user_id(self, value: int = object) -> None:
         raise NotImplementedError
 
-    async def is_bot(self, value: bool = object):
+    async def is_bot(self, value: bool = object) -> None:
         raise NotImplementedError
 
-    async def export_session_string(self):
+    async def export_session_string(self) -> str:
         packed = struct.pack(
             self.SESSION_STRING_FORMAT,
             await self.dc_id(),
