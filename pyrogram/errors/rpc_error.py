@@ -38,7 +38,7 @@ class RPCError(Exception):
         rpc_name: str = None,
         is_unknown: bool = False,
         is_signed: bool = False
-    ):
+    ) -> None:
         super().__init__("Telegram says: [{}{} {}] - {} {}".format(
             "-" if is_signed else "",
             self.CODE,
@@ -57,7 +57,7 @@ class RPCError(Exception):
                 f.write(f"{datetime.now()}\t{value}\t{rpc_name}\n")
 
     @staticmethod
-    def raise_it(rpc_error: "raw.types.RpcError", rpc_type: Type[TLObject]):
+    def raise_it(rpc_error: "raw.types.RpcError", rpc_type: Type[TLObject]) -> None:
         error_code = rpc_error.error_code
         is_signed = error_code < 0
         error_message = rpc_error.error_message
