@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Optional
+from typing import Optional, Union
 
 import pyrogram
 from pyrogram import enums
@@ -30,7 +30,7 @@ class Parser:
         self.html = HTML(client)
         self.markdown = Markdown(client)
 
-    async def parse(self, text: str, mode: Optional[enums.ParseMode] = None):
+    async def parse(self, text: str, mode: Optional[enums.ParseMode] = None) -> Union[str, dict]:
         text = str(text if text else "").strip()
 
         if mode is None:
@@ -54,8 +54,7 @@ class Parser:
         raise ValueError(f'Invalid parse mode "{mode}"')
 
     @staticmethod
-    def unparse(text: str, entities: list, is_html: bool):
+    def unparse(text: str, entities: list, is_html: bool) -> str:
         if is_html:
             return HTML.unparse(text, entities)
-        else:
-            return Markdown.unparse(text, entities)
+        return Markdown.unparse(text, entities)

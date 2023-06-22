@@ -20,7 +20,7 @@ import html
 import logging
 import re
 from html.parser import HTMLParser
-from typing import Optional
+from typing import Optional, Union
 
 import pyrogram
 from pyrogram import raw
@@ -34,7 +34,7 @@ log = logging.getLogger(__name__)
 class Parser(HTMLParser):
     MENTION_RE = re.compile(r"tg://user\?id=(\d+)")
 
-    def __init__(self, client: "pyrogram.Client"):
+    def __init__(self, client: "pyrogram.Client") -> None:
         super().__init__()
 
         self.client = client
@@ -43,7 +43,7 @@ class Parser(HTMLParser):
         self.entities = []
         self.tag_entities = {}
 
-    def handle_starttag(self, tag, attrs):
+    def handle_starttag(self, tag: str, attrs: list) -> None:
         attrs = dict(attrs)
         extra = {}
 
@@ -87,7 +87,7 @@ class Parser(HTMLParser):
 
         self.tag_entities[tag].append(entity(offset=len(self.text), length=0, **extra))
 
-    def handle_data(self, data):
+    def handle_data(self, data: str) -> None:
         data = html.unescape(data)
 
         for entities in self.tag_entities.values():
@@ -96,7 +96,7 @@ class Parser(HTMLParser):
 
         self.text += data
 
-    def handle_endtag(self, tag):
+    def handle_endtag(self, tag: str) -> None:
         try:
             self.entities.append(self.tag_entities[tag].pop())
         except (KeyError, IndexError):
@@ -113,10 +113,10 @@ class Parser(HTMLParser):
 
 
 class HTML:
-    def __init__(self, client: Optional["pyrogram.Client"]):
+    def __init__(self, client: Optional["pyrogram.Client"]) -> None:
         self.client = client
 
-    async def parse(self, text: str):
+    async def parse(self, text: str) -> dict:
         # Strip whitespaces from the beginning and the end, but preserve closing tags
         text = re.sub(r"^\s*(<[\w<>=\s\"]*>)\s*", r"\1", text)
         text = re.sub(r"\s*(</[\w</>]*>)\s*$", r"\1", text)
@@ -154,8 +154,8 @@ class HTML:
         }
 
     @staticmethod
-    def unparse(text: str, entities: list):
-        def parse_one(entity):
+    def unparse(text: str, entities: list) -> str:
+        def parse_one(entity) -> Union[tuple, None]:
             """
             Parses a single entity and returns (start_tag, start), (end_tag, end)
             """

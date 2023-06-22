@@ -56,10 +56,10 @@ FIXED_WIDTH_DELIMS = [CODE_DELIM, PRE_DELIM]
 
 
 class Markdown:
-    def __init__(self, client: Optional["pyrogram.Client"]):
+    def __init__(self, client: Optional["pyrogram.Client"]) -> None:
         self.html = HTML(client)
 
-    async def parse(self, text: str, strict: bool = False):
+    async def parse(self, text: str, strict: bool = False) -> dict:
         if strict:
             text = html.escape(text)
 
@@ -116,7 +116,7 @@ class Markdown:
         return await self.html.parse(text)
 
     @staticmethod
-    def unparse(text: str, entities: list):
+    def unparse(text: str, entities: list) -> str:
         text = utils.add_surrogates(text)
 
         entities_offsets = []
