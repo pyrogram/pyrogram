@@ -44,6 +44,9 @@ class Run:
             coroutine (``Coroutine``, *optional*):
                 Pass a coroutine to run it until it completes.
 
+        Returns:
+            Result of the coroutine, if provided.
+
         Raises:
             ConnectionError: In case you try to run an already started client.
 
@@ -74,7 +77,7 @@ class Run:
         run = loop.run_until_complete
 
         if coroutine is not None:
-            run(coroutine)
+            return run(coroutine)
         else:
             if inspect.iscoroutinefunction(self.start):
                 run(self.start())
