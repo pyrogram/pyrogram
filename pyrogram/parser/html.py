@@ -131,7 +131,7 @@ class HTML:
             for tag, entities in parser.tag_entities.items():
                 unclosed_tags.append(f"<{tag}> (x{len(entities)})")
 
-            log.warning("Unclosed tags: %s", ", ".join(unclosed_tags))
+            log.info("Unclosed tags: %s", ", ".join(unclosed_tags))
 
         entities = []
 

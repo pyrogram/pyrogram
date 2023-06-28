@@ -16,18 +16,13 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import bisect
 from hashlib import sha256
 from io import BytesIO
 from os import urandom
-from typing import List
 
 from pyrogram.errors import SecurityCheckMismatch
 from pyrogram.raw.core import Message, Long
 from . import aes
-from ..session.internals import MsgId
-
-STORED_MSG_IDS_MAX_SIZE = 1000 * 2
 
 
 def kdf(auth_key: bytes, msg_key: bytes, outgoing: bool) -> tuple:
@@ -59,8 +54,7 @@ def unpack(
     b: BytesIO,
     session_id: bytes,
     auth_key: bytes,
-    auth_key_id: bytes,
-    stored_msg_ids: List[int]
+    auth_key_id: bytes
 ) -> Message:
     SecurityCheckMismatch.check(b.read(8) == auth_key_id, "b.read(8) == auth_key_id")
 
@@ -102,27 +96,5 @@ def unpack(
 
     # https://core.telegram.org/mtproto/security_guidelines#checking-msg-id
     SecurityCheckMismatch.check(message.msg_id % 2 != 0, "message.msg_id % 2 != 0")
-
-    if len(stored_msg_ids) > STORED_MSG_IDS_MAX_SIZE:
-        del stored_msg_ids[:STORED_MSG_IDS_MAX_SIZE // 2]
-
-    if stored_msg_ids:
-        if message.msg_id < stored_msg_ids[0]:
-            raise SecurityCheckMismatch("The msg_id is lower than all the stored values")
-
-        if message.msg_id in stored_msg_ids:
-            raise SecurityCheckMismatch("The msg_id is equal to any of the stored values")
-
-        time_diff = (message.msg_id - MsgId()) / 2 ** 32
-
-        if time_diff > 30:
-            raise SecurityCheckMismatch("The msg_id belongs to over 30 seconds in the future. "
-                                        "Most likely the client time has to be synchronized.")
-
-        if time_diff < -300:
-            raise SecurityCheckMismatch("The msg_id belongs to over 300 seconds in the past. "
-                                        "Most likely the client time has to be synchronized.")
-
-    bisect.insort(stored_msg_ids, message.msg_id)
 
     return message

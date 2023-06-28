@@ -91,7 +91,7 @@ class TCP:
                 self.writer.close()
                 await asyncio.wait_for(self.writer.wait_closed(), TCP.TIMEOUT)
         except Exception as e:
-            log.warning("Close exception: %s %s", type(e).__name__, e)
+            log.info("Close exception: %s %s", type(e).__name__, e)
 
     async def send(self, data: bytes):
         async with self.lock:
@@ -100,7 +100,7 @@ class TCP:
                     self.writer.write(data)
                     await self.writer.drain()
             except Exception as e:
-                log.warning("Send exception: %s %s", type(e).__name__, e)
+                log.info("Send exception: %s %s", type(e).__name__, e)
                 raise OSError(e)
 
     async def recv(self, length: int = 0):

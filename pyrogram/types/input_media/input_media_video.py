@@ -63,6 +63,9 @@ class InputMediaVideo(InputMedia):
 
         supports_streaming (``bool``, *optional*):
             Pass True, if the uploaded video is suitable for streaming.
+
+        has_spoiler (``bool``, *optional*):
+            Pass True if the photo needs to be covered with a spoiler animation.
     """
 
     def __init__(
@@ -75,7 +78,8 @@ class InputMediaVideo(InputMedia):
         width: int = 0,
         height: int = 0,
         duration: int = 0,
-        supports_streaming: bool = True
+        supports_streaming: bool = True,
+        has_spoiler: bool = None,
     ):
         super().__init__(media, caption, parse_mode, caption_entities)
 
@@ -84,3 +88,4 @@ class InputMediaVideo(InputMedia):
         self.height = height
         self.duration = duration
         self.supports_streaming = supports_streaming
+        self.has_spoiler = has_spoiler
