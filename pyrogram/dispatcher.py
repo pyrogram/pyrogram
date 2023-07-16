@@ -257,3 +257,5 @@ class Dispatcher:
                 pass
             except Exception as e:
                 log.exception(e)
+            finally:
+                self.updates_queue.task_done()
