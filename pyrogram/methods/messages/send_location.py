@@ -87,6 +87,21 @@ class SendLocation:
 
                 app.send_location("me", latitude, longitude)
         """
+
+        reply_to = None
+        if reply_to_message_id or message_thread_id:
+            reply_to_msg_id = None
+            top_msg_id = None
+            if message_thread_id:
+                if not reply_to_message_id:
+                    reply_to_msg_id = message_thread_id
+                else:
+                    reply_to_msg_id = reply_to_message_id
+                    top_msg_id = message_thread_id
+            else:
+                reply_to_msg_id = reply_to_message_id
+            reply_to = raw.types.InputReplyToMessage(reply_to_msg_id=reply_to_msg_id, top_msg_id=top_msg_id)
+
         r = await self.invoke(
             raw.functions.messages.SendMedia(
                 peer=await self.resolve_peer(chat_id),
@@ -98,7 +113,7 @@ class SendLocation:
                 ),
                 message="",
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id or message_thread_id,
+                reply_to=reply_to,
                 random_id=self.rnd_id(),
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
                 noforwards=protect_content,
