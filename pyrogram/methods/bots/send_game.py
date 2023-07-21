@@ -30,6 +30,7 @@ class SendGame:
         game_short_name: str,
         disable_notification: bool = None,
         reply_to_message_id: int = None,
+        message_thread_id: int = None,
         protect_content: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -58,6 +59,9 @@ class SendGame:
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            message_thread_id (``int``, *optional*):
+                If the message is in a thread, ID of the original message.
+
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
 
@@ -84,7 +88,10 @@ class SendGame:
                 ),
                 message="",
                 silent=disable_notification or None,
-                reply_to_msg_id=reply_to_message_id,
+                reply_to=raw.types.InputReplyToMessage(
+                    reply_to_msg_id=reply_to_message_id,
+                    top_msg_id=message_thread_id
+                ),
                 random_id=self.rnd_id(),
                 noforwards=protect_content,
                 reply_markup=await reply_markup.write(self) if reply_markup else None
