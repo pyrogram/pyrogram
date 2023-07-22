@@ -91,7 +91,7 @@ class SendGame:
                 reply_to=raw.types.InputReplyToMessage(
                     reply_to_msg_id=reply_to_message_id,
                     top_msg_id=message_thread_id
-                ),
+                ) if reply_to_message_id else None,
                 random_id=self.rnd_id(),
                 noforwards=protect_content,
                 reply_markup=await reply_markup.write(self) if reply_markup else None
