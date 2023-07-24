@@ -19,8 +19,7 @@
 from typing import Union
 
 import pyrogram
-from pyrogram import raw
-from pyrogram import types
+from pyrogram import raw, utils, types
 
 
 class SendGame:
@@ -77,6 +76,9 @@ class SendGame:
 
                 await app.send_game(chat_id, "gamename")
         """
+
+        reply_to = utils.get_reply_head_fm(message_thread_id, reply_to_message_id)
+
         r = await self.invoke(
             raw.functions.messages.SendMedia(
                 peer=await self.resolve_peer(chat_id),
@@ -88,10 +90,7 @@ class SendGame:
                 ),
                 message="",
                 silent=disable_notification or None,
-                reply_to=raw.types.InputReplyToMessage(
-                    reply_to_msg_id=reply_to_message_id,
-                    top_msg_id=message_thread_id
-                ) if reply_to_message_id else None,
+                reply_to=reply_to,
                 random_id=self.rnd_id(),
                 noforwards=protect_content,
                 reply_markup=await reply_markup.write(self) if reply_markup else None

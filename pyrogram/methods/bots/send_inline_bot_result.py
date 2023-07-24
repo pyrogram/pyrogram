@@ -19,7 +19,7 @@
 from typing import Union
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, utils
 
 
 class SendInlineBotResult:
@@ -67,6 +67,9 @@ class SendInlineBotResult:
 
                 await app.send_inline_bot_result(chat_id, query_id, result_id)
         """
+
+        reply_to = utils.get_reply_head_fm(message_thread_id, reply_to_message_id)
+
         return await self.invoke(
             raw.functions.messages.SendInlineBotResult(
                 peer=await self.resolve_peer(chat_id),
@@ -74,9 +77,6 @@ class SendInlineBotResult:
                 id=result_id,
                 random_id=self.rnd_id(),
                 silent=disable_notification or None,
-                reply_to=raw.types.InputReplyToMessage(
-                    reply_to_msg_id=reply_to_message_id,
-                    top_msg_id=message_thread_id
-                ) if reply_to_message_id else None
+                reply_to=reply_to
             )
         )

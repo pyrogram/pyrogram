@@ -127,15 +127,14 @@ class SendMessage:
 
         message, entities = (await utils.parse_text_entities(self, text, parse_mode, entities)).values()
 
+        reply_to = utils.get_reply_head_fm(message_thread_id, reply_to_message_id)
+
         r = await self.invoke(
             raw.functions.messages.SendMessage(
                 peer=await self.resolve_peer(chat_id),
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
-                reply_to=raw.types.InputReplyToMessage(
-                    reply_to_msg_id=reply_to_message_id,
-                    top_msg_id=message_thread_id
-                ) if reply_to_message_id else None,
+                reply_to=reply_to,
                 random_id=self.rnd_id(),
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
                 reply_markup=await reply_markup.write(self) if reply_markup else None,

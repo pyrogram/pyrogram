@@ -118,15 +118,14 @@ class CopyMediaGroup:
                 )
             )
 
+        reply_to = utils.get_reply_head_fm(message_thread_id, reply_to_message_id)
+
         r = await self.invoke(
             raw.functions.messages.SendMultiMedia(
                 peer=await self.resolve_peer(chat_id),
                 multi_media=multi_media,
                 silent=disable_notification or None,
-                reply_to=raw.types.InputReplyToMessage(
-                    reply_to_msg_id=reply_to_message_id,
-                    top_msg_id=message_thread_id
-                ) if reply_to_message_id else None,
+                reply_to=reply_to,
                 schedule_date=utils.datetime_to_timestamp(schedule_date)
             ),
             sleep_threshold=60

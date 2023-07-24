@@ -105,6 +105,9 @@ class SendVenue:
                     "me", latitude, longitude,
                     "Venue title", "Venue address")
         """
+
+        reply_to = utils.get_reply_head_fm(message_thread_id, reply_to_message_id)
+
         r = await self.invoke(
             raw.functions.messages.SendMedia(
                 peer=await self.resolve_peer(chat_id),
@@ -121,10 +124,7 @@ class SendVenue:
                 ),
                 message="",
                 silent=disable_notification or None,
-                reply_to=raw.types.InputReplyToMessage(
-                    reply_to_msg_id=reply_to_message_id,
-                    top_msg_id=message_thread_id
-                ) if reply_to_message_id else None,
+                reply_to=reply_to,
                 random_id=self.rnd_id(),
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
                 noforwards=protect_content,
