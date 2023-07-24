@@ -824,8 +824,8 @@ class Message(Object, Update):
             )
 
             if message.reply_to:
-                parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
-                parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
+                parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id if isinstance(message.reply_to, raw.types.MessageReplyHeader) else message.reply_to.story_id
+                parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id if isinstance(message.reply_to, raw.types.MessageReplyHeader) else None
 
                 if replies:
                     try:
