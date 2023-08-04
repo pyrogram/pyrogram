@@ -168,6 +168,7 @@ MAX_QTS_INVALID	The provided QTS is invalid
 MD5_CHECKSUM_INVALID	The file's checksum did not match the md5_checksum parameter
 MEDIA_CAPTION_TOO_LONG	The media caption is too long
 MEDIA_EMPTY	The media you tried to send is invalid
+MEDIA_FILE_INVALID The media file is invalid
 MEDIA_INVALID	The media is invalid
 MEDIA_NEW_INVALID	The new media to edit the message with is invalid
 MEDIA_PREV_INVALID	The previous media cannot be edited with anything else
