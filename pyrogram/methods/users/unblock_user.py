@@ -25,7 +25,8 @@ from pyrogram import raw
 class UnblockUser:
     async def unblock_user(
         self: "pyrogram.Client",
-        user_id: Union[int, str]
+        user_id: Union[int, str],
+        my_stories_from: Union[bool, None] = None
     ) -> bool:
         """Unblock a user.
 
@@ -48,7 +49,8 @@ class UnblockUser:
         return bool(
             await self.invoke(
                 raw.functions.contacts.Unblock(
-                    id=await self.resolve_peer(user_id)
+                    id=await self.resolve_peer(user_id),
+                    my_stories_from=my_stories_from
                 )
             )
         )
