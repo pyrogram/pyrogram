@@ -55,7 +55,7 @@ CHANNEL_TOO_LARGE	The channel is too large
 CHAT_ABOUT_NOT_MODIFIED	The chat about text was not modified because you tried to edit it using the same content
 CHAT_ABOUT_TOO_LONG	The chat about text is too long
 CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
-CHAT_DISCUSSION_UNALLOWED   The chat discussion is not allowed
+CHAT_DISCUSSION_UNALLOWED	The chat discussion is not allowed
 CHAT_FORWARDS_RESTRICTED	The chat restricts forwarding content
 CHAT_ID_EMPTY	The provided chat id is empty
 CHAT_ID_INVALID	The chat id being used is invalid or not known yet. Make sure you see the chat before interacting with it
@@ -169,12 +169,12 @@ MAX_QTS_INVALID	The provided QTS is invalid
 MD5_CHECKSUM_INVALID	The file's checksum did not match the md5_checksum parameter
 MEDIA_CAPTION_TOO_LONG	The media caption is too long
 MEDIA_EMPTY	The media you tried to send is invalid
-MEDIA_FILE_INVALID  The media file is invalid
+MEDIA_FILE_INVALID	The media file is invalid
 MEDIA_INVALID	The media is invalid
 MEDIA_NEW_INVALID	The new media to edit the message with is invalid
 MEDIA_PREV_INVALID	The previous media cannot be edited with anything else
-MEDIA_TTL_INVALID   The media ttl is invalid
-MEDIA_VIDEO_STORY_MISSING   The media does not have a photo or a video
+MEDIA_TTL_INVALID	The media ttl is invalid
+MEDIA_VIDEO_STORY_MISSING	The media does not have a photo or a video
 MEGAGROUP_ID_INVALID	The supergroup is invalid
 MEGAGROUP_PREHISTORY_HIDDEN	The action failed because the supergroup has the pre-history hidden
 MEGAGROUP_REQUIRED	The request can only be used with a supergroup
@@ -187,7 +187,7 @@ MESSAGE_POLL_CLOSED	You can't interact with a closed poll
 MESSAGE_TOO_LONG	The message text is too long
 METHOD_INVALID	The API method is invalid and cannot be used
 MSG_ID_INVALID	The message ID used in the peer was invalid
-MSG_VOICE_MISSING   The message does not contain a voice message
+MSG_VOICE_MISSING	The message does not contain a voice message
 MSG_WAIT_FAILED	A waiting call returned an error
 MULTI_MEDIA_TOO_LONG	The album/media group contains too many items
 NEW_SALT_INVALID	The new salt is invalid
@@ -245,7 +245,7 @@ POLL_OPTION_INVALID	A poll option used invalid data (the data may be too long)
 POLL_QUESTION_INVALID	The poll question is invalid
 POLL_UNSUPPORTED	This layer does not support polls in the invoked method
 POLL_VOTE_REQUIRED	Cast a vote in the poll before calling this method
-PREMIUM_ACCOUNT_REQUIRED    The method requires a premium user account
+PREMIUM_ACCOUNT_REQUIRED	The method requires a premium user account
 PRIVACY_KEY_INVALID	The privacy key is invalid
 PRIVACY_TOO_LONG	Your privacy exception list has exceeded the maximum capacity
 PRIVACY_VALUE_INVALID	The privacy value is invalid
@@ -308,7 +308,7 @@ STICKER_PNG_NOPNG	Stickers must be png files but the provided image was not a pn
 STICKER_TGS_NOTGS	A tgs sticker file was expected, but something else was provided
 STICKER_THUMB_PNG_NOPNG	A png sticker thumbnail file was expected, but something else was provided
 STICKER_VIDEO_NOWEBM	A webm video file was expected, but something else was provided
-STORIES_TOO_MUCH    Too many stories in the current account
+STORIES_TOO_MUCH	Too many stories in the current account
 TAKEOUT_INVALID	The takeout id is invalid
 TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
 TEMP_AUTH_KEY_EMPTY	The temporary auth key provided is empty
@@ -319,7 +319,7 @@ THEME_MIME_INVALID	You cannot create this theme because the mime-type is invalid
 TMP_PASSWORD_DISABLED	The temporary password is disabled
 TMP_PASSWORD_INVALID	The temporary password is invalid
 TOKEN_INVALID	The provided token is invalid
-TRANSCRIPTION_FAILED    Telegram is having internal problems. Please try again later to transcribe the audio.
+TRANSCRIPTION_FAILED	Telegram is having internal problems. Please try again later to transcribe the audio.
 TTL_DAYS_INVALID	The provided TTL days is invalid
 TTL_MEDIA_INVALID	The media does not support self-destruction
 TYPES_EMPTY	The types parameter is empty
