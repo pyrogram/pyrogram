@@ -322,6 +322,7 @@ TOKEN_INVALID	The provided token is invalid
 TRANSCRIPTION_FAILED	Telegram is having internal problems. Please try again later to transcribe the audio.
 TTL_DAYS_INVALID	The provided TTL days is invalid
 TTL_MEDIA_INVALID	The media does not support self-destruction
+TTL_PERIOD_INVALID	The provided TTL period is invalid
 TYPES_EMPTY	The types parameter is empty
 TYPE_CONSTRUCTOR_INVALID	The type constructor is invalid
 UNTIL_DATE_INVALID	That date parameter is invalid
