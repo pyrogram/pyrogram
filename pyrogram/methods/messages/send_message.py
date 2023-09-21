@@ -41,7 +41,8 @@ class SendMessage:
             "types.ReplyKeyboardMarkup",
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
-        ] = None
+        ] = None,
+        send_as: Union[int, str] = None
     ) -> "types.Message":
         """Send text messages.
 
@@ -82,6 +83,10 @@ class SendMessage:
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
+
+            send_as (``int`` | ``str``):
+                Unique channel identifier (int) or channel name (str) of the channel owned by the user.
+                For 'TG Premium' users only.
 
         Returns:
             :obj:`~pyrogram.types.Message`: On success, the sent text message is returned.
@@ -134,7 +139,8 @@ class SendMessage:
                 reply_markup=await reply_markup.write(self) if reply_markup else None,
                 message=message,
                 entities=entities,
-                noforwards=protect_content
+                noforwards=protect_content,
+                send_as=await self.resolve_peer(send_as) if send_as else None
             )
         )
 
