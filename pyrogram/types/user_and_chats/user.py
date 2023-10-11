@@ -118,6 +118,9 @@ class User(Object, Update):
         username (``str``, *optional*):
             User's or bot's username.
 
+        usernames (List of :obj:`~pyrogram.types.Username`, *optional*):
+            The list of user's collectible (and basic) usernames if available.
+
         language_code (``str``, *optional*):
             IETF language tag of the user's language.
 
@@ -169,6 +172,7 @@ class User(Object, Update):
         last_online_date: datetime = None,
         next_offline_date: datetime = None,
         username: str = None,
+        usernames: List["types.Username"] = None,
         language_code: str = None,
         emoji_status: Optional["types.EmojiStatus"] = None,
         dc_id: int = None,
@@ -196,6 +200,7 @@ class User(Object, Update):
         self.last_online_date = last_online_date
         self.next_offline_date = next_offline_date
         self.username = username
+        self.usernames = usernames
         self.language_code = language_code
         self.emoji_status = emoji_status
         self.dc_id = dc_id
@@ -233,6 +238,7 @@ class User(Object, Update):
             last_name=user.last_name,
             **User._parse_status(user.status, user.bot),
             username=user.username,
+            usernames=types.List([types.Username._parse(r) for r in user.usernames]) or None,
             language_code=user.lang_code,
             emoji_status=types.EmojiStatus._parse(client, user.emoji_status),
             dc_id=getattr(user.photo, "dc_id", None),
