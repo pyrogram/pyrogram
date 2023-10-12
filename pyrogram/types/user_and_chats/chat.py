@@ -39,6 +39,9 @@ class Chat(Object):
         is_verified (``bool``, *optional*):
             True, if this chat has been verified by Telegram. Supergroups, channels and bots only.
 
+        is_participants_hidden (``bool``, *optional*):
+            True, if the chat members are hidden.
+
         is_restricted (``bool``, *optional*):
             True, if this chat has been restricted. Supergroups, channels and bots only.
             See *restriction_reason* for details.
@@ -144,6 +147,7 @@ class Chat(Object):
         id: int,
         type: "enums.ChatType",
         is_verified: bool = None,
+        is_participants_hidden: bool = None,
         is_restricted: bool = None,
         is_creator: bool = None,
         is_scam: bool = None,
@@ -176,6 +180,7 @@ class Chat(Object):
         self.id = id
         self.type = type
         self.is_verified = is_verified
+        self.is_participants_hidden = is_participants_hidden
         self.is_restricted = is_restricted
         self.is_creator = is_creator
         self.is_scam = is_scam
@@ -333,6 +338,7 @@ class Chat(Object):
                 # TODO: Add StickerSet type
                 parsed_chat.can_set_sticker_set = full_chat.can_set_stickers
                 parsed_chat.sticker_set_name = getattr(full_chat.stickerset, "short_name", None)
+                parsed_chat.is_participants_hidden = full_chat.participants_hidden
 
                 linked_chat_raw = chats.get(full_chat.linked_chat_id, None)
 
