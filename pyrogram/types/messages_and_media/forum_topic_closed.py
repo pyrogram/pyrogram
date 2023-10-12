@@ -16,10 +16,14 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .input_message_content import InputMessageContent
-from .input_reply_to_message import InputReplyToMessage
-from .input_text_message_content import InputTextMessageContent
+from ..object import Object
 
-__all__ = [
-    "InputMessageContent", "InputReplyToMessage", "InputTextMessageContent"
-]
+
+class ForumTopicClosed(Object):
+    """A service message about a forum topic closed in the chat.
+
+    Currently holds no information.
+    """
+
+    def __init__(self):
+        super().__init__()

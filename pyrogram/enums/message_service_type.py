@@ -39,6 +39,24 @@ class MessageServiceType(AutoName):
     DELETE_CHAT_PHOTO = auto()
     "Deleted chat photo"
 
+    FORUM_TOPIC_CREATED = auto()
+    "a new forum topic created in the chat"
+
+    FORUM_TOPIC_CLOSED = auto()
+    "a new forum topic closed in the chat"
+
+    FORUM_TOPIC_REOPENED = auto()
+    "a new forum topic reopened in the chat"
+
+    FORUM_TOPIC_EDITED = auto()
+    "a new forum topic renamed in the chat"
+
+    GENERAL_TOPIC_HIDDEN = auto()
+    "a forum general topic hidden in the chat"
+
+    GENERAL_TOPIC_UNHIDDEN = auto()
+    "a forum general topic unhidden in the chat"
+
     GROUP_CHAT_CREATED = auto()
     "Group chat created"
 

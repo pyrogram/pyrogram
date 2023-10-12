@@ -42,6 +42,7 @@ class SendPoll:
         is_closed: bool = None,
         disable_notification: bool = None,
         protect_content: bool = None,
+        message_thread_id: int = None,
         reply_to_message_id: int = None,
         schedule_date: datetime = None,
         reply_markup: Union[
@@ -114,6 +115,10 @@ class SendPoll:
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
 
+            message_thread_id (``int``, *optional*):
+                Unique identifier for the target message thread (topic) of the forum.
+                for forum supergroups only.
+
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
@@ -132,7 +137,6 @@ class SendPoll:
 
                 await app.send_poll(chat_id, "Is this a poll question?", ["Yes", "No", "Maybe"])
         """
-
         solution, solution_entities = (await utils.parse_text_entities(
             self, explanation, explanation_parse_mode, explanation_entities
         )).values()
@@ -161,7 +165,7 @@ class SendPoll:
                 ),
                 message="",
                 silent=disable_notification,
-                reply_to_msg_id=reply_to_message_id,
+                reply_to=utils.get_reply_to(reply_to_message_id, message_thread_id),
                 random_id=self.rnd_id(),
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
                 noforwards=protect_content,

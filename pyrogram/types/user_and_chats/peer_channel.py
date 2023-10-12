@@ -16,10 +16,29 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .input_message_content import InputMessageContent
-from .input_reply_to_message import InputReplyToMessage
-from .input_text_message_content import InputTextMessageContent
+from pyrogram import raw
+from ..object import Object
 
-__all__ = [
-    "InputMessageContent", "InputReplyToMessage", "InputTextMessageContent"
-]
+
+class PeerChannel(Object):
+    """A PeerChannel.
+
+
+    Parameters:
+        channel_id (``int``):
+            Id of the channel.
+    """
+
+    def __init__(
+        self, *,
+        channel_id: int
+    ):
+        super().__init__()
+
+        self.channel_id = channel_id
+
+    @staticmethod
+    def _parse(action: "raw.types.PeerChannel") -> "PeerChannel":
+        return PeerChannel(
+            channel_id=getattr(action, "channel_id", None)
+        )

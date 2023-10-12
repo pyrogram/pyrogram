@@ -36,6 +36,9 @@ class Chat(Object):
         type (:obj:`~pyrogram.enums.ChatType`):
             Type of chat.
 
+        is_forum (``bool``, *optional*):
+            True, if the supergroup chat is a forum
+
         is_verified (``bool``, *optional*):
             True, if this chat has been verified by Telegram. Supergroups, channels and bots only.
 
@@ -146,6 +149,7 @@ class Chat(Object):
         client: "pyrogram.Client" = None,
         id: int,
         type: "enums.ChatType",
+        is_forum: bool = None,
         is_verified: bool = None,
         is_participants_hidden: bool = None,
         is_restricted: bool = None,
@@ -179,6 +183,7 @@ class Chat(Object):
 
         self.id = id
         self.type = type
+        self.is_forum = is_forum
         self.is_verified = is_verified
         self.is_participants_hidden = is_participants_hidden
         self.is_restricted = is_restricted
@@ -258,6 +263,7 @@ class Chat(Object):
         return Chat(
             id=peer_id,
             type=enums.ChatType.SUPERGROUP if getattr(channel, "megagroup", None) else enums.ChatType.CHANNEL,
+            is_forum=getattr(channel, "forum", None),
             is_verified=getattr(channel, "verified", None),
             is_restricted=getattr(channel, "restricted", None),
             is_creator=getattr(channel, "creator", None),
