@@ -68,7 +68,8 @@ class StoryViews(Object):
             has_viewers=getattr(storyviews, "has_viewers", None),
             forwards_count=getattr(storyviews, "forwards_count", None),
             reactions=[
-                types.Reaction._parse_count(client, reaction) for reaction in storyviews.reactions
+                types.Reaction._parse_count(client, reaction)
+                for reaction in getattr(storyviews, "reactions", [])
             ] or None,
-            recent_viewers=getattr(storyviews, "recent_viewers", None)
+            recent_viewers=getattr(storyviews, "recent_viewers", None),
         )
