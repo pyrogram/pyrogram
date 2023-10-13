@@ -217,7 +217,7 @@ class Story(Object, Update):
             selected_contacts=stories.selected_contacts,
             caption=stories.caption,
             caption_entities=entities or None,
-            views=types.StoryViews._parse(stories.views),
+            views=types.StoryViews._parse(client, stories.views),
             client=client
         )
 
