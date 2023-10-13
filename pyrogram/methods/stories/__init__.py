@@ -22,12 +22,13 @@ from .edit_story import EditStory
 from .export_story_link import ExportStoryLink
 from .get_all_stories import GetAllStories
 from .get_peer_stories import GetPeerStories
-from .get_stories_archive import GetStoriesArchive
 from .get_stories import GetStories
+from .get_stories_archive import GetStoriesArchive
+from .hide_stories import HideStories
 from .increment_story_views import IncrementStoryViews
+from .pin_stories import PinStories
 from .read_stories import ReadStories
 from .send_story import SendStory
-from .toggle_stories_pinned import ToggleStoriesPinned
 
 class Stories(
     ApplyBoost,
@@ -38,9 +39,10 @@ class Stories(
     GetPeerStories,
     GetStories,
     GetStoriesArchive,
+    HideStories,
     IncrementStoryViews,
+    PinStories,
     ReadStories,
     SendStory,
-    ToggleStoriesPinned
 ):
     pass
