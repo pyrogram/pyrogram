@@ -20,10 +20,11 @@ from typing import List, Union, Iterable
 
 import pyrogram
 from pyrogram import raw
+from pyrogram import types
 
 
-class ToggleStoriesPinned:
-    async def toggle_stories_pinned(
+class PinStories:
+    async def pin_stories(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         stories_ids: Union[int, Iterable[int]],
@@ -51,7 +52,7 @@ class ToggleStoriesPinned:
             .. code-block:: python
 
                 # Pin a single story
-                await app.toggle_stories_pinned(chat_id, 123456789, True)
+                await app.pin_stories(chat_id, 123456789, True)
 
         """
         is_iterable = not isinstance(stories_ids, int)
