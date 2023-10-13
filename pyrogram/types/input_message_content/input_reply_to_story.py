@@ -16,32 +16,33 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .advanced import Advanced
-from .auth import Auth
-from .bots import Bots
-from .chats import Chats
-from .contacts import Contacts
-from .decorators import Decorators
-from .invite_links import InviteLinks
-from .messages import Messages
-from .password import Password
-from .users import Users
-from .stories import Stories
-from .utilities import Utilities
+from pyrogram import raw
+from ..object import Object
 
 
-class Methods(
-    Advanced,
-    Auth,
-    Bots,
-    Contacts,
-    Password,
-    Chats,
-    Users,
-    Stories,
-    Messages,
-    Decorators,
-    Utilities,
-    InviteLinks,
-):
-    pass
+class InputReplyToStory(Object):
+    """Contains information about a target replied story.
+
+    Parameters:
+        user_id (:obj:`~pyrogram.raw.types.InputUser`):
+            An InputUser.
+            
+        story_id (``int``):
+            Unique identifier for the target story.
+    """
+
+    def __init__(
+        self, *,
+        user_id: "raw.types.InputUser" = None,
+        story_id: int = None
+    ):
+        super().__init__()
+
+        self.user_id = user_id
+        self.story_id = story_id
+
+    def write(self):
+        return raw.types.InputReplyToStory(
+            user_id=self.user_id,
+            story_id=self.story_id
+        ).write()

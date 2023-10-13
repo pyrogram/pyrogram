@@ -27,4 +27,5 @@ from .inline_query_handler import InlineQueryHandler
 from .message_handler import MessageHandler
 from .poll_handler import PollHandler
 from .raw_update_handler import RawUpdateHandler
+from .story_handler import StoryHandler
 from .user_status_handler import UserStatusHandler

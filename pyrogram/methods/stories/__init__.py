@@ -16,32 +16,31 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .advanced import Advanced
-from .auth import Auth
-from .bots import Bots
-from .chats import Chats
-from .contacts import Contacts
-from .decorators import Decorators
-from .invite_links import InviteLinks
-from .messages import Messages
-from .password import Password
-from .users import Users
-from .stories import Stories
-from .utilities import Utilities
+from .apply_boost import ApplyBoost
+from .delete_stories import DeleteStories
+from .edit_story import EditStory
+from .export_story_link import ExportStoryLink
+from .get_all_stories import GetAllStories
+from .get_peer_stories import GetPeerStories
+from .get_stories_archive import GetStoriesArchive
+from .get_stories import GetStories
+from .increment_story_views import IncrementStoryViews
+from .read_stories import ReadStories
+from .send_story import SendStory
+from .toggle_stories_pinned import ToggleStoriesPinned
 
-
-class Methods(
-    Advanced,
-    Auth,
-    Bots,
-    Contacts,
-    Password,
-    Chats,
-    Users,
-    Stories,
-    Messages,
-    Decorators,
-    Utilities,
-    InviteLinks,
+class Stories(
+    ApplyBoost,
+    DeleteStories,
+    EditStory,
+    ExportStoryLink,
+    GetAllStories,
+    GetPeerStories,
+    GetStories,
+    GetStoriesArchive,
+    IncrementStoryViews,
+    ReadStories,
+    SendStory,
+    ToggleStoriesPinned
 ):
     pass

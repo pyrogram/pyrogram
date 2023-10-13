@@ -16,32 +16,24 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .advanced import Advanced
-from .auth import Auth
-from .bots import Bots
-from .chats import Chats
-from .contacts import Contacts
-from .decorators import Decorators
-from .invite_links import InviteLinks
-from .messages import Messages
-from .password import Password
-from .users import Users
-from .stories import Stories
-from .utilities import Utilities
+from enum import auto
+from .auto_name import AutoName
 
 
-class Methods(
-    Advanced,
-    Auth,
-    Bots,
-    Contacts,
-    Password,
-    Chats,
-    Users,
-    Stories,
-    Messages,
-    Decorators,
-    Utilities,
-    InviteLinks,
-):
-    pass
+class StoriesPrivacyRules(AutoName):
+    """Stories privacy rules type enumeration used in :obj:`~pyrogram.method.SendStory`."""
+
+    PUBLIC = auto()
+    "Public stories"
+
+    CLOSE_FRIENDS = auto()
+    "Close friends stories"
+
+    CONTACTS = auto()
+    "Contacts only stories"
+
+    PRIVATE = auto()
+    "Private stories"
+
+    NO_CONTACTS = auto()
+    "Hide stories from contacts"

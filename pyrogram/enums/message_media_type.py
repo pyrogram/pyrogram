@@ -68,3 +68,6 @@ class MessageMediaType(AutoName):
 
     GAME = auto()
     "Game media"
+
+    STORY = auto()
+    "Story media"

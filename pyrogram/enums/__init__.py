@@ -29,21 +29,25 @@ from .next_code_type import NextCodeType
 from .parse_mode import ParseMode
 from .poll_type import PollType
 from .sent_code_type import SentCodeType
+from .stories_privacy import StoriesPrivacy
+from .stories_privacy_rules import StoriesPrivacyRules
 from .user_status import UserStatus
 
 __all__ = [
-    'ChatAction', 
-    'ChatEventAction', 
-    'ChatMemberStatus', 
-    'ChatMembersFilter', 
-    'ChatType', 
-    'MessageEntityType', 
-    'MessageMediaType', 
-    'MessageServiceType', 
-    'MessagesFilter', 
-    'NextCodeType', 
-    'ParseMode', 
-    'PollType', 
-    'SentCodeType', 
+    'ChatAction',
+    'ChatEventAction',
+    'ChatMemberStatus',
+    'ChatMembersFilter',
+    'ChatType',
+    'MessageEntityType',
+    'MessageMediaType',
+    'MessageServiceType',
+    'MessagesFilter',
+    'NextCodeType',
+    'ParseMode',
+    'PollType',
+    'SentCodeType',
+    'StoriesPrivacy',
+    'StoriesPrivacyRules',
     'UserStatus'
 ]
