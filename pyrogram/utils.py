@@ -105,7 +105,13 @@ async def parse_messages(
         messages_with_replies = {
             i.id: i.reply_to.reply_to_msg_id
             for i in messages.messages
-            if not isinstance(i, raw.types.MessageEmpty) and i.reply_to
+            if not isinstance(i, raw.types.MessageEmpty) and i.reply_to and isinstance(i.reply_to, raw.types.MessageReplyHeader)
+        }
+
+        message_reply_to_story = {
+            i.id: {'user_id': i.reply_to.user_id, 'story_id': i.reply_to.story_id}
+            for i in messages.messages
+            if not isinstance(i, raw.types.MessageEmpty) and i.reply_to and isinstance(i.reply_to, raw.types.MessageReplyStoryHeader)
         }
 
         if messages_with_replies:
@@ -131,6 +137,25 @@ async def parse_messages(
                     if reply.id == reply_id:
                         if not reply.forum_topic_created:
                             message.reply_to_message = reply
+
+        if message_reply_to_story:
+            for m in parsed_messages:
+                if m.chat:
+                    chat_id = m.chat.id
+                    break
+            else:
+                chat_id = 0
+
+            reply_messages = {}
+            for msg_id in message_reply_to_story.keys():
+                reply_messages[msg_id] = await client.get_stories(
+                    message_reply_to_story[msg_id]['user_id'],
+                    message_reply_to_story[msg_id]['story_id']
+                )
+
+            for message in parsed_messages:
+                if message.id in reply_messages:
+                    message.reply_to_story = reply_messages[message.id]
 
     return types.List(parsed_messages)
 
