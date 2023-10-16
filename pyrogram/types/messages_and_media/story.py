@@ -107,7 +107,8 @@ class Story(Object, Update):
         *,
         client: "pyrogram.Client" = None,
         id: int,
-        from_user: "types.User",
+        from_user: "types.User" = None,
+        sender_chat: "types.Chat" = None,
         date: datetime = None,
         expire_date: datetime = None,
         media: "enums.MessageMediaType",
@@ -134,6 +135,7 @@ class Story(Object, Update):
 
         self.id = id
         self.from_user = from_user
+        self.sender_chat = sender_chat
         self.date = date
         self.expire_date = expire_date
         self.media = media
@@ -168,40 +170,60 @@ class Story(Object, Update):
             return await types.StoryDeleted._parse(client, stories, peer)
 
         entities = [types.MessageEntity._parse(client, entity, {}) for entity in stories.entities]
-        entities = types.List(filter(lambda x: x is not None, entities))
+        entities = types.List(filter(lambda x: x is not None, entities)) or None
+
         animation = None
         photo = None
         video = None
         from_user = None
         sender_chat = None
+        privacy = None
+        allowed_chats = None
+        allowed_users = None
+        denied_chats = None
+        denied_users = None
+
         if stories.media:
+            media_type = None
             if isinstance(stories.media, raw.types.MessageMediaPhoto):
                 photo = types.Photo._parse(client, stories.media.photo, stories.media.ttl_seconds)
                 media_type = enums.MessageMediaType.PHOTO
-            elif isinstance(stories.media, raw.types.MessageMediaDocument):
-                doc = stories.media.document
-
-                if isinstance(doc, raw.types.Document):
-                    attributes = {type(i): i for i in doc.attributes}
-
-                    if raw.types.DocumentAttributeAnimated in attributes:
-                        video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
-                        animation = types.Animation._parse(client, doc, video_attributes, None)
-                        media_type = enums.MessageMediaType.ANIMATION
-                    elif raw.types.DocumentAttributeVideo in attributes:
-                        video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
-                        video = types.Video._parse(client, doc, video_attributes, None, stories.media.ttl_seconds)
-                        media_type = enums.MessageMediaType.VIDEO
-                    else:
-                        media_type = None
             else:
-                media_type = None
+                doc = stories.media.document
+                video = types.Video._parse(client, doc, doc.attributes, None)
+                media_type = enums.MessageMediaType.VIDEO
 
-        from_user = await client.get_users(peer.user_id) if isinstance(peer, raw.types.PeerUser) else await client.get_chat(peer.channel_id)
+        # if isinstance(peer, raw.types.PeerChannel):
+        #     print(peer)
+        #     sender_chat = await client.get_chat(peer.channel_id)
+        # elif isinstance(peer, raw.types.InputPeerSelf):
+        #     from_user = client.me
+        # else:
+        #     from_user = await client.get_users(peer.user_id)
+        sender_chat = getattr(peer, "channel_id", None)
+        from_user = getattr(peer, "user_id", None)
+
+        for priv in stories.privacy:
+            if isinstance(priv, raw.types.PrivacyValueAllowAll):
+                privacy = enums.StoriesPrivacyRules.PUBLIC
+            elif isinstance(priv, raw.types.PrivacyValueAllowCloseFriends):
+                privacy = enums.StoriesPrivacyRules.CLOSE_FRIENDS
+            elif isinstance(priv, raw.types.PrivacyValueAllowContacts):
+                privacy = enums.StoriesPrivacyRules.CONTACTS
+            elif isinstance(priv, raw.types.PrivacyValueDisallowAll):
+                privacy = enums.StoriesPrivacyRules.PRIVATE
+            elif isinstance(priv, raw.types.PrivacyValueDisallowContacts):
+                privacy = enums.StoriesPrivacyRules.NO_CONTACTS
+
+            if isinstance(priv, raw.types.PrivacyValueAllowUsers):
+                allowed_users = priv.users
+            if isinstance(priv, raw.types.PrivacyValueDisallowUsers):
+                denied_users = priv.users
 
         return Story(
             id=stories.id,
             from_user=from_user,
+            sender_chat=sender_chat,
             date=utils.timestamp_to_datetime(stories.date),
             expire_date=utils.timestamp_to_datetime(stories.expire_date),
             media=media_type,
@@ -216,8 +238,13 @@ class Story(Object, Update):
             contacts=stories.contacts,
             selected_contacts=stories.selected_contacts,
             caption=stories.caption,
-            caption_entities=entities or None,
+            caption_entities=entities,
             views=types.StoryViews._parse(client, stories.views),
+            privacy=privacy,
+            allowed_chats=allowed_chats,
+            denied_chats=denied_chats,
+            allowed_users=allowed_users,
+            denied_users=denied_users,
             client=client
         )
 
@@ -1270,7 +1297,7 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return await self._client.delete_stories(chat_id=self.from_user.id ,story_ids=self.id)
+        return await self._client.delete_stories(chat_id=self.from_user.id, story_ids=self.id)
 
     async def edit(
         self,
@@ -1480,7 +1507,7 @@ class Story(Object, Update):
         .. code-block:: python
 
             await client.export_story_link(
-                user_id=story.from_user.id,
+                chat_id=story.from_user.id,
                 story_id=story.id
             )
 
@@ -1495,4 +1522,4 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return await self._client.export_story_link(user_id=self.from_user.id, story_id=self.id)
+        return await self._client.export_story_link(chat_id=self.from_user.id, story_id=self.id)

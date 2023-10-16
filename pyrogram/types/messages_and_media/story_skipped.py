@@ -47,14 +47,13 @@ class StorySkipped(Object, Update):
            True, if the Story is shared with close_friends only.
     """
 
-    # TODO: Add Privacy
-
     def __init__(
         self,
         *,
         client: "pyrogram.Client" = None,
         id: int,
-        from_user: Union["types.User", "types.Chat"] = None,
+        from_user: "types.User" = None,
+        sender_chat: "types.Chat" = None,
         date: datetime,
         expire_date: datetime,
         close_friends: bool = None
@@ -63,6 +62,7 @@ class StorySkipped(Object, Update):
 
         self.id = id
         self.from_user = from_user
+        self.sender_chat = sender_chat
         self.date = date
         self.expire_date = expire_date
         self.close_friends = close_friends
@@ -72,11 +72,19 @@ class StorySkipped(Object, Update):
         stories: raw.base.StoryItem,
         peer: Union["raw.types.PeerChannel", "raw.types.PeerUser"]
     ) -> "StorySkipped":
-        from_user = await client.get_users(peer.user_id) if isinstance(peer, raw.types.PeerUser) else await client.get_chat(peer.channel_id)
+        from_user = None
+        sender_chat = None
+        if isinstance(peer, raw.types.PeerChannel):
+            sender_chat = await client.get_chat(peer.channel_id)
+        elif isinstance(peer, raw.types.InputPeerSelf):
+            from_user = client.me
+        else:
+            from_user = await client.get_users(peer.user_id)
 
         return StorySkipped(
             id=stories.id,
             from_user=from_user,
+            sender_chat=sender_chat,
             date=utils.timestamp_to_datetime(stories.date),
             expire_date=utils.timestamp_to_datetime(stories.expire_date),
             close_friends=stories.close_friends,
