@@ -66,7 +66,7 @@ class Dispatcher:
 
         async def message_parser(update, users, chats):
             return (
-                await pyrogram.types.Message._parse(self.client, update.message, users, chats,
+                await pyrogram.types.Message._parse(self.client, update.message, users, chats, None,
                                                     isinstance(update, UpdateNewScheduledMessage)),
                 MessageHandler
             )
@@ -128,9 +128,9 @@ class Dispatcher:
                 ChatJoinRequestHandler
             )
 
-        async def story_parser(update, _, __):
+        async def story_parser(update, users, chats):
             return (
-                await pyrogram.types.Story._parse(self.client, update.story, update.peer),
+                await pyrogram.types.Story._parse(self.client, update.story, users, chats, update.peer),
                 StoryHandler
             )
 

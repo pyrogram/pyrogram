@@ -20,6 +20,7 @@ import pyrogram
 
 from datetime import datetime
 from pyrogram import enums, raw, types, utils
+from pyrogram.errors import PeerIdInvalid
 from typing import BinaryIO, Callable, List, Optional, Union
 from ..object import Object
 from ..update import Update
@@ -47,9 +48,6 @@ class Story(Object, Update):
 
         has_protected_content (``bool``, *optional*):
             True, if the story can't be forwarded.
-
-        animation (:obj:`~pyrogram.types.Animation`, *optional*):
-            Story is an animation, information about the animation.
 
         photo (:obj:`~pyrogram.types.Photo`, *optional*):
             Story is a photo, information about the photo.
@@ -113,7 +111,6 @@ class Story(Object, Update):
         expire_date: datetime = None,
         media: "enums.MessageMediaType",
         has_protected_content: bool = None,
-        animation: "types.Animation" = None,
         photo: "types.Photo" = None,
         video: "types.Video" = None,
         edited: bool = None,
@@ -140,7 +137,6 @@ class Story(Object, Update):
         self.expire_date = expire_date
         self.media = media
         self.has_protected_content = has_protected_content
-        self.animation = animation
         self.photo = photo
         self.video = video
         self.edited = edited
@@ -162,6 +158,8 @@ class Story(Object, Update):
     async def _parse(
         client: "pyrogram.Client",
         stories: raw.base.StoryItem,
+        users: dict,
+        chats: dict,
         peer: Union["raw.types.PeerChannel", "raw.types.PeerUser"]
     ) -> "Story":
         if isinstance(stories, raw.types.StoryItemSkipped):
@@ -172,7 +170,22 @@ class Story(Object, Update):
         entities = [types.MessageEntity._parse(client, entity, {}) for entity in stories.entities]
         entities = types.List(filter(lambda x: x is not None, entities)) or None
 
-        animation = None
+        peer_id = utils.get_raw_peer_id(peer)
+
+        if isinstance(peer, raw.types.PeerUser) and peer_id not in users:
+            try:
+                r = await client.invoke(
+                    raw.functions.users.GetUsers(
+                        id=[
+                            await client.resolve_peer(peer_id)
+                        ]
+                    )
+                )
+            except PeerIdInvalid:
+                pass
+            else:
+                users.update({i.id: i for i in r})
+
         photo = None
         video = None
         from_user = None
@@ -190,30 +203,25 @@ class Story(Object, Update):
                 media_type = enums.MessageMediaType.PHOTO
             else:
                 doc = stories.media.document
-                video = types.Video._parse(client, doc, doc.attributes, None)
+                attributes = {type(i): i for i in doc.attributes}
+                video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
+                video = types.Video._parse(client, doc, video_attributes, None)
                 media_type = enums.MessageMediaType.VIDEO
 
-        # if isinstance(peer, raw.types.PeerChannel):
-        #     print(peer)
-        #     sender_chat = await client.get_chat(peer.channel_id)
-        # elif isinstance(peer, raw.types.InputPeerSelf):
-        #     from_user = client.me
-        # else:
-        #     from_user = await client.get_users(peer.user_id)
-        sender_chat = getattr(peer, "channel_id", None)
-        from_user = getattr(peer, "user_id", None)
+        from_user = types.User._parse(client, users.get(peer_id, None))
+        sender_chat = types.Chat._parse_channel_chat(client, chats.get(peer_id, None)) if not from_user else None
 
         for priv in stories.privacy:
             if isinstance(priv, raw.types.PrivacyValueAllowAll):
-                privacy = enums.StoriesPrivacyRules.PUBLIC
+                privacy = enums.StoriesPrivacy.PUBLIC
             elif isinstance(priv, raw.types.PrivacyValueAllowCloseFriends):
-                privacy = enums.StoriesPrivacyRules.CLOSE_FRIENDS
+                privacy = enums.StoriesPrivacy.CLOSE_FRIENDS
             elif isinstance(priv, raw.types.PrivacyValueAllowContacts):
-                privacy = enums.StoriesPrivacyRules.CONTACTS
+                privacy = enums.StoriesPrivacy.CONTACTS
             elif isinstance(priv, raw.types.PrivacyValueDisallowAll):
-                privacy = enums.StoriesPrivacyRules.PRIVATE
+                privacy = enums.StoriesPrivacy.PRIVATE
             elif isinstance(priv, raw.types.PrivacyValueDisallowContacts):
-                privacy = enums.StoriesPrivacyRules.NO_CONTACTS
+                privacy = enums.StoriesPrivacy.NO_CONTACTS
 
             if isinstance(priv, raw.types.PrivacyValueAllowUsers):
                 allowed_users = priv.users
@@ -228,7 +236,6 @@ class Story(Object, Update):
             expire_date=utils.timestamp_to_datetime(stories.expire_date),
             media=media_type,
             has_protected_content=stories.noforwards,
-            animation=animation,
             photo=photo,
             video=video,
             edited=stories.edited,
@@ -1331,25 +1338,11 @@ class Story(Object, Update):
             story_id (``int``):
                 Unique identifier (int) of the target story.
 
-            animation (``str`` | ``BinaryIO``, *optional*):
-                New story Animation.
-                Pass a file_id as string to send a animation that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get a animation from the Internet,
-                pass a file path as string to upload a new animation that exists on your local machine, or
-                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
-
-            photo (``str`` | ``BinaryIO``, *optional*):
-                New story photo.
+            media (``str`` | ``BinaryIO``, *optional*):
+                New story media.
                 Pass a file_id as string to send a photo that exists on the Telegram servers,
                 pass an HTTP URL as a string for Telegram to get a photo from the Internet,
                 pass a file path as string to upload a new photo that exists on your local machine, or
-                pass a binary file-like object with its attribute ".name" set for in-memory uploads.
-
-            video (``str`` | ``BinaryIO``, *optional*):
-                New story video.
-                Pass a file_id as string to send a video that exists on the Telegram servers,
-                pass an HTTP URL as a string for Telegram to get a video from the Internet,
-                pass a file path as string to upload a new video that exists on your local machine, or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
             privacy (:obj:`~pyrogram.enums.StoriesPrivacyRules`, *optional*):

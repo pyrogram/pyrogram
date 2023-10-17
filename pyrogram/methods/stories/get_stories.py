@@ -71,6 +71,14 @@ class GetStories:
 
         for i in r.updates:
             if isinstance(i, raw.types.stories.PeerStories):
-                stories = [await types.Story._parse(self, story, peer) for story in r.stories]
+                stories = [
+                    await types.Story._parse(
+                        self,
+                        story,
+                        {i.id: i for i in r.users},
+                        {i.id: i for i in r.chats},
+                        peer
+                    ) for story in r.stories
+                ]
 
         return types.List(stories) if is_iterable else stories[0]
