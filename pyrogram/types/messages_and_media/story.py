@@ -82,7 +82,7 @@ class Story(Object, Update):
         views (:obj:`~pyrogram.types.StoryViews`, *optional*):
             Stories views.
 
-        privacy (:obj:`~pyrogram.enums.StoryPrivacy`, *optional*):
+        privacy (:obj:`~pyrogram.enums.StoryPrivacyRules`, *optional*):
             Story privacy.
 
         allowed_chats (List of ``int``, *optional*):
@@ -213,15 +213,15 @@ class Story(Object, Update):
 
         for priv in stories.privacy:
             if isinstance(priv, raw.types.PrivacyValueAllowAll):
-                privacy = enums.StoriesPrivacy.PUBLIC
+                privacy = enums.StoriesPrivacyRules.PUBLIC
             elif isinstance(priv, raw.types.PrivacyValueAllowCloseFriends):
-                privacy = enums.StoriesPrivacy.CLOSE_FRIENDS
+                privacy = enums.StoriesPrivacyRules.CLOSE_FRIENDS
             elif isinstance(priv, raw.types.PrivacyValueAllowContacts):
-                privacy = enums.StoriesPrivacy.CONTACTS
+                privacy = enums.StoriesPrivacyRules.CONTACTS
             elif isinstance(priv, raw.types.PrivacyValueDisallowAll):
-                privacy = enums.StoriesPrivacy.PRIVATE
+                privacy = enums.StoriesPrivacyRules.PRIVATE
             elif isinstance(priv, raw.types.PrivacyValueDisallowContacts):
-                privacy = enums.StoriesPrivacy.NO_CONTACTS
+                privacy = enums.StoriesPrivacyRules.NO_CONTACTS
 
             if isinstance(priv, raw.types.PrivacyValueAllowUsers):
                 allowed_users = priv.users
@@ -275,7 +275,7 @@ class Story(Object, Update):
         .. code-block:: python
 
             await client.send_message(
-                chat_id=message.chat.id,
+                chat_id=chat_id,
                 text="hello",
                 reply_to_story_id=story.id
             )
@@ -319,9 +319,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
 
         return await self._client.send_message(
-            chat_id=self.from_user.id,
+            chat_id=chat.id,
             text=text,
             parse_mode=parse_mode,
             entities=entities,
@@ -332,8 +333,6 @@ class Story(Object, Update):
             protect_content=protect_content,
             reply_markup=reply_markup
         )
-
-    reply = reply_text
 
     async def reply_animation(
         self,
@@ -451,9 +450,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
 
         return await self._client.send_animation(
-            chat_id=self.from_user.id,
+            chat_id=chat.id,
             animation=animation,
             caption=caption,
             parse_mode=parse_mode,
@@ -583,9 +583,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
 
         return await self._client.send_audio(
-            chat_id=self.from_user.id,
+            chat_id=chat.id,
             audio=audio,
             caption=caption,
             parse_mode=parse_mode,
@@ -662,9 +663,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
 
         return await self._client.send_cached_media(
-            chat_id=self.from_user.id,
+            chat_id=chat.id,
             file_id=file_id,
             caption=caption,
             parse_mode=parse_mode,
@@ -718,8 +720,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.send_media_group(
-            chat_id=self.chat.id,
+            chat_id=chat.id,
             media=media,
             disable_notification=disable_notification,
             reply_to_story_id=self.id
@@ -823,8 +827,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.send_photo(
-            chat_id=self.chat.id,
+            chat_id=chat.id,
             photo=photo,
             caption=caption,
             parse_mode=parse_mode,
@@ -916,8 +922,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.send_sticker(
-            chat_id=self.chat.id,
+            chat_id=chat.id,
             sticker=sticker,
             disable_notification=disable_notification,
             reply_to_story_id=self.id,
@@ -1052,8 +1060,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.send_video(
-            chat_id=self.chat.id,
+            chat_id=chat.id,
             video=video,
             caption=caption,
             parse_mode=parse_mode,
@@ -1163,8 +1173,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.send_video_note(
-            chat_id=self.chat.id,
+            chat_id=chat.id,
             video_note=video_note,
             duration=duration,
             length=length,
@@ -1268,8 +1280,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.send_voice(
-            chat_id=self.chat.id,
+            chat_id=chat.id,
             voice=voice,
             caption=caption,
             parse_mode=parse_mode,
@@ -1304,7 +1318,9 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return await self._client.delete_stories(chat_id=self.from_user.id, story_ids=self.id)
+        chat = self.from_user or self.sender_chat
+
+        return await self._client.delete_stories(chat_id=chat.id, story_ids=self.id)
 
     async def edit(
         self,
@@ -1376,8 +1392,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.edit_story(
-            chat_id=self.from_user.id,
+            chat_id=chat.id,
             story_id=self.id,
             media=media,
             privacy=privacy,
@@ -1429,8 +1447,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.edit_story(
-            chat_id=self.from_user.id,
+            chat_id=chat.id,
             story_id=self.id,
             caption=caption,
             parse_mode=parse_mode,
@@ -1483,7 +1503,10 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
+        chat = self.from_user or self.sender_chat
+
         return await self._client.edit_story(
+            chat_id=chat.id,
             story_id=self.id,
             privacy=privacy,
             allowed_chats=allowed_chats,
@@ -1500,7 +1523,7 @@ class Story(Object, Update):
         .. code-block:: python
 
             await client.export_story_link(
-                chat_id=story.from_user.id,
+                chat_id=chat_id,
                 story_id=story.id
             )
 
@@ -1515,4 +1538,81 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        return await self._client.export_story_link(chat_id=self.from_user.id, story_id=self.id)
+        chat = self.from_user or self.sender_chat
+
+        return await self._client.export_story_link(chat_id=chat.id, story_id=self.id)
+
+    async def download(
+        self,
+        file_name: str = "",
+        in_memory: bool = False,
+        block: bool = True,
+        progress: Callable = None,
+        progress_args: tuple = ()
+    ) -> str:
+        """Bound method *download* of :obj:`~pyrogram.types.Story`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            await client.download_media(story)
+
+        Example:
+            .. code-block:: python
+
+                await story.download()
+
+        Parameters:
+            file_name (``str``, *optional*):
+                A custom *file_name* to be used instead of the one provided by Telegram.
+                By default, all files are downloaded in the *downloads* folder in your working directory.
+                You can also specify a path for downloading files in a custom location: paths that end with "/"
+                are considered directories. All non-existent folders will be created automatically.
+
+            in_memory (``bool``, *optional*):
+                Pass True to download the media in-memory.
+                A binary file-like object with its attribute ".name" set will be returned.
+                Defaults to False.
+
+            block (``bool``, *optional*):
+                Blocks the code execution until the file has been downloaded.
+                Defaults to True.
+
+            progress (``Callable``, *optional*):
+                Pass a callback function to view the file transmission progress.
+                The function must take *(current, total)* as positional arguments (look at Other Parameters below for a
+                detailed description) and will be called back each time a new file chunk has been successfully
+                transmitted.
+
+            progress_args (``tuple``, *optional*):
+                Extra custom arguments for the progress callback function.
+                You can pass anything you need to be available in the progress callback scope; for example, a Message
+                object or a Client instance in order to edit the message with the updated progress status.
+
+        Other Parameters:
+            current (``int``):
+                The amount of bytes transmitted so far.
+
+            total (``int``):
+                The total size of the file.
+
+            *args (``tuple``, *optional*):
+                Extra custom arguments as defined in the ``progress_args`` parameter.
+                You can either keep ``*args`` or add every single extra argument in your function signature.
+
+        Returns:
+            On success, the absolute path of the downloaded file as string is returned, None otherwise.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+            ``ValueError``: If the message doesn't contain any downloadable media
+        """
+        return await self._client.download_media(
+            message=getattr(self, self.media.value),
+            file_name=file_name,
+            in_memory=in_memory,
+            block=block,
+            progress=progress,
+            progress_args=progress_args,
+        )
