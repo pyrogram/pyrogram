@@ -1542,6 +1542,43 @@ class Story(Object, Update):
 
         return await self._client.export_story_link(chat_id=chat.id, story_id=self.id)
 
+    async def react(self, emoji: Union[int, str] = None) -> bool:
+        """Bound method *react* of :obj:`~pyrogram.types.Story`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            await client.send_reaction(
+                chat_id=chat_id,
+                story_id=story.id,
+                emoji="🔥"
+            )
+
+        Example:
+            .. code-block:: python
+
+                await story.react(emoji="🔥")
+
+        Parameters:
+            emoji (``str``, *optional*):
+                Reaction emoji.
+                Pass "" as emoji (default) to retract the reaction.
+
+        Returns:
+            ``bool``: On success, True is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        chat = self.from_user or self.sender_chat
+
+        return await self._client.send_reaction(
+            chat_id=chat.id,
+            story_id=self.id,
+            emoji=emoji
+        )
+
     async def download(
         self,
         file_name: str = "",
