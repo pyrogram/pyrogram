@@ -47,34 +47,46 @@ class GetStoriesArchive:
             offset_id (``int``, *optional*):
                 Identifier of the first story to be returned.
 
-        Returns:
-            ``Generator``: On success, a generator yielding :obj:`~pyrogram.types.Story` objects is returned.
+        Yields:
+            :obj:`~pyrogram.types.Story` objects.
 
         Example:
             .. code-block:: python
 
-                # Get story archive
+                # Get stories archive
                 async for story in app.get_stories_archive(chat_id):
                     print(story)
-
-        Raises:
-            ValueError: In case of invalid arguments.
         """
-        peer = await self.resolve_peer(chat_id)
+        current = 0
+        total = abs(limit) or (1 << 31)
+        limit = min(100, total)
 
-        r = await self.invoke(
-            raw.functions.stories.GetStoriesArchive(
-                peer=peer,
-                offset_id=offset_id,
-                limit=limit
+        while True:
+            peer = await self.resolve_peer(chat_id)
+            r = await self.invoke(
+                raw.functions.stories.GetStoriesArchive(
+                    peer=peer,
+                    offset_id=offset_id,
+                    limit=limit
+                )
             )
-        )
 
-        for story in r.stories:
-            yield await types.Story._parse(
-                self,
-                story,
-                {i.id: i for i in r.users},
-                {i.id: i for i in r.chats},
-                peer
-            )
+            if not r.stories:
+                return
+
+            last = r.stories[-1]
+            offset_id = last.id
+
+            for story in r.stories:
+                yield await types.Story._parse(
+                    self,
+                    story,
+                    {i.id: i for i in r.users},
+                    {i.id: i for i in r.chats},
+                    peer
+                )
+
+                current += 1
+
+                if current >= total:
+                    return

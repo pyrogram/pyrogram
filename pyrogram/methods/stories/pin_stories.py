@@ -28,7 +28,7 @@ class PinStories:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         stories_ids: Union[int, Iterable[int]],
-        pinned: bool,
+        pinned: bool = False,
     ) -> List[int]:
         """Toggle stories pinned.
 

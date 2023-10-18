@@ -26,8 +26,9 @@ class SendReaction:
     async def send_reaction(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        message_id: int,
-        emoji: str = "",
+        message_id: int = None,
+        story_id: int = None,
+        emoji: Union[int, str] = None,
         big: bool = False
     ) -> bool:
         """Send a reaction to a message.
@@ -41,10 +42,13 @@ class SendReaction:
             message_id (``int``):
                 Identifier of the message.
 
-            emoji (``str``, *optional*):
+            story_id (``int``):
+                Identifier of the story.
+
+            emoji (``int`` | ``str``, *optional*):
                 Reaction emoji.
                 Pass "" as emoji (default) to retract the reaction.
-            
+
             big (``bool``, *optional*):
                 Pass True to show a bigger and longer reaction.
                 Defaults to False.
@@ -61,13 +65,25 @@ class SendReaction:
                 # Retract a reaction
                 await app.send_reaction(chat_id, message_id)
         """
-        await self.invoke(
-            raw.functions.messages.SendReaction(
+        if isinstance(emoji, int):
+            emoji = [raw.types.ReactionCustomEmoji(document_id=emoji)]
+        else:
+            emoji = [raw.types.ReactionEmoji(emoticon=emoji)] if emoji else None
+
+        if story_id:
+            rpc = raw.functions.stories.SendReaction(
+                peer=await self.resolve_peer(chat_id),
+                story_id=story_id,
+                reaction=emoji,
+            )
+        else:
+            rpc = raw.functions.messages.SendReaction(
                 peer=await self.resolve_peer(chat_id),
                 msg_id=message_id,
-                reaction=[raw.types.ReactionEmoji(emoticon=emoji)] if emoji else None,
+                reaction=emoji,
                 big=big
             )
-        )
+
+        await self.invoke(rpc)
 
         return True
