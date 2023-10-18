@@ -262,18 +262,13 @@ class SendAnimation:
                                 is_scheduled=isinstance(i, raw.types.UpdateNewScheduledMessage)
                             )
 
-                            if unsave:
-                                document = message.animation or message.document
+                            if unsave and message.animation:
                                 document_id = utils.get_input_media_from_file_id(
-                                    document.file_id, FileType.ANIMATION
+                                    message.animation.file_id,
+                                    FileType.ANIMATION,
                                 ).id
 
-                                await self.invoke(
-                                    raw.functions.messages.SaveGif(
-                                        id=document_id,
-                                        unsave=True
-                                    )
-                                )
+                                await self.invoke(raw.functions.messages.SaveGif(id=document_id, unsave=True))  # type: ignore[arg-type]
 
                             return message
 
