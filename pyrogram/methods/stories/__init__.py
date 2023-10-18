@@ -17,11 +17,13 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from .apply_boost import ApplyBoost
+from .can_send_story import CanSendStory
 from .delete_stories import DeleteStories
 from .edit_story import EditStory
 from .export_story_link import ExportStoryLink
 from .get_all_stories import GetAllStories
 from .get_peer_stories import GetPeerStories
+from .get_pinned_stories import GetPinnedStories
 from .get_stories import GetStories
 from .get_stories_archive import GetStoriesArchive
 from .hide_stories import HideStories
@@ -32,11 +34,13 @@ from .send_story import SendStory
 
 class Stories(
     ApplyBoost,
+    CanSendStory,
     DeleteStories,
     EditStory,
     ExportStoryLink,
     GetAllStories,
     GetPeerStories,
+    GetPinnedStories,
     GetStories,
     GetStoriesArchive,
     HideStories,
