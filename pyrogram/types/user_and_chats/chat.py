@@ -61,6 +61,12 @@ class Chat(Object):
         is_support (``bool``):
             True, if this chat is part of the Telegram support team. Users and bots only.
 
+        is_stories_hidden (``bool``):
+            True, if this chat has hidden stories.
+
+        is_stories_unavailable (``bool``):
+            True, if this chat stories is unavailable.
+
         title (``str``, *optional*):
             Title, for supergroups, channels and basic group chats.
 
@@ -157,6 +163,8 @@ class Chat(Object):
         is_scam: bool = None,
         is_fake: bool = None,
         is_support: bool = None,
+        is_stories_hidden: bool = None,
+        is_stories_unavailable: bool = None,
         title: str = None,
         username: str = None,
         usernames: List["types.Username"] = None,
@@ -191,6 +199,8 @@ class Chat(Object):
         self.is_scam = is_scam
         self.is_fake = is_fake
         self.is_support = is_support
+        self.is_stories_hidden = is_stories_hidden
+        self.is_stories_unavailable = is_stories_unavailable
         self.title = title
         self.username = username
         self.usernames = usernames
@@ -269,6 +279,8 @@ class Chat(Object):
             is_creator=getattr(channel, "creator", None),
             is_scam=getattr(channel, "scam", None),
             is_fake=getattr(channel, "fake", None),
+            is_stories_hidden=getattr(channel, "stories_hidden", None),
+            is_stories_unavailable=getattr(channel, "stories_unavailable", None),
             title=channel.title,
             username=getattr(channel, "username", None),
             usernames=types.List([types.Username._parse(r) for r in usernames]) or None,

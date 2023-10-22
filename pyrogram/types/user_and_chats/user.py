@@ -100,6 +100,15 @@ class User(Object, Update):
         is_premium (``bool``, *optional*):
             True, if this user is a premium user.
 
+        is_close_friend (``bool``):
+            True, if this user is a close friend.
+
+        is_stories_hidden (``bool``):
+            True, if this user has hidden stories.
+
+        is_stories_unavailable (``bool``):
+            True, if this chat stories is unavailable.
+
         first_name (``str``, *optional*):
             User's or bot's first name.
 
@@ -169,6 +178,9 @@ class User(Object, Update):
         is_fake: bool = None,
         is_support: bool = None,
         is_premium: bool = None,
+        is_close_friend: bool = None,
+        is_stories_hidden: bool = None,
+        is_stories_unavailable: bool = None,
         first_name: str = None,
         last_name: str = None,
         status: "enums.UserStatus" = None,
@@ -197,6 +209,9 @@ class User(Object, Update):
         self.is_fake = is_fake
         self.is_support = is_support
         self.is_premium = is_premium
+        self.is_close_friend = is_close_friend
+        self.is_stories_hidden = is_stories_hidden
+        self.is_stories_unavailable = is_stories_unavailable
         self.first_name = first_name
         self.last_name = last_name
         self.status = status
@@ -241,6 +256,9 @@ class User(Object, Update):
             is_fake=user.fake,
             is_support=user.support,
             is_premium=user.premium,
+            is_close_friend=user.close_friend,
+            is_stories_hidden=user.stories_hidden,
+            is_stories_unavailable=user.stories_unavailable,
             first_name=user.first_name,
             last_name=user.last_name,
             **User._parse_status(user.status, user.bot),
