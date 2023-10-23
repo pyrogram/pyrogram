@@ -167,8 +167,7 @@ class Story(Object, Update):
         if isinstance(stories, raw.types.StoryItemDeleted):
             return await types.StoryDeleted._parse(client, stories, users, chats, peer)
 
-        entities = [types.MessageEntity._parse(client, entity, {}) for entity in stories.entities]
-        entities = types.List(filter(lambda x: x is not None, entities)) or None
+        entities = [e for e in (types.MessageEntity._parse(client, entity, {}) for entity in stories.entities) if e]
 
         photo = None
         video = None
@@ -179,26 +178,26 @@ class Story(Object, Update):
         allowed_users = None
         denied_chats = None
         denied_users = None
+        media_type = None
 
-        if stories.media:
-            media_type = None
-            if isinstance(stories.media, raw.types.MessageMediaPhoto):
-                photo = types.Photo._parse(client, stories.media.photo, stories.media.ttl_seconds)
-                media_type = enums.MessageMediaType.PHOTO
-            else:
-                doc = stories.media.document
-                attributes = {type(i): i for i in doc.attributes}
-                video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
-                video = types.Video._parse(client, doc, video_attributes, None)
-                media_type = enums.MessageMediaType.VIDEO
+        if isinstance(stories.media, raw.types.MessageMediaPhoto):
+            photo = types.Photo._parse(client, stories.media.photo, stories.media.ttl_seconds)
+            media_type = enums.MessageMediaType.PHOTO
+        else:
+            doc = stories.media.document
+            attributes = {type(i): i for i in doc.attributes}
+            video_attributes = attributes.get(raw.types.DocumentAttributeVideo, None)
+            video = types.Video._parse(client, doc, video_attributes, None)
+            media_type = enums.MessageMediaType.VIDEO
 
-        peer_id = None
-        if hasattr(peer, "user_id"):
-            peer_id = peer.user_id
-        elif hasattr(peer, "chat_id"):
-            peer_id = peer.chat_id
-        elif hasattr(peer, "channel_id"):
-            peer_id = peer.channel_id
+        if isinstance(peer, raw.types.InputPeerSelf):
+            r = await client.invoke(raw.functions.users.GetUsers(id=[raw.types.InputPeerSelf()]))
+            peer_id = r[0].id
+            users.update({i.id: i for i in r})
+        elif isinstance(peer, (raw.types.InputPeerUser, raw.types.InputPeerChannel)):
+            peer_id = utils.get_input_peer_id(peer)
+        else:
+            peer_id = utils.get_raw_peer_id(peer)
 
         if isinstance(peer, (raw.types.PeerUser, raw.types.InputPeerUser)) and peer_id not in users:
             try:
@@ -213,31 +212,20 @@ class Story(Object, Update):
                 pass
             else:
                 users.update({i.id: i for i in r})
-        if isinstance(peer, raw.types.InputPeerSelf):
-            r = await client.invoke(
-                raw.functions.users.GetUsers(
-                    id=[
-                        raw.types.InputPeerSelf()
-                    ]
-                )
-            )
-            peer_id = r[0].id
-            users.update({i.id: i for i in r})
 
         from_user = types.User._parse(client, users.get(peer_id, None))
         sender_chat = types.Chat._parse_channel_chat(client, chats[peer_id]) if not from_user else None
 
+        privacy_map = {
+            raw.types.PrivacyValueAllowAll: enums.StoriesPrivacyRules.PUBLIC,
+            raw.types.PrivacyValueAllowCloseFriends: enums.StoriesPrivacyRules.CLOSE_FRIENDS,
+            raw.types.PrivacyValueAllowContacts: enums.StoriesPrivacyRules.CONTACTS,
+            raw.types.PrivacyValueDisallowAll: enums.StoriesPrivacyRules.PRIVATE,
+            raw.types.PrivacyValueDisallowContacts: enums.StoriesPrivacyRules.NO_CONTACTS
+        }
+
         for priv in stories.privacy:
-            if isinstance(priv, raw.types.PrivacyValueAllowAll):
-                privacy = enums.StoriesPrivacyRules.PUBLIC
-            elif isinstance(priv, raw.types.PrivacyValueAllowCloseFriends):
-                privacy = enums.StoriesPrivacyRules.CLOSE_FRIENDS
-            elif isinstance(priv, raw.types.PrivacyValueAllowContacts):
-                privacy = enums.StoriesPrivacyRules.CONTACTS
-            elif isinstance(priv, raw.types.PrivacyValueDisallowAll):
-                privacy = enums.StoriesPrivacyRules.PRIVATE
-            elif isinstance(priv, raw.types.PrivacyValueDisallowContacts):
-                privacy = enums.StoriesPrivacyRules.NO_CONTACTS
+            privacy = privacy_map.get(type(priv), None)
 
             if isinstance(priv, raw.types.PrivacyValueAllowUsers):
                 allowed_users = priv.users
@@ -261,8 +249,8 @@ class Story(Object, Update):
             contacts=stories.contacts,
             selected_contacts=stories.selected_contacts,
             caption=stories.caption,
-            caption_entities=entities,
-            views=types.StoryViews._parse(client, stories.views),
+            caption_entities=entities or None,
+            views=types.StoryViews._parse(client, stories.views) if stories.views else None,
             privacy=privacy,
             allowed_chats=allowed_chats,
             denied_chats=denied_chats,

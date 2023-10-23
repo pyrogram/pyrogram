@@ -18,7 +18,7 @@
 
 import pyrogram
 
-from pyrogram import raw, types
+from pyrogram import raw, types, utils
 from pyrogram.errors import PeerIdInvalid
 from typing import Union
 from ..object import Object
@@ -63,13 +63,14 @@ class StoryDeleted(Object, Update):
         from_user = None
         sender_chat = None
 
-        peer_id = None
-        if hasattr(peer, "user_id"):
-            peer_id = peer.user_id
-        elif hasattr(peer, "chat_id"):
-            peer_id = peer.chat_id
-        elif hasattr(peer, "channel_id"):
-            peer_id = peer.channel_id
+        if isinstance(peer, raw.types.InputPeerSelf):
+            r = await client.invoke(raw.functions.users.GetUsers(id=[raw.types.InputPeerSelf()]))
+            peer_id = r[0].id
+            users.update({i.id: i for i in r})
+        elif isinstance(peer, (raw.types.InputPeerUser, raw.types.InputPeerChannel)):
+            peer_id = utils.get_input_peer_id(peer)
+        else:
+            peer_id = utils.get_raw_peer_id(peer)
 
         if isinstance(peer, (raw.types.PeerUser, raw.types.InputPeerUser)) and peer_id not in users:
             try:
@@ -84,16 +85,6 @@ class StoryDeleted(Object, Update):
                 pass
             else:
                 users.update({i.id: i for i in r})
-        if isinstance(peer, raw.types.InputPeerSelf):
-            r = await client.invoke(
-                raw.functions.users.GetUsers(
-                    id=[
-                        raw.types.InputPeerSelf()
-                    ]
-                )
-            )
-            peer_id = r[0].id
-            users.update({i.id: i for i in r})
 
         from_user = types.User._parse(client, users.get(peer_id, None))
         sender_chat = types.Chat._parse_channel_chat(client, chats[peer_id]) if not from_user else None
