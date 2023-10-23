@@ -65,5 +65,5 @@ class GetPeerStories:
                 story,
                 {i.id: i for i in r.users},
                 {i.id: i for i in r.chats},
-                peer
+                r.stories.peer
             )

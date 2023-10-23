@@ -163,28 +163,12 @@ class Story(Object, Update):
         peer: Union["raw.types.PeerChannel", "raw.types.PeerUser"]
     ) -> "Story":
         if isinstance(stories, raw.types.StoryItemSkipped):
-            return await types.StorySkipped._parse(client, stories, peer)
+            return await types.StorySkipped._parse(client, stories, users, chats, peer)
         if isinstance(stories, raw.types.StoryItemDeleted):
-            return await types.StoryDeleted._parse(client, stories, peer)
+            return await types.StoryDeleted._parse(client, stories, users, chats, peer)
 
         entities = [types.MessageEntity._parse(client, entity, {}) for entity in stories.entities]
         entities = types.List(filter(lambda x: x is not None, entities)) or None
-
-        peer_id = utils.get_raw_peer_id(peer)
-
-        if isinstance(peer, raw.types.PeerUser) and peer_id not in users:
-            try:
-                r = await client.invoke(
-                    raw.functions.users.GetUsers(
-                        id=[
-                            await client.resolve_peer(peer_id)
-                        ]
-                    )
-                )
-            except PeerIdInvalid:
-                pass
-            else:
-                users.update({i.id: i for i in r})
 
         photo = None
         video = None
@@ -208,8 +192,40 @@ class Story(Object, Update):
                 video = types.Video._parse(client, doc, video_attributes, None)
                 media_type = enums.MessageMediaType.VIDEO
 
+        peer_id = None
+        if hasattr(peer, "user_id"):
+            peer_id = peer.user_id
+        elif hasattr(peer, "chat_id"):
+            peer_id = peer.chat_id
+        elif hasattr(peer, "channel_id"):
+            peer_id = peer.channel_id
+
+        if isinstance(peer, (raw.types.PeerUser, raw.types.InputPeerUser)) and peer_id not in users:
+            try:
+                r = await client.invoke(
+                    raw.functions.users.GetUsers(
+                        id=[
+                            await client.resolve_peer(peer_id)
+                        ]
+                    )
+                )
+            except PeerIdInvalid:
+                pass
+            else:
+                users.update({i.id: i for i in r})
+        if isinstance(peer, raw.types.InputPeerSelf):
+            r = await client.invoke(
+                raw.functions.users.GetUsers(
+                    id=[
+                        raw.types.InputPeerSelf()
+                    ]
+                )
+            )
+            peer_id = r[0].id
+            users.update({i.id: i for i in r})
+
         from_user = types.User._parse(client, users.get(peer_id, None))
-        sender_chat = types.Chat._parse_channel_chat(client, chats.get(peer_id, None)) if not from_user else None
+        sender_chat = types.Chat._parse_channel_chat(client, chats[peer_id]) if not from_user else None
 
         for priv in stories.privacy:
             if isinstance(priv, raw.types.PrivacyValueAllowAll):
