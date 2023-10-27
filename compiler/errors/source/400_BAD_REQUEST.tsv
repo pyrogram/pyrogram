@@ -49,6 +49,7 @@ CHANNELS_ADMIN_PUBLIC_TOO_MUCH	You are an administrator of too many public chann
 CHANNELS_TOO_MUCH	You have joined too many channels or supergroups, leave some and try again
 CHANNEL_ADD_INVALID	Internal error.
 CHANNEL_BANNED	The channel is banned
+CHANNEL_FORUM_MISSING	The channel forum is missing
 CHANNEL_INVALID	The channel parameter is invalid
 CHANNEL_PRIVATE	The channel/supergroup is not accessible
 CHANNEL_TOO_LARGE	The channel is too large
@@ -325,6 +326,7 @@ TOPIC_NOT_MODIFIED	The topic was not modified
 TRANSCRIPTION_FAILED	Telegram is having internal problems. Please try again later to transcribe the audio.
 TTL_DAYS_INVALID	The provided TTL days is invalid
 TTL_MEDIA_INVALID	The media does not support self-destruction
+TTL_PERIOD_INVALID	The provided TTL period is invalid
 TYPES_EMPTY	The types parameter is empty
 TYPE_CONSTRUCTOR_INVALID	The type constructor is invalid
 UNTIL_DATE_INVALID	That date parameter is invalid
