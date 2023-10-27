@@ -25,6 +25,7 @@ from typing import BinaryIO, Callable, List, Optional, Union
 from ..object import Object
 from ..update import Update
 
+
 class Story(Object, Update):
     """A story.
 
@@ -1534,10 +1535,10 @@ class Story(Object, Update):
         Example:
             .. code-block:: python
 
-                await story.export_link()
+                link = await story.export_link()
 
         Returns:
-            :obj:`~pyrogram.types.ExportedStoryLink`: a single story link is returned.
+            ``str``: On success, a link to the story as string is returned.
 
         Raises:
             RPCError: In case of a Telegram RPC error.
@@ -1565,7 +1566,7 @@ class Story(Object, Update):
                 await story.react(emoji="🔥")
 
         Parameters:
-            emoji (``str``, *optional*):
+            emoji (``int`` | ``str``, *optional*):
                 Reaction emoji.
                 Pass "" as emoji (default) to retract the reaction.
 
