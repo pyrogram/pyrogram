@@ -18,9 +18,11 @@
 
 from .apply_boost import ApplyBoost
 from .can_send_story import CanSendStory
+from .copy_story import CopyStory
 from .delete_stories import DeleteStories
 from .edit_story import EditStory
 from .export_story_link import ExportStoryLink
+from .forward_story import ForwardStory
 from .get_all_stories import GetAllStories
 from .get_peer_stories import GetPeerStories
 from .get_pinned_stories import GetPinnedStories
@@ -35,9 +37,11 @@ from .send_story import SendStory
 class Stories(
     ApplyBoost,
     CanSendStory,
+    CopyStory,
     DeleteStories,
     EditStory,
     ExportStoryLink,
+    ForwardStory,
     GetAllStories,
     GetPeerStories,
     GetPinnedStories,
