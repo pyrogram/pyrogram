@@ -36,6 +36,12 @@ class Story(Object, Update):
         from_user (:obj:`~pyrogram.types.User`, *optional*):
             Sender of the story.
 
+        sender_chat (:obj:`~pyrogram.types.Chat`, *optional*):
+            Sender of the story, sent on behalf of a chat.
+
+        chat (:obj:`~pyrogram.types.Chat`, *optional*):
+            Conversation the story belongs to.
+
         date (:py:obj:`~datetime.datetime`, *optional*):
             Date the story was sent.
 
@@ -86,16 +92,10 @@ class Story(Object, Update):
         privacy (:obj:`~pyrogram.enums.StoryPrivacyRules`, *optional*):
             Story privacy.
 
-        allowed_chats (List of ``int``, *optional*):
-            List of chat_ids which participant allowed to view the story.
+        allowed_users (List of ``int`` | ``str``, *optional*):
+            List of user_ids or chat_ids whos allowed to view the story.
 
-        denied_chats (List of ``int``, *optional*):
-            List of chat_ids which participant denied to view the story.
-
-        allowed_users (List of ``int``, *optional*):
-            List of user_ids whos allowed to view the story.
-
-        denied_users (List of ``int``, *optional*):
+        disallowed_users (List of ``int`` | ``str``, *optional*):
             List of user_ids whos denied to view the story.
     """
 
@@ -108,6 +108,7 @@ class Story(Object, Update):
         id: int,
         from_user: "types.User" = None,
         sender_chat: "types.Chat" = None,
+        chat: "types.Chat" = None,
         date: datetime = None,
         expire_date: datetime = None,
         media: "enums.MessageMediaType",
@@ -124,16 +125,15 @@ class Story(Object, Update):
         caption_entities: List["types.MessageEntity"] = None,
         views: "types.StoryViews" = None,
         privacy: "enums.StoryPrivacy" = None,
-        allowed_users: List[int] = None,
-        denied_users: List[int] = None,
-        allowed_chats: List[int] = None,
-        denied_chats: List[int] = None
+        allowed_users: List[Union[int, str]] = None,
+        disallowed_users: List[Union[int, str]] = None,
     ):
         super().__init__(client)
 
         self.id = id
         self.from_user = from_user
         self.sender_chat = sender_chat
+        self.chat = chat
         self.date = date
         self.expire_date = expire_date
         self.media = media
@@ -151,9 +151,7 @@ class Story(Object, Update):
         self.views = views
         self.privacy = privacy
         self.allowed_users = allowed_users
-        self.denied_users = denied_users
-        self.allowed_chats = allowed_chats
-        self.denied_chats = denied_chats
+        self.disallowed_users = disallowed_users
 
     @staticmethod
     async def _parse(
@@ -174,11 +172,10 @@ class Story(Object, Update):
         video = None
         from_user = None
         sender_chat = None
+        chat = None
         privacy = None
-        allowed_chats = None
         allowed_users = None
-        denied_chats = None
-        denied_users = None
+        disallowed_users = None
         media_type = None
 
         if isinstance(stories.media, raw.types.MessageMediaPhoto):
@@ -216,27 +213,32 @@ class Story(Object, Update):
 
         from_user = types.User._parse(client, users.get(peer_id, None))
         sender_chat = types.Chat._parse_channel_chat(client, chats[peer_id]) if not from_user else None
+        chat = sender_chat if not from_user else types.Chat._parse_user_chat(client, users.get(peer_id, None))
 
         privacy_map = {
             raw.types.PrivacyValueAllowAll: enums.StoriesPrivacyRules.PUBLIC,
-            raw.types.PrivacyValueAllowCloseFriends: enums.StoriesPrivacyRules.CLOSE_FRIENDS,
             raw.types.PrivacyValueAllowContacts: enums.StoriesPrivacyRules.CONTACTS,
-            raw.types.PrivacyValueDisallowAll: enums.StoriesPrivacyRules.PRIVATE,
-            raw.types.PrivacyValueDisallowContacts: enums.StoriesPrivacyRules.NO_CONTACTS
+            raw.types.PrivacyValueAllowCloseFriends: enums.StoriesPrivacyRules.CLOSE_FRIENDS,
+            raw.types.PrivacyValueDisallowAll: enums.StoriesPrivacyRules.SELECTED_USERS,
         }
 
         for priv in stories.privacy:
             privacy = privacy_map.get(type(priv), None)
 
             if isinstance(priv, raw.types.PrivacyValueAllowUsers):
-                allowed_users = priv.users
-            if isinstance(priv, raw.types.PrivacyValueDisallowUsers):
-                denied_users = priv.users
+                allowed_users = types.List(types.User._parse(client, users.get(user_id, None)) for user_id in priv.users)
+            elif isinstance(priv, raw.types.PrivacyValueAllowChatParticipants):
+                allowed_users = types.List(types.Chat._parse_chat_chat(client, chats.get(chat_id, None)) for chat_id in priv.chats)
+            elif isinstance(priv, raw.types.PrivacyValueDisallowUsers):
+                disallowed_users = types.List(types.User._parse(client, users.get(user_id, None)) for user_id in priv.users)
+            elif isinstance(priv, raw.types.PrivacyValueDisallowChatParticipants):
+                disallowed_users = types.List(types.Chat._parse_chat_chat(client, chats.get(chat_id, None)) for chat_id in priv.chats)
 
         return Story(
             id=stories.id,
             from_user=from_user,
             sender_chat=sender_chat,
+            chat=chat,
             date=utils.timestamp_to_datetime(stories.date),
             expire_date=utils.timestamp_to_datetime(stories.expire_date),
             media=media_type,
@@ -253,10 +255,8 @@ class Story(Object, Update):
             caption_entities=entities or None,
             views=types.StoryViews._parse(client, stories.views) if stories.views else None,
             privacy=privacy,
-            allowed_chats=allowed_chats,
-            denied_chats=denied_chats,
             allowed_users=allowed_users,
-            denied_users=denied_users,
+            disallowed_users=disallowed_users,
             client=client
         )
 
@@ -280,7 +280,7 @@ class Story(Object, Update):
         .. code-block:: python
 
             await client.send_message(
-                chat_id=chat_id,
+                chat_id=self.chat.id,
                 text="hello",
                 reply_to_story_id=story.id
             )
@@ -324,10 +324,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_message(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             text=text,
             parse_mode=parse_mode,
             entities=entities,
@@ -455,10 +453,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_animation(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             animation=animation,
             caption=caption,
             parse_mode=parse_mode,
@@ -588,10 +584,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_audio(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             audio=audio,
             caption=caption,
             parse_mode=parse_mode,
@@ -668,10 +662,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_cached_media(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             file_id=file_id,
             caption=caption,
             parse_mode=parse_mode,
@@ -725,10 +717,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_media_group(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             media=media,
             disable_notification=disable_notification,
             reply_to_story_id=self.id
@@ -832,10 +822,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_photo(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             photo=photo,
             caption=caption,
             parse_mode=parse_mode,
@@ -927,10 +915,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_sticker(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             sticker=sticker,
             disable_notification=disable_notification,
             reply_to_story_id=self.id,
@@ -1065,10 +1051,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_video(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             video=video,
             caption=caption,
             parse_mode=parse_mode,
@@ -1178,10 +1162,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_video_note(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             video_note=video_note,
             duration=duration,
             length=length,
@@ -1285,10 +1267,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_voice(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             voice=voice,
             caption=caption,
             parse_mode=parse_mode,
@@ -1299,6 +1279,106 @@ class Story(Object, Update):
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
+        )
+
+    async def copy(
+        self,
+        chat_id: Union[int, str],
+        caption: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        caption_entities: List["types.MessageEntity"] = None,
+        period: int = None,
+        privacy: "enums.StoriesPrivacyRules" = None,
+        allowed_users: List[int] = None,
+        disallowed_users: List[int] = None,
+        protect_content: bool = None
+    ) -> "types.Story":
+        """Bound method *copy* of :obj:`~pyrogram.types.Story`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            await client.copy_story(
+                chat_id=self.chat.id,
+                from_chat_id=from_chat_id,
+                story_id=story.id
+            )
+
+        Example:
+            .. code-block:: python
+
+                await story.copy(chat_id)
+
+        Parameters:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal stories you can simply use "me" or "self".
+
+            caption (``string``, *optional*):
+                New caption for story, 0-1024 characters after entities parsing.
+                If not specified, the original caption is kept.
+                Pass "" (empty string) to remove the caption.
+
+            period (``int``, *optional*):
+                How long the story will posted, in secs.
+                only for premium users.
+
+            privacy (:obj:`~pyrogram.enums.StoriesPrivacyRules`, *optional*):
+                Story privacy.
+                Defaults to :obj:`~pyrogram.enums.StoriesPrivacyRules.PUBLIC`
+
+            allowed_users (List of ``int``, *optional*):
+                List of user_id or chat_id of chat users who are allowed to view stories.
+                Note: chat_id available only with :obj:`~pyrogram.enums.StoriesPrivacyRules.SELECTED_USERS`.
+                Works with :obj:`~pyrogram.enums.StoriesPrivacyRules.CLOSE_FRIENDS`
+                and :obj:`~pyrogram.enums.StoriesPrivacyRules.SELECTED_USERS` only
+
+            disallowed_users (List of ``int``, *optional*):
+                List of user_id whos disallow to view the stories.
+                Note: Works with :obj:`~pyrogram.enums.StoriesPrivacyRules.PUBLIC`
+                and :obj:`~pyrogram.enums.StoriesPrivacyRules.CONTACTS` only
+
+            protect_content (``bool``, *optional*):
+                Protects the contents of the sent story from forwarding and saving.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in the new caption, which can be specified instead of *parse_mode*.
+
+        Returns:
+            :obj:`~pyrogram.types.Story`: On success, the copied story is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        file_id = None
+
+        if self.photo:
+            file_id = self.photo.file_id
+        elif self.video:
+            file_id = self.video.file_id
+        else:
+            raise ValueError("Unknown media type")
+
+        if caption is None:
+            caption = self.caption or ""
+            caption_entities = self.caption_entities
+
+        return await self._client.post_story(
+            chat_id=chat_id,
+            media=file_id,
+            caption=caption,
+            period=period,
+            protect_content=protect_content,
+            parse_mode=parse_mode,
+            caption_entities=caption_entities,
+            privacy=privacy,
+            allowed_users=allowed_users,
+            disallowed_chats=disallowed_users
         )
 
     async def delete(self):
@@ -1323,18 +1403,14 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
-        return await self._client.delete_stories(chat_id=chat.id, story_ids=self.id)
+        return await self._client.delete_stories(chat_id=self.chat.id, story_ids=self.id)
 
     async def edit(
         self,
         media: Union[str, BinaryIO] = None,
         privacy: "enums.StoriesPrivacyRules" = None,
-        allowed_users: List[int] = None,
-        denied_users: List[int] = None,
-        allowed_chats: List[int] = None,
-        denied_chats: List[int] = None,
+        allowed_users: List[Union[int, str]] = None,
+        disallowed_users: List[Union[int, str]] = None,
         caption: str = None,
         parse_mode: "enums.ParseMode" = None,
         caption_entities: List["types.MessageEntity"] = None
@@ -1369,17 +1445,16 @@ class Story(Object, Update):
             privacy (:obj:`~pyrogram.enums.StoriesPrivacyRules`, *optional*):
                 Story privacy.
 
-            allowed_chats (List of ``int``, *optional*):
-                List of chat_id which participant allowed to view the story.
-
-            denied_chats (List of ``int``, *optional*):
-                List of chat_id which participant denied to view the story.
-
             allowed_users (List of ``int``, *optional*):
-                List of user_id whos allowed to view the story.
+                List of user_id or chat_id of chat users who are allowed to view stories.
+                Note: chat_id available only with :obj:`~pyrogram.enums.StoriesPrivacyRules.SELECTED_USERS`.
+                Works with :obj:`~pyrogram.enums.StoriesPrivacyRules.CLOSE_FRIENDS`
+                and :obj:`~pyrogram.enums.StoriesPrivacyRules.SELECTED_USERS` only
 
-            denied_users (List of ``int``, *optional*):
-                List of user_id whos denied to view the story.
+            disallowed_users (List of ``int``, *optional*):
+                List of user_id whos disallow to view the stories.
+                Note: Works with :obj:`~pyrogram.enums.StoriesPrivacyRules.PUBLIC`
+                and :obj:`~pyrogram.enums.StoriesPrivacyRules.CONTACTS` only
 
             caption (``str``, *optional*):
                 Story caption, 0-1024 characters.
@@ -1397,17 +1472,13 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.edit_story(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             story_id=self.id,
             media=media,
             privacy=privacy,
-            allowed_chats=allowed_chats,
-            denied_chats=denied_chats,
             allowed_users=allowed_users,
-            denied_users=denied_users,
+            disallowed_users=disallowed_users,
             caption=caption,
             parse_mode=parse_mode,
             caption_entities=caption_entities
@@ -1452,10 +1523,8 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.edit_story(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             story_id=self.id,
             caption=caption,
             parse_mode=parse_mode,
@@ -1465,10 +1534,8 @@ class Story(Object, Update):
     async def edit_privacy(
         self,
         privacy: "enums.StoriesPrivacyRules" = None,
-        allowed_users: List[int] = None,
-        denied_users: List[int] = None,
-        allowed_chats: List[int] = None,
-        denied_chats: List[int] = None
+        allowed_users: List[Union[int, str]] = None,
+        disallowed_users: List[Union[int, str]] = None,
     ) -> "types.Story":
         """Bound method *edit_privacy* of :obj:`~pyrogram.types.Story`.
 
@@ -1490,17 +1557,16 @@ class Story(Object, Update):
             privacy (:obj:`~pyrogram.enums.StoriesPrivacyRules`, *optional*):
                 Story privacy.
 
-            allowed_chats (List of ``int``, *optional*):
-                List of chat_id which participant allowed to view the story.
-
-            denied_chats (List of ``int``, *optional*):
-                List of chat_id which participant denied to view the story.
-
             allowed_users (List of ``int``, *optional*):
-                List of user_id whos allowed to view the story.
+                List of user_id or chat_id of chat users who are allowed to view stories.
+                Note: chat_id available only with :obj:`~pyrogram.enums.StoriesPrivacyRules.SELECTED_USERS`.
+                Works with :obj:`~pyrogram.enums.StoriesPrivacyRules.CLOSE_FRIENDS`
+                and :obj:`~pyrogram.enums.StoriesPrivacyRules.SELECTED_USERS` only
 
-            denied_users (List of ``int``, *optional*):
-                List of user_id whos denied to view the story.
+            disallowed_users (List of ``int``, *optional*):
+                List of user_id whos disallow to view the stories.
+                Note: Works with :obj:`~pyrogram.enums.StoriesPrivacyRules.PUBLIC`
+                and :obj:`~pyrogram.enums.StoriesPrivacyRules.CONTACTS` only
 
         Returns:
             On success, the edited :obj:`~pyrogram.types.Story` is returned.
@@ -1508,16 +1574,12 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.edit_story(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             story_id=self.id,
             privacy=privacy,
-            allowed_chats=allowed_chats,
-            denied_chats=denied_chats,
             allowed_users=allowed_users,
-            denied_users=denied_users
+            disallowed_users=disallowed_users,
         )
 
     async def export_link(self) -> "types.ExportedStoryLink":
@@ -1528,7 +1590,7 @@ class Story(Object, Update):
         .. code-block:: python
 
             await client.export_story_link(
-                chat_id=chat_id,
+                chat_id=self.chat.id,
                 story_id=story.id
             )
 
@@ -1543,9 +1605,7 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
-        return await self._client.export_story_link(chat_id=chat.id, story_id=self.id)
+        return await self._client.export_story_link(chat_id=self.chat.id, story_id=self.id)
 
     async def react(self, emoji: Union[int, str] = None) -> bool:
         """Bound method *react* of :obj:`~pyrogram.types.Story`.
@@ -1555,7 +1615,7 @@ class Story(Object, Update):
         .. code-block:: python
 
             await client.send_reaction(
-                chat_id=chat_id,
+                chat_id=self.chat.id,
                 story_id=story.id,
                 emoji="🔥"
             )
@@ -1576,12 +1636,65 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        chat = self.from_user or self.sender_chat
-
         return await self._client.send_reaction(
-            chat_id=chat.id,
+            chat_id=self.chat.id,
             story_id=self.id,
             emoji=emoji
+        )
+
+    async def forward(
+        self,
+        chat_id: Union[int, str],
+        message_thread_id: int = None,
+        disable_notification: bool = None,
+        schedule_date: datetime = None
+    ) -> Union["types.Message", List["types.Message"]]:
+        """Bound method *forward* of :obj:`~pyrogram.types.Story`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            await client.forward_story(
+                chat_id=chat_id,
+                from_chat_id=message.chat.id,
+                story_id=story.id
+            )
+
+        Example:
+            .. code-block:: python
+
+                await story.forward(chat_id)
+
+        Parameters:
+            chat_id (``int`` | ``str``):
+                Unique identifier (int) or username (str) of the target chat.
+                For your personal cloud (Saved Messages) you can simply use "me" or "self".
+                For a contact that exists in your Telegram address book you can use his phone number (str).
+
+            message_thread_id (``int``, *optional*):
+                Unique identifier of a message thread to which the message belongs; for supergroups only
+
+            disable_notification (``bool``, *optional*):
+                Sends the message silently.
+                Users will receive a notification with no sound.
+
+            schedule_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the message will be automatically sent.
+
+        Returns:
+            On success, the forwarded Message is returned.
+
+        Raises:
+            RPCError: In case of a Telegram RPC error.
+        """
+        return await self._client.forward_story(
+            chat_id=chat_id,
+            from_chat_id=self.chat.id,
+            story_id=self.id,
+            message_thread_id=message_thread_id,
+            disable_notification=disable_notification,
+            schedule_date=schedule_date
         )
 
     async def download(
