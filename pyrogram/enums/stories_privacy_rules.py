@@ -26,14 +26,11 @@ class StoriesPrivacyRules(AutoName):
     PUBLIC = auto()
     "Public stories"
 
-    CLOSE_FRIENDS = auto()
-    "Close friends stories"
-
     CONTACTS = auto()
     "Contacts only stories"
 
-    PRIVATE = auto()
-    "Private stories"
+    CLOSE_FRIENDS = auto()
+    "Close friends stories"
 
-    NO_CONTACTS = auto()
-    "Hide stories from contacts"
+    SELECTED_USERS = auto()
+    "Selected users stories"

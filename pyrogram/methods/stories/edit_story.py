@@ -38,10 +38,8 @@ class EditStory:
         supports_streaming: bool = True,
         file_name: str = None,
         privacy: "enums.StoriesPrivacyRules" = None,
-        allowed_users: List[int] = None,
-        denied_users: List[int] = None,
-        allowed_chats: List[int] = None,
-        denied_chats: List[int] = None,
+        allowed_users: List[Union[int, str]] = None,
+        disallowed_users: List[Union[int, str]] = None,
         parse_mode: "enums.ParseMode" = None,
         caption_entities: List["types.MessageEntity"] = None,
         progress: Callable = None,
@@ -88,17 +86,16 @@ class EditStory:
                 Story privacy.
                 Defaults to :obj:`~pyrogram.enums.StoriesPrivacyRules.PUBLIC`
 
-            allowed_chats (List of ``int``, *optional*):
-                List of chat_id which participant allowed to view the story.
-
-            denied_chats (List of ``int``, *optional*):
-                List of chat_id which participant denied to view the story.
-
             allowed_users (List of ``int``, *optional*):
-                List of user_id whos allowed to view the story.
+                List of user_id or chat_id of chat users who are allowed to view stories.
+                Note: chat_id available only with :obj:`~pyrogram.enums.StoriesPrivacyRules.SELECTED_USERS`.
+                Works with :obj:`~pyrogram.enums.StoriesPrivacyRules.CLOSE_FRIENDS`
+                and :obj:`~pyrogram.enums.StoriesPrivacyRules.SELECTED_USERS` only
 
-            denied_users (List of ``int``, *optional*):
-                List of user_id whos denied to view the story.
+            disallowed_users (List of ``int``, *optional*):
+                List of user_id whos disallow to view the stories.
+                Note: Works with :obj:`~pyrogram.enums.StoriesPrivacyRules.PUBLIC`
+                and :obj:`~pyrogram.enums.StoriesPrivacyRules.CONTACTS` only
 
             parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
                 By default, texts are parsed using both Markdown and HTML styles.
@@ -126,7 +123,7 @@ class EditStory:
 
                 # Send new photo story
                 photo_id = "abcd12345"
-                await app.send_story(photo=photo_id, caption='Hello guys.')
+                await app.edit_story(meida=photo_id, caption='Hello guys.')
 
         Raises:
             ValueError: In case of invalid arguments.
@@ -198,18 +195,41 @@ class EditStory:
                         file=file,
                     )
 
-            if allowed_chats:
-                chats = [await self.resolve_peer(chat_id) for chat_id in allowed_chats]
-                privacy_rules.append(raw.types.InputPrivacyValueAllowChatParticipants(chats=chats))
-            if denied_chats:
-                chats = [await self.resolve_peer(chat_id) for chat_id in denied_chats]
-                privacy_rules.append(raw.types.InputPrivacyValueDisallowChatParticipants(chats=chats))
-            if allowed_users:
-                users = [await self.resolve_peer(user_id) for user_id in allowed_users]
-                privacy_rules.append(raw.types.InputPrivacyValueAllowUsers(users=users))
-            if denied_users:
-                users = [await self.resolve_peer(user_id) for user_id in denied_users]
-                privacy_rules.append(raw.types.InputPrivacyValueDisallowUsers(users=users))
+            privacy_rules = []
+
+            if privacy:
+                if privacy == enums.StoriesPrivacyRules.PUBLIC:
+                    privacy_rules.append(raw.types.InputPrivacyValueAllowAll())
+                    if disallowed_users:
+                        users = [await self.resolve_peer(user_id) for user_id in disallowed_users]
+                        privacy_rules.append(raw.types.InputPrivacyValueDisallowUsers(users=users))
+                elif privacy == enums.StoriesPrivacyRules.CONTACTS:
+                    privacy_rules = [raw.types.InputPrivacyValueAllowContacts()]
+                    if disallowed_users:
+                        users = [await self.resolve_peer(user_id) for user_id in disallowed_users]
+                        privacy_rules.append(raw.types.InputPrivacyValueDisallowUsers(users=users))
+                elif privacy == enums.StoriesPrivacyRules.CLOSE_FRIENDS:
+                    privacy_rules = [raw.types.InputPrivacyValueAllowCloseFriends()]
+                    if allowed_users:
+                        users = [await self.resolve_peer(user_id) for user_id in allowed_users]
+                        privacy_rules.append(raw.types.InputPrivacyValueAllowUsers(users=users))
+                elif privacy == enums.StoriesPrivacyRules.SELECTED_USERS:
+                    _allowed_users = []
+                    _allowed_chats = []
+
+                    for user in allowed_users:
+                        peer = await self.resolve_peer(user)
+                        if isinstance(peer, raw.types.InputPeerUser):
+                            _allowed_users.append(peer)
+                        elif isinstance(peer, raw.types.InputPeerChat):
+                            _allowed_chats.append(peer)
+
+                    if _allowed_users:
+                        privacy_rules.append(raw.types.InputPrivacyValueAllowUsers(users=_allowed_users))
+                    if _allowed_chats:
+                        privacy_rules.append(raw.types.InputPrivacyValueAllowChatParticipants(chats=_allowed_chats))
+            else:
+                privacy_rules.append(raw.types.InputPrivacyValueAllowAll())
 
             while True:
                 try:

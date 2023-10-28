@@ -38,7 +38,6 @@ from .poll_option import PollOption
 from .reaction import Reaction
 from .sticker import Sticker
 from .stripped_thumbnail import StrippedThumbnail
-from .stories_privacy_rules import StoriesPrivacyRules
 from .story import Story
 from .story_deleted import StoryDeleted
 from .story_skipped import StorySkipped
@@ -57,7 +56,7 @@ __all__ = [
     "Animation", "Audio", "Contact", "Document", "ForumTopic", "ForumTopicCreated",
     "ForumTopicClosed", "ForumTopicReopened", "ForumTopicEdited", "GeneralTopicHidden",
     "GeneralTopicUnhidden", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",
-    "StrippedThumbnail", "Story", "StoryDeleted", "StorySkipped", "StoryViews", "StoriesPrivacyRules", "Poll", "PollOption", "Sticker",
+    "StrippedThumbnail", "Story", "StoryDeleted", "StorySkipped", "StoryViews", "Poll", "PollOption", "Sticker",
     "Venue", "Video", "VideoNote", "Voice", "WebPage", "Dice", "Reaction", "WebAppData",
     "MessageReactions", "MessageStory"
 ]
