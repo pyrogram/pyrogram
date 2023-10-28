@@ -16,7 +16,8 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from pyrogram import raw
+import pyrogram
+from pyrogram import raw, types, utils
 from ..object import Object
 
 
@@ -35,22 +36,24 @@ class MessageStory(Object):
     def __init__(
         self,
         *,
-        chat_id: int,
+        chat: "types.Chat",
         story_id: int
     ):
         super().__init__()
 
-        self.chat_id = chat_id
+        self.chat = chat
         self.story_id = story_id
 
     @staticmethod
-    def _parse(message_story: "raw.types.MessageMediaStory") -> "MessageStory":
+    def _parse(client: "pyrogram.Client", message_story: "raw.types.MessageMediaStory", users, chats) -> "MessageStory":
+        peer_id = utils.get_raw_peer_id(message_story.peer)
+
         if isinstance(message_story.peer, raw.types.PeerChannel):
-            chat_id = message_story.peer.channel_id
+            chat = types.Chat._parse_channel_chat(client, chats.get(peer_id, None))
         else:
-            chat_id = message_story.peer.user_id
+            chat = types.Chat._parse_user_chat(client, users.get(peer_id, None))
 
         return MessageStory(
-            chat_id=chat_id,
+            chat=chat,
             story_id=message_story.id
         )
