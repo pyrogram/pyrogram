@@ -66,7 +66,7 @@ class UpdateColor:
             )
 
             r = await self.invoke(raw.functions.users.GetUsers(id=[raw.types.InputPeerSelf()]))
-            return types.Chat._parse_user_chat(self, r)
+            return types.Chat._parse_user_chat(self, r[0])
         else:
             r = await self.invoke(
                 raw.functions.channels.UpdateColor(
