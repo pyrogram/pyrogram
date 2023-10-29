@@ -34,6 +34,7 @@ class EditMessageMedia:
         chat_id: Union[int, str],
         message_id: int,
         media: "types.InputMedia",
+        invert_media: bool = None,
         reply_markup: "types.InlineKeyboardMarkup" = None,
         file_name: str = None
     ) -> "types.Message":
@@ -55,6 +56,9 @@ class EditMessageMedia:
 
             media (:obj:`~pyrogram.types.InputMedia`):
                 One of the InputMedia objects describing an animation, audio, document, photo or video.
+
+            invert_media (``bool``, *optional*):
+                Invert media.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup`, *optional*):
                 An InlineKeyboardMarkup object.
@@ -271,6 +275,7 @@ class EditMessageMedia:
             raw.functions.messages.EditMessage(
                 peer=await self.resolve_peer(chat_id),
                 id=message_id,
+                invert_media=invert_media,
                 media=media,
                 reply_markup=await reply_markup.write(self) if reply_markup else None,
                 message=message,

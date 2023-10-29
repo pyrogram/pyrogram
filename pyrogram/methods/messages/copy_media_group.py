@@ -34,6 +34,7 @@ class CopyMediaGroup:
         message_thread_id: int = None,
         reply_to_message_id: int = None,
         schedule_date: datetime = None,
+        invert_media: bool = None,
     ) -> List["types.Message"]:
         """Copy a media group by providing one of the message ids.
 
@@ -75,6 +76,9 @@ class CopyMediaGroup:
 
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
+
+            invert_media (``bool``, *optional*):
+                Invert media.
 
         Returns:
             List of :obj:`~pyrogram.types.Message`: On success, a list of copied messages is returned.
@@ -125,7 +129,8 @@ class CopyMediaGroup:
                 multi_media=multi_media,
                 silent=disable_notification or None,
                 reply_to=utils.get_reply_to(reply_to_message_id, message_thread_id),
-                schedule_date=utils.datetime_to_timestamp(schedule_date)
+                schedule_date=utils.datetime_to_timestamp(schedule_date),
+                invert_media=invert_media
             ),
             sleep_threshold=60
         )

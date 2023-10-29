@@ -39,6 +39,7 @@ class SendCachedMedia:
         reply_to_story_id: int = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
+        invert_media: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -94,6 +95,9 @@ class SendCachedMedia:
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
 
+            invert_media (``bool``, *optional*):
+                Invert media.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -112,6 +116,7 @@ class SendCachedMedia:
                 peer=peer,
                 media=utils.get_input_media_from_file_id(file_id),
                 silent=disable_notification or None,
+                invert_media=invert_media,
                 reply_to=utils.get_reply_to(reply_to_message_id, message_thread_id, peer, reply_to_story_id),
                 random_id=self.rnd_id(),
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
