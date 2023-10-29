@@ -16,44 +16,64 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+from datetime import datetime
+
 import pyrogram
 from pyrogram import raw, types, utils
 from ..object import Object
 
 
-class MessageStory(Object):
-    """Contains information about a forwarded story.
+class MyBoost(Object):
+    """Contains information about boost.
 
     Parameters:
-        chat (:obj:`~pyrogram.types.Chat`):
-            Conversation the story belongs to.
+        slot (``int``):
+            Unique user identifier of story sender.
 
-        story_id (``int``):
-            Unique story identifier.
+        date (:py:obj:`~datetime.datetime`):
+            Date the boost was sent.
+
+        expire_date (:py:obj:`~datetime.datetime`):
+            Point in time when the boost will expire.
+
+        chat (:obj:`~pyrogram.types.Chat`):
+            Conversation the boost belongs to.
+
+        cooldown_until_date (:py:obj:`~datetime.datetime`):
+            Point in time when you'll be able to boost again.
 
     """
 
     def __init__(
         self,
         *,
+        slot: int,
+        date: datetime,
+        expire_date: datetime,
         chat: "types.Chat",
-        story_id: int
+        cooldown_until_date: datetime
     ):
         super().__init__()
 
+        self.slot = slot
+        self.date = date
+        self.expire_date = expire_date
         self.chat = chat
-        self.story_id = story_id
+        self.cooldown_until_date = cooldown_until_date
 
     @staticmethod
-    def _parse(client: "pyrogram.Client", message_story: "raw.types.MessageMediaStory", users, chats) -> "MessageStory":
-        peer_id = utils.get_raw_peer_id(message_story.peer)
+    def _parse(client: "pyrogram.Client", my_boost: "raw.types.MyBoost", users, chats) -> "MyBoost":
+        peer_id = utils.get_raw_peer_id(my_boost.peer)
 
-        if isinstance(message_story.peer, raw.types.PeerChannel):
+        if isinstance(my_boost.peer, raw.types.PeerChannel):
             chat = types.Chat._parse_channel_chat(client, chats.get(peer_id, None))
         else:
             chat = types.Chat._parse_user_chat(client, users.get(peer_id, None))
 
-        return MessageStory(
+        return MyBoost(
+            slot=my_boost.slot,
+            date=utils.timestamp_to_datetime(my_boost.date),
+            expire_date=utils.timestamp_to_datetime(my_boost.expire_date),
             chat=chat,
-            story_id=message_story.id
+            cooldown_until_date=utils.timestamp_to_datetime(my_boost.cooldown_until_date),
         )

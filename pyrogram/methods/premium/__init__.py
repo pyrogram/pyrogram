@@ -16,38 +16,9 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from .apply_boost import ApplyBoost
 
-import pyrogram
-from pyrogram import raw
-
-
-class ApplyBoost:
-    async def apply_boost(
-        self: "pyrogram.Client",
-        chat_id: Union[int, str],
-    ) -> bool:
-        """Apply boost
-
-        .. include:: /_includes/usable-by/users-bots.rst
-
-        Parameters:
-            chat_id (``int`` | ``str``):
-                Unique identifier (int) or username (str) of the target chat.
-
-        Returns:
-            ``str``: On success, a bool is returned.
-
-        Example:
-            .. code-block:: python
-
-                # Apply boost to chat id
-                app.apply_boost(chat_id)
-        """
-        r = await self.invoke(
-            raw.functions.stories.ApplyBoost(
-                peer=await self.resolve_peer(chat_id),
-            )
-        )
-
-        return r
+class Premium(
+    ApplyBoost,
+):
+    pass

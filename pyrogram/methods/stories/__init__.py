@@ -16,7 +16,6 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .apply_boost import ApplyBoost
 from .can_send_story import CanSendStory
 from .copy_story import CopyStory
 from .delete_stories import DeleteStories
@@ -35,7 +34,6 @@ from .read_stories import ReadStories
 from .send_story import SendStory
 
 class Stories(
-    ApplyBoost,
     CanSendStory,
     CopyStory,
     DeleteStories,
