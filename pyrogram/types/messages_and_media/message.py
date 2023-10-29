@@ -142,6 +142,9 @@ class Message(Object, Update):
             This field will contain the enumeration type of the media message.
             You can use ``media = getattr(message, message.media.value)`` to access the media message.
 
+        invert_media (``bool``, *optional*):
+            Invert media.
+
         edit_date (:py:obj:`~datetime.datetime`, *optional*):
             Date the message was last edited.
 
@@ -377,6 +380,7 @@ class Message(Object, Update):
         scheduled: bool = None,
         from_scheduled: bool = None,
         media: "enums.MessageMediaType" = None,
+        invert_media: bool = None,
         edit_date: datetime = None,
         media_group_id: str = None,
         author_signature: str = None,
@@ -467,6 +471,7 @@ class Message(Object, Update):
         self.scheduled = scheduled
         self.from_scheduled = from_scheduled
         self.media = media
+        self.invert_media = invert_media
         self.edit_date = edit_date
         self.media_group_id = media_group_id
         self.author_signature = author_signature
@@ -918,6 +923,7 @@ class Message(Object, Update):
                 scheduled=is_scheduled,
                 from_scheduled=message.from_scheduled,
                 media=media_type,
+                invert_media=getattr(message, "invert_media", None),
                 edit_date=utils.timestamp_to_datetime(message.edit_date),
                 media_group_id=message.grouped_id,
                 photo=photo,
