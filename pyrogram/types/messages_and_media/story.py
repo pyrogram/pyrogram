@@ -1368,7 +1368,7 @@ class Story(Object, Update):
             caption = self.caption or ""
             caption_entities = self.caption_entities
 
-        return await self._client.post_story(
+        return await self._client.send_story(
             chat_id=chat_id,
             media=file_id,
             caption=caption,
@@ -1378,7 +1378,7 @@ class Story(Object, Update):
             caption_entities=caption_entities,
             privacy=privacy,
             allowed_users=allowed_users,
-            disallowed_chats=disallowed_users
+            disallowed_users=disallowed_users
         )
 
     async def delete(self):
