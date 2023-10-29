@@ -48,17 +48,17 @@ class MyBoost(Object):
         self,
         *,
         slot: int,
+        chat: "types.Chat",
         date: datetime,
         expire_date: datetime,
-        chat: "types.Chat",
         cooldown_until_date: datetime
     ):
         super().__init__()
 
         self.slot = slot
+        self.chat = chat
         self.date = date
         self.expire_date = expire_date
-        self.chat = chat
         self.cooldown_until_date = cooldown_until_date
 
     @staticmethod
@@ -72,8 +72,8 @@ class MyBoost(Object):
 
         return MyBoost(
             slot=my_boost.slot,
+            chat=chat,
             date=utils.timestamp_to_datetime(my_boost.date),
             expire_date=utils.timestamp_to_datetime(my_boost.expire_date),
-            chat=chat,
             cooldown_until_date=utils.timestamp_to_datetime(my_boost.cooldown_until_date),
         )
