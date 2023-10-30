@@ -969,6 +969,9 @@ class Message(Object, Update):
                 client=client
             )
 
+            if any((isinstance(entity, raw.types.MessageEntityBlockquote) for entity in message.entities)):
+                parsed_message.quote = True
+
             if message.reply_to:
                 if isinstance(message.reply_to, raw.types.MessageReplyHeader):
                     if message.reply_to.forum_topic:
