@@ -1355,22 +1355,13 @@ class Story(Object, Update):
         Raises:
             RPCError: In case of a Telegram RPC error.
         """
-        file_id = None
-
-        if self.photo:
-            file_id = self.photo.file_id
-        elif self.video:
-            file_id = self.video.file_id
-        else:
-            raise ValueError("Unknown media type")
-
         if caption is None:
             caption = self.caption or ""
             caption_entities = self.caption_entities
 
         return await self._client.send_story(
             chat_id=chat_id,
-            media=file_id,
+            media=await self.download(in_memory=True),
             caption=caption,
             period=period,
             protect_content=protect_content,
