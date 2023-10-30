@@ -129,10 +129,10 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
     Parameters:
         func (``Callable``):
             A function that accepts three positional arguments *(filter, client, update)* and returns a boolean: True if the
-            update should be handled, False otherwise. 
-            The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below). 
+            update should be handled, False otherwise.
+            The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below).
             The *client* argument refers to the :obj:`~pyrogram.Client` that received the update.
-            The *update* argument type will vary depending on which `Handler <handlers>`_ is coming from. 
+            The *update* argument type will vary depending on which `Handler <handlers>`_ is coming from.
             For example, in a :obj:`~pyrogram.handlers.MessageHandler` the *update* argument will be a :obj:`~pyrogram.types.Message`; in a :obj:`~pyrogram.handlers.CallbackQueryHandler` the *update* will be a :obj:`~pyrogram.types.CallbackQuery`.
             Your function body can then access the incoming update attributes and decide whether to allow it or not.
 
@@ -423,6 +423,17 @@ async def dice_filter(_, __, m: Message):
 
 dice = create(dice_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Dice` objects."""
+
+
+# endregion
+
+# region quote_filter
+async def quote_filter(_, __, m: Message):
+    return bool(m.quote)
+
+
+text = create(quote_filter)
+"""Filter quote messages."""
 
 
 # endregion
