@@ -90,7 +90,10 @@ class SendGame:
                 ),
                 message="",
                 silent=disable_notification or None,
-                reply_to=utils.get_reply_to(reply_to_message_id, message_thread_id),
+                reply_to=utils.get_reply_to(
+                    reply_to_message_id=reply_to_message_id,
+                    message_thread_id=message_thread_id
+                ),
                 random_id=self.rnd_id(),
                 noforwards=protect_content,
                 reply_markup=await reply_markup.write(self) if reply_markup else None

@@ -20,8 +20,7 @@ from datetime import datetime
 from typing import Union, List, Optional
 
 import pyrogram
-from pyrogram import raw, enums
-from pyrogram import types
+from pyrogram import raw, enums, types
 from pyrogram import utils
 
 
@@ -37,6 +36,8 @@ class SendCachedMedia:
         message_thread_id: int = None,
         reply_to_message_id: int = None,
         reply_to_story_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
         invert_media: bool = None,
@@ -89,6 +90,12 @@ class SendCachedMedia:
             reply_to_story_id (``int``, *optional*):
                 Unique identifier for the target story.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
 
@@ -110,6 +117,8 @@ class SendCachedMedia:
 
                 await app.send_cached_media("me", file_id)
         """
+        quote_text, quote_entities = (await utils.parse_text_entities(self, quote_text, parse_mode, quote_entities)).values()
+
         peer = await self.resolve_peer(chat_id)
         r = await self.invoke(
             raw.functions.messages.SendMedia(
@@ -117,7 +126,14 @@ class SendCachedMedia:
                 media=utils.get_input_media_from_file_id(file_id),
                 silent=disable_notification or None,
                 invert_media=invert_media,
-                reply_to=utils.get_reply_to(reply_to_message_id, message_thread_id, peer, reply_to_story_id),
+                reply_to=utils.get_reply_to(
+                    reply_to_message_id=reply_to_message_id,
+                    message_thread_id=message_thread_id,
+                    reply_to_peer=peer,
+                    reply_to_story_id=reply_to_story_id,
+                    quote_text=quote_text,
+                    quote_entities=quote_entities,
+                ),
                 random_id=self.rnd_id(),
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
                 noforwards=protect_content,

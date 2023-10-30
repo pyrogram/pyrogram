@@ -36,6 +36,8 @@ class SendMessage:
         message_thread_id: int = None,
         reply_to_message_id: int = None,
         reply_to_story_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
@@ -81,6 +83,12 @@ class SendMessage:
 
             reply_to_story_id (``int``, *optional*):
                 Unique identifier for the target story.
+
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
 
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
@@ -131,6 +139,7 @@ class SendMessage:
         """
 
         message, entities = (await utils.parse_text_entities(self, text, parse_mode, entities)).values()
+        quote_text, quote_entities = (await utils.parse_text_entities(self, quote_text, parse_mode, quote_entities)).values()
 
         peer = await self.resolve_peer(chat_id)
         r = await self.invoke(
@@ -138,7 +147,14 @@ class SendMessage:
                 peer=peer,
                 no_webpage=disable_web_page_preview or None,
                 silent=disable_notification or None,
-                reply_to=utils.get_reply_to(reply_to_message_id, message_thread_id, peer, reply_to_story_id),
+                reply_to=utils.get_reply_to(
+                    reply_to_message_id=reply_to_message_id,
+                    message_thread_id=message_thread_id,
+                    reply_to_peer=peer,
+                    reply_to_story_id=reply_to_story_id,
+                    quote_text=quote_text,
+                    quote_entities=quote_entities,
+                ),
                 random_id=self.rnd_id(),
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
                 reply_markup=await reply_markup.write(self) if reply_markup else None,

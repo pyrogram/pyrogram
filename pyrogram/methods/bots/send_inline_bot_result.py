@@ -16,10 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union
+from typing import Union, List, Optional
 
 import pyrogram
-from pyrogram import raw
+from pyrogram import raw, enums, types
 from pyrogram import utils
 
 
@@ -31,7 +31,10 @@ class SendInlineBotResult:
         result_id: str,
         disable_notification: bool = None,
         message_thread_id: int = None,
-        reply_to_message_id: int = None
+        reply_to_message_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None
     ) -> "raw.base.Updates":
         """Send an inline bot result.
         Bot results can be retrieved using :meth:`~pyrogram.Client.get_inline_bot_results`
@@ -61,6 +64,16 @@ class SendInlineBotResult:
             reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
         Returns:
             :obj:`~pyrogram.raw.base.Updates`: Currently, on success, a raw result is returned.
 
@@ -69,6 +82,8 @@ class SendInlineBotResult:
 
                 await app.send_inline_bot_result(chat_id, query_id, result_id)
         """
+        quote_text, quote_entities = (await utils.parse_text_entities(self, quote_text, parse_mode, quote_entities)).values()
+
         return await self.invoke(
             raw.functions.messages.SendInlineBotResult(
                 peer=await self.resolve_peer(chat_id),
@@ -76,6 +91,11 @@ class SendInlineBotResult:
                 id=result_id,
                 random_id=self.rnd_id(),
                 silent=disable_notification or None,
-                reply_to=utils.get_reply_to(reply_to_message_id, message_thread_id)
+                reply_to=utils.get_reply_to(
+                    reply_to_message_id=reply_to_message_id,
+                    message_thread_id=message_thread_id,
+                    quote_text=quote_text,
+                    quote_entities=quote_entities
+                )
             )
         )

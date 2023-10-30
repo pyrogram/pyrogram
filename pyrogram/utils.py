@@ -288,16 +288,22 @@ def get_peer_type(peer_id: int) -> str:
 def get_reply_to(
     reply_to_message_id: Optional[int] = None,
     message_thread_id: Optional[int] = None,
-    user_id: Optional[raw.types.InputUser] = None,
+    reply_to_peer: Optional[raw.base.InputPeer] = None,
+    quote_text: Optional[str] = None,
+    quote_entities: Optional[List[raw.base.MessageEntity]] = None,
     reply_to_story_id: Optional[int] = None
 ) -> Optional[Union[raw.types.InputReplyToMessage, raw.types.InputReplyToStory]]:
-    if all((user_id, reply_to_story_id)):
-        return raw.types.InputReplyToStory(user_id=user_id, story_id=reply_to_story_id)  # type: ignore[arg-type]
+    """Get InputReply for reply_to argument"""
+    if all((reply_to_peer, reply_to_story_id)):
+        return raw.types.InputReplyToStory(user_id=reply_to_peer, story_id=reply_to_story_id)  # type: ignore[arg-type]
 
     if any((reply_to_message_id, message_thread_id)):
         return raw.types.InputReplyToMessage(
             reply_to_msg_id=reply_to_message_id or message_thread_id,  # type: ignore[arg-type]
             top_msg_id=message_thread_id if reply_to_message_id else None,
+            reply_to_peer_id=reply_to_peer,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
         )
 
     return None

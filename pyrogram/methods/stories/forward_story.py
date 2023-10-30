@@ -83,7 +83,9 @@ class ForwardStory:
                 random_id=self.rnd_id(),
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
                 message="",
-                reply_to=utils.get_reply_to(message_thread_id=message_thread_id),
+                reply_to=utils.get_reply_to(
+                    message_thread_id=message_thread_id
+                ),
             )
         )
 

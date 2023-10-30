@@ -167,12 +167,21 @@ class Message(Object, Update):
             *text.html* to get the marked up message text. In case there is no entity, the fields
             will contain the same text as *text*.
 
+        quote_text (``str``, *optional*):
+            For quote messages, the actual UTF-8 text of the message, 0-4096 characters.
+            If the quote contains entities (bold, italic, ...) you can access *text.markdown* or
+            *text.html* to get the marked up message text. In case there is no entity, the fields
+            will contain the same text as *text*.
+
         entities (List of :obj:`~pyrogram.types.MessageEntity`, *optional*):
             For text messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
 
         caption_entities (List of :obj:`~pyrogram.types.MessageEntity`, *optional*):
             For messages with a caption, special entities like usernames, URLs, bot commands, etc. that appear
             in the caption.
+
+        quote_entities (List of :obj:`~pyrogram.types.MessageEntity`, *optional*):
+            For quote messages, special entities like usernames, URLs, bot commands, etc. that appear in the text.
 
         audio (:obj:`~pyrogram.types.Audio`, *optional*):
             Message is an audio file, information about the file.
@@ -295,6 +304,9 @@ class Message(Object, Update):
             Messages sent from yourself to other chats are outgoing (*outgoing* is True).
             An exception is made for your own personal chat; messages sent there will be incoming.
 
+        quote (``bool``, *optional*):
+            The message contains a quote.
+
         matches (List of regex Matches, *optional*):
             A list containing all `Match Objects <https://docs.python.org/3/library/re.html#match-objects>`_ that match
             the text of this message. Only applicable when using :obj:`Filters.regex <pyrogram.Filters.regex>`.
@@ -387,8 +399,10 @@ class Message(Object, Update):
         has_protected_content: bool = None,
         has_media_spoiler: bool = None,
         text: Str = None,
+        quote_text: Str = None,
         entities: List["types.MessageEntity"] = None,
         caption_entities: List["types.MessageEntity"] = None,
+        quote_entities: List["types.MessageEntity"] = None,
         audio: "types.Audio" = None,
         document: "types.Document" = None,
         photo: "types.Photo" = None,
@@ -422,6 +436,7 @@ class Message(Object, Update):
         forwards: int = None,
         via_bot: "types.User" = None,
         outgoing: bool = None,
+        quote: bool = None,
         matches: List[Match] = None,
         command: List[str] = None,
         forum_topic_created: "types.ForumTopicCreated" = None,
@@ -478,8 +493,10 @@ class Message(Object, Update):
         self.has_protected_content = has_protected_content
         self.has_media_spoiler = has_media_spoiler
         self.text = text
+        self.quote_text = quote_text
         self.entities = entities
         self.caption_entities = caption_entities
+        self.quote_entities = quote_entities
         self.audio = audio
         self.document = document
         self.photo = photo
@@ -513,6 +530,7 @@ class Message(Object, Update):
         self.forwards = forwards
         self.via_bot = via_bot
         self.outgoing = outgoing
+        self.quote = quote
         self.matches = matches
         self.command = command
         self.reply_markup = reply_markup
@@ -971,6 +989,21 @@ class Message(Object, Update):
                             except Exception:
                                 pass
                     else:
+                        if message.reply_to.quote:
+                            quote_entities = [types.MessageEntity._parse(client, entity, users) for entity in message.reply_to.quote_entities]
+                            quote_entities = types.List(filter(lambda x: x is not None, quote_entities))
+
+                            parsed_message.quote = message.reply_to.quote
+                            parsed_message.quote_text = (
+                                Str(message.reply_to.quote_text).init(quote_entities) or None
+                                if media is None or web_page is not None
+                                else None
+                            )
+                            parsed_message.quote_entities = (
+                                quote_entities or None
+                                if media is None or web_page is not None
+                                else None
+                            )
                         parsed_message.reply_to_message_id = message.reply_to.reply_to_msg_id
                         parsed_message.reply_to_top_message_id = message.reply_to.reply_to_top_id
                 else:
@@ -1058,6 +1091,8 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup=None
@@ -1110,6 +1145,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
 
@@ -1141,6 +1182,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             schedule_date=schedule_date,
             protect_content=protect_content,
             reply_markup=reply_markup
@@ -1169,6 +1212,8 @@ class Message(Object, Update):
         ] = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         progress: Callable = None,
         progress_args: tuple = ()
     ) -> "Message":
@@ -1238,6 +1283,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1292,6 +1343,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -1311,6 +1364,8 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1383,6 +1438,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1436,6 +1497,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -1451,6 +1514,8 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1504,6 +1569,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1529,6 +1600,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             reply_markup=reply_markup
         )
 
@@ -1579,6 +1652,9 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -1631,6 +1707,16 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -1656,6 +1742,9 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            parse_mode=parse_mode,
+            quote_entities=quote_entities,
             reply_markup=reply_markup
         )
 
@@ -1672,6 +1761,8 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         schedule_date: datetime = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -1745,6 +1836,16 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
 
@@ -1800,6 +1901,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             schedule_date=schedule_date,
             reply_markup=reply_markup,
             progress=progress,
@@ -1887,7 +1990,10 @@ class Message(Object, Update):
         quote: bool = None,
         disable_notification: bool = None,
         message_thread_id: bool = None,
-        reply_to_message_id: int = None
+        reply_to_message_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None
     ) -> "Message":
         """Bound method *reply_inline_bot_result* of :obj:`~pyrogram.types.Message`.
 
@@ -1928,6 +2034,16 @@ class Message(Object, Update):
             reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
         Returns:
             On success, the sent Message is returned.
 
@@ -1946,7 +2062,10 @@ class Message(Object, Update):
             result_id=result_id,
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
-            reply_to_message_id=reply_to_message_id
+            reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            parse_mode=parse_mode,
+            quote_entities=quote_entities
         )
 
     async def reply_location(
@@ -1957,6 +2076,8 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2003,6 +2124,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2026,6 +2153,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             reply_markup=reply_markup
         )
 
@@ -2035,7 +2164,10 @@ class Message(Object, Update):
         quote: bool = None,
         disable_notification: bool = None,
         message_thread_id: int = None,
-        reply_to_message_id: int = None
+        reply_to_message_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None
     ) -> List["types.Message"]:
         """Bound method *reply_media_group* of :obj:`~pyrogram.types.Message`.
 
@@ -2074,6 +2206,16 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
         Returns:
             On success, a :obj:`~pyrogram.types.Messages` object is returned containing all the
             single messages sent.
@@ -2092,7 +2234,10 @@ class Message(Object, Update):
             media=media,
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
-            reply_to_message_id=reply_to_message_id
+            reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            parse_mode=parse_mode,
+            quote_entities=quote_entities
         )
 
     async def reply_photo(
@@ -2107,6 +2252,8 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2172,6 +2319,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2223,6 +2376,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -2247,6 +2402,9 @@ class Message(Object, Update):
         protect_content: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None,
         schedule_date: datetime = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -2337,6 +2495,16 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
 
@@ -2374,6 +2542,9 @@ class Message(Object, Update):
             protect_content=protect_content,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            parse_mode=parse_mode,
+            quote_entities=quote_entities,
             schedule_date=schedule_date,
             reply_markup=reply_markup
         )
@@ -2385,6 +2556,9 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2432,6 +2606,16 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2478,6 +2662,9 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            parse_mode=parse_mode,
+            quote_entities=quote_entities,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -2495,6 +2682,9 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2556,6 +2746,16 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2583,6 +2783,9 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            parse_mode=parse_mode,
+            quote_entities=quote_entities,
             reply_markup=reply_markup
         )
 
@@ -2603,6 +2806,8 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2686,6 +2891,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2742,6 +2953,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -2757,6 +2970,9 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2816,6 +3032,16 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2865,6 +3091,9 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            parse_mode=parse_mode,
+            quote_entities=quote_entities,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args
@@ -2881,6 +3110,8 @@ class Message(Object, Update):
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -2941,6 +3172,12 @@ class Message(Object, Update):
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message
 
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
                 instructions to remove reply keyboard or to force a reply from the user.
@@ -2991,6 +3228,8 @@ class Message(Object, Update):
             disable_notification=disable_notification,
             message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            quote_text=quote_text,
+            quote_entities=quote_entities,
             reply_markup=reply_markup,
             progress=progress,
             progress_args=progress_args

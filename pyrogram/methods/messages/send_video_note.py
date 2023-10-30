@@ -18,13 +18,14 @@
 
 import os
 from datetime import datetime
-from typing import Union, BinaryIO, Optional, Callable
+from typing import Union, BinaryIO, Optional, Callable, List
 
 import pyrogram
 from pyrogram import StopTransmission
 from pyrogram import raw
 from pyrogram import types
 from pyrogram import utils
+from pyrogram import enums
 from pyrogram.errors import FilePartMissing
 from pyrogram.file_id import FileType
 
@@ -41,6 +42,9 @@ class SendVideoNote:
         message_thread_id: int = None,
         reply_to_message_id: int = None,
         reply_to_story_id: int = None,
+        quote_text: str = None,
+        parse_mode: Optional["enums.ParseMode"] = None,
+        quote_entities: List["types.MessageEntity"] = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
         reply_markup: Union[
@@ -94,6 +98,16 @@ class SendVideoNote:
 
             reply_to_story_id (``int``, *optional*):
                 Unique identifier for the target story.
+
+            quote_text (``str``):
+                Text of the quote to be sent.
+
+            parse_mode (:obj:`~pyrogram.enums.ParseMode`, *optional*):
+                By default, texts are parsed using both Markdown and HTML styles.
+                You can combine both syntaxes together.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
 
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
@@ -180,6 +194,8 @@ class SendVideoNote:
                     ]
                 )
 
+            quote_text, quote_entities = (await utils.parse_text_entities(self, quote_text, parse_mode, quote_entities)).values()
+
             while True:
                 try:
                     peer = await self.resolve_peer(chat_id)
@@ -188,7 +204,14 @@ class SendVideoNote:
                             peer=peer,
                             media=media,
                             silent=disable_notification or None,
-                            reply_to=utils.get_reply_to(reply_to_message_id, message_thread_id, peer, reply_to_story_id),
+                            reply_to=utils.get_reply_to(
+                                reply_to_message_id=reply_to_message_id,
+                                message_thread_id=message_thread_id,
+                                reply_to_peer=peer,
+                                reply_to_story_id=reply_to_story_id,
+                                quote_text=quote_text,
+                                quote_entities=quote_entities,
+                            ),
                             random_id=self.rnd_id(),
                             schedule_date=utils.datetime_to_timestamp(schedule_date),
                             noforwards=protect_content,
