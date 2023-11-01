@@ -432,7 +432,7 @@ async def quote_filter(_, __, m: Message):
     return bool(m.quote)
 
 
-text = create(quote_filter)
+quote = create(quote_filter)
 """Filter quote messages."""
 
 
