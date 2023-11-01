@@ -258,6 +258,7 @@ QUIZ_CORRECT_ANSWERS_EMPTY	The correct answers of the quiz are empty
 QUIZ_CORRECT_ANSWERS_TOO_MUCH	The quiz contains too many correct answers
 QUIZ_CORRECT_ANSWER_INVALID	The correct answers of the quiz are invalid
 QUIZ_MULTIPLE_INVALID	A quiz can't have multiple answers
+QUOTE_TEXT_INVALID	The quote text is invalid
 RANDOM_ID_EMPTY	The random ID is empty
 RANDOM_ID_INVALID	The provided random ID is invalid
 RANDOM_LENGTH_INVALID	The random length is invalid
