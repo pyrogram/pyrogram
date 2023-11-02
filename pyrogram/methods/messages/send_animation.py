@@ -219,7 +219,7 @@ class SendAnimation:
                         spoiler=has_spoiler
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(animation, FileType.ANIMATION)
+                    media = utils.get_input_media_from_file_id(animation, FileType.ANIMATION, has_spoiler=has_spoiler)
             else:
                 thumb = await self.save_file(thumb)
                 file = await self.save_file(animation, progress=progress, progress_args=progress_args)

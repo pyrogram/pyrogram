@@ -180,7 +180,7 @@ class SendPhoto:
                         spoiler=has_spoiler
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(photo, FileType.PHOTO, ttl_seconds=ttl_seconds)
+                    media = utils.get_input_media_from_file_id(photo, FileType.PHOTO, ttl_seconds=ttl_seconds, has_spoiler=has_spoiler)
             else:
                 file = await self.save_file(photo, progress=progress, progress_args=progress_args)
                 media = raw.types.InputMediaUploadedPhoto(
