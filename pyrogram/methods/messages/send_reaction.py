@@ -74,7 +74,7 @@ class SendReaction:
             rpc = raw.functions.stories.SendReaction(
                 peer=await self.resolve_peer(chat_id),
                 story_id=story_id,
-                reaction=emoji,
+                reaction=emoji[0],
             )
         else:
             rpc = raw.functions.messages.SendReaction(
