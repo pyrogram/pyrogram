@@ -106,7 +106,7 @@ async def parse_messages(
 
     if replies:
         messages_with_replies = {
-            i.id: i.reply_to.reply_to_msg_id
+            i.id: i.reply_to
             for i in messages.messages
             if not isinstance(i, raw.types.MessageEmpty) and i.reply_to and isinstance(i.reply_to, raw.types.MessageReplyHeader)
         }
@@ -121,28 +121,61 @@ async def parse_messages(
             # We need a chat id, but some messages might be empty (no chat attribute available)
             # Scan until we find a message with a chat available (there must be one, because we are fetching replies)
             for m in parsed_messages:
+                if not isinstance(m, types.Message):
+                    continue
+
                 if m.chat:
                     chat_id = m.chat.id
                     break
             else:
                 chat_id = 0
 
-            reply_messages = await client.get_messages(
-                chat_id,
-                reply_to_message_ids=messages_with_replies.keys(),
-                replies=replies - 1
+            is_all_within_chat = not any(
+                value.reply_to_peer_id
+                for value in messages_with_replies.values()
             )
+            reply_messages: List[pyrogram.types.Message] = []
+            if is_all_within_chat:
+                # fast path: fetch all messages within the same chat
+                reply_messages = await client.get_messages(
+                    chat_id,
+                    reply_to_message_ids=messages_with_replies.keys(),
+                    replies=replies - 1
+                )
+            else:
+                # slow path: fetch all messages individually
+                for target_reply_to in messages_with_replies.values():
+                    to_be_added_msg = None
+                    the_chat_id = chat_id
+                    if target_reply_to.reply_to_peer_id:
+                        the_chat_id = get_channel_id(target_reply_to.reply_to_peer_id.channel_id)
+                    to_be_added_msg = await client.get_messages(
+                        chat_id=the_chat_id,
+                        message_ids=target_reply_to.reply_to_msg_id,
+                        replies=replies - 1
+                    )
+                    if isinstance(to_be_added_msg, list):
+                        for current_to_be_added in to_be_added_msg:
+                            reply_messages.append(current_to_be_added)
+                    elif to_be_added_msg:
+                        reply_messages.append(to_be_added_msg)
 
             for message in parsed_messages:
-                reply_id = messages_with_replies.get(message.id, None)
+                reply_to = messages_with_replies.get(message.id, None)
+                if not reply_to:
+                    continue
+
+                reply_id = reply_to.reply_to_msg_id
 
                 for reply in reply_messages:
-                    if reply.id == reply_id:
-                        if not reply.forum_topic_created:
-                            message.reply_to_message = reply
+                    if reply.id == reply_id and not reply.forum_topic_created:
+                        message.reply_to_message = reply
 
         if message_reply_to_story:
             for m in parsed_messages:
+                if not isinstance(m, types.Message):
+                    continue
+
                 if m.chat:
                     chat_id = m.chat.id
                     break
@@ -150,7 +183,7 @@ async def parse_messages(
                 chat_id = 0
 
             reply_messages = {}
-            for msg_id in message_reply_to_story.keys():
+            for msg_id in message_reply_to_story:
                 reply_messages[msg_id] = await client.get_stories(
                     message_reply_to_story[msg_id]['user_id'],
                     message_reply_to_story[msg_id]['story_id']

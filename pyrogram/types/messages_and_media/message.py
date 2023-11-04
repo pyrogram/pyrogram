@@ -1015,15 +1015,22 @@ class Message(Object, Update):
 
                 if replies:
                     if parsed_message.reply_to_message_id:
-                        try:
+                        is_cross_chat = getattr(message.reply_to, "reply_to_peer_id", None) and getattr(message.reply_to.reply_to_peer_id, "channel_id", None)
+
+                        if is_cross_chat:
+                            key = (utils.get_channel_id(message.reply_to.reply_to_peer_id.channel_id), message.reply_to.reply_to_msg_id)
+                            reply_to_params = {"chat_id": key[0], 'message_ids': key[1]}
+                        else:
                             key = (parsed_message.chat.id, parsed_message.reply_to_message_id)
+                            reply_to_params = {'chat_id': key[0], 'reply_to_message_ids': message.id}
+
+                        try:
                             reply_to_message = client.message_cache[key]
 
                             if not reply_to_message:
                                 reply_to_message = await client.get_messages(
-                                    parsed_message.chat.id,
-                                    reply_to_message_ids=message.id,
-                                    replies=replies - 1
+                                    replies=replies - 1,
+                                    **reply_to_params
                                 )
                             if reply_to_message and not reply_to_message.forum_topic_created:
                                 parsed_message.reply_to_message = reply_to_message
