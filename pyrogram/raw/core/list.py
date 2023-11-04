@@ -24,3 +24,10 @@ from .tl_object import TLObject
 class List(TList[Any], TLObject):
     def __repr__(self) -> str:
         return f"pyrogram.raw.core.List([{','.join(TLObject.__repr__(i) for i in self)}])"
+
+    def write(self, *args: Any) -> bytes:
+        from . import Int
+        return b"".join(
+            [Int(0x1CB5C415, False), Int(len(self), False)]
+            + [i.write() for i in self]
+        )
