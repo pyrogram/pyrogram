@@ -34,6 +34,7 @@ class SendMessage:
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         message_thread_id: int = None,
+        reply_to_chat_id: int = None,
         reply_to_message_id: int = None,
         reply_to_story_id: int = None,
         quote_text: str = None,
@@ -77,6 +78,9 @@ class SendMessage:
             message_thread_id (``int``, *optional*):
                 Unique identifier for the target message thread (topic) of the forum.
                 for forum supergroups only.
+
+            reply_to_chat_id (``int``, *optional*):
+                If the message is a reply, the ID of the original chat.
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
@@ -142,6 +146,9 @@ class SendMessage:
         quote_text, quote_entities = (await utils.parse_text_entities(self, quote_text, parse_mode, quote_entities)).values()
 
         peer = await self.resolve_peer(chat_id)
+        if reply_to_chat_id:
+            peer = await self.resolve_peer(reply_to_chat_id)
+
         r = await self.invoke(
             raw.functions.messages.SendMessage(
                 peer=peer,
