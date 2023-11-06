@@ -25,7 +25,7 @@ import pyrogram
 from pyrogram import raw, enums
 from pyrogram import types
 from pyrogram import utils
-from pyrogram.errors import MessageIdsEmpty, PeerIdInvalid
+from pyrogram.errors import MessageIdsEmpty, PeerIdInvalid, ChannelPrivate
 from pyrogram.parser import utils as parser_utils, Parser
 from ..object import Object
 from ..update import Update
@@ -1028,10 +1028,13 @@ class Message(Object, Update):
                             reply_to_message = client.message_cache[key]
 
                             if not reply_to_message:
-                                reply_to_message = await client.get_messages(
-                                    replies=replies - 1,
-                                    **reply_to_params
-                                )
+                                try:
+                                    reply_to_message = await client.get_messages(
+                                        replies=replies - 1,
+                                        **reply_to_params
+                                    )
+                                except ChannelPrivate:
+                                    pass
                             if reply_to_message and not reply_to_message.forum_topic_created:
                                 parsed_message.reply_to_message = reply_to_message
                         except MessageIdsEmpty:
