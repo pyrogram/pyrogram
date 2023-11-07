@@ -28,7 +28,7 @@ class MyBoost(Object):
 
     Parameters:
         slot (``int``):
-            Unique user identifier of story sender.
+            Boost slot.
 
         date (:py:obj:`~datetime.datetime`):
             Date the boost was sent.
