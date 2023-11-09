@@ -56,12 +56,15 @@ class GetAllStories:
             )
         )
 
+        users = {i.id: i for i in r.users}
+        chats = {i.id: i for i in r.chats}
+
         for peer_story in r.peer_stories:
             for story in peer_story.stories:
                 yield await types.Story._parse(
                     self,
                     story,
-                    {i.id: i for i in r.users},
-                    {i.id: i for i in r.chats},
+                    users,
+                    chats,
                     peer_story.peer
                 )

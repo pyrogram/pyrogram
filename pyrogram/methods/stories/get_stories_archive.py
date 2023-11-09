@@ -77,12 +77,15 @@ class GetStoriesArchive:
             last = r.stories[-1]
             offset_id = last.id
 
+            users = {i.id: i for i in r.users}
+            chats = {i.id: i for i in r.chats}
+
             for story in r.stories:
                 yield await types.Story._parse(
                     self,
                     story,
-                    {i.id: i for i in r.users},
-                    {i.id: i for i in r.chats},
+                    users,
+                    chats,
                     peer
                 )
 
