@@ -196,8 +196,9 @@ class Story(Object, Update):
             peer_id = utils.get_input_peer_id(peer)
         elif isinstance(peer, raw.types.InputPeerChannel):
             peer_id = utils.get_input_peer_id(peer)
-            r = await client.invoke(raw.functions.channels.GetChannels(id=[peer]))
-            chats.update({peer_id: r.chats[0]})
+            if peer_id not in chats:
+                r = await client.invoke(raw.functions.channels.GetChannels(id=[peer]))
+                chats.update({peer_id: r.chats[0]})
         else:
             peer_id = utils.get_raw_peer_id(peer)
 

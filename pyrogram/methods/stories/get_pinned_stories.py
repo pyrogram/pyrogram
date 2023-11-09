@@ -21,6 +21,7 @@ from typing import AsyncGenerator, Union, Optional
 import pyrogram
 from pyrogram import raw
 from pyrogram import types
+from pyrogram import utils
 
 
 class GetPinnedStories:
@@ -60,8 +61,9 @@ class GetPinnedStories:
         total = abs(limit) or (1 << 31)
         limit = min(100, total)
 
+        peer = await self.resolve_peer(chat_id)
+
         while True:
-            peer = await self.resolve_peer(chat_id)
             r = await self.invoke(
                 raw.functions.stories.GetPinnedStories(
                     peer=peer,
@@ -73,6 +75,15 @@ class GetPinnedStories:
             if not r.stories:
                 return
 
+            users = {i.id: i for i in r.users}
+            chats = {i.id: i for i in r.chats}
+
+            if isinstance(peer, raw.types.InputPeerChannel):
+                peer_id = utils.get_input_peer_id(peer)
+                if peer_id not in r.chats:
+                    channel = await self.invoke(raw.functions.channels.GetChannels(id=[peer]))
+                    chats.update({peer_id: channel.chats[0]})
+
             last = r.stories[-1]
             offset_id = last.id
 
@@ -80,8 +91,8 @@ class GetPinnedStories:
                 yield await types.Story._parse(
                     self,
                     story,
-                    {i.id: i for i in r.users},
-                    {i.id: i for i in r.chats},
+                    users,
+                    chats,
                     peer
                 )
 
