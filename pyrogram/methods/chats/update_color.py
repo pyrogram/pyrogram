@@ -22,15 +22,12 @@ import pyrogram
 from pyrogram import raw
 from pyrogram import types
 
-# account.updateColor  flags:                      color:int background_emoji_id:flags.0?long = Bool;
-# channels.updateColor flags: channel:InputChannel color:int background_emoji_id:flags.0?long = Updates;
-
 class UpdateColor:
     async def update_color(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         color: int,
-        background_emoji_id: int = None,
+        background_emoji_id: int = None
     ) -> "types.Chat":
         """Update color
 
