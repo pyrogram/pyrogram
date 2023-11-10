@@ -34,8 +34,8 @@ class SendMessage:
         disable_web_page_preview: bool = None,
         disable_notification: bool = None,
         message_thread_id: int = None,
-        reply_to_chat_id: int = None,
         reply_to_message_id: int = None,
+        reply_to_chat_id: Union[int, str] = None,
         reply_to_story_id: int = None,
         quote_text: str = None,
         quote_entities: List["types.MessageEntity"] = None,
@@ -79,11 +79,11 @@ class SendMessage:
                 Unique identifier for the target message thread (topic) of the forum.
                 for forum supergroups only.
 
-            reply_to_chat_id (``int``, *optional*):
-                If the message is a reply, the ID of the original chat.
-
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            reply_to_chat_id (``int``, *optional*):
+                If the message is a reply, ID of the original chat.
 
             reply_to_story_id (``int``, *optional*):
                 Unique identifier for the target story.
@@ -143,12 +143,10 @@ class SendMessage:
         """
 
         message, entities = (await utils.parse_text_entities(self, text, parse_mode, entities)).values()
+
         quote_text, quote_entities = (await utils.parse_text_entities(self, quote_text, parse_mode, quote_entities)).values()
 
         peer = await self.resolve_peer(chat_id)
-        if reply_to_chat_id:
-            peer = await self.resolve_peer(reply_to_chat_id)
-
         r = await self.invoke(
             raw.functions.messages.SendMessage(
                 peer=peer,
@@ -157,7 +155,7 @@ class SendMessage:
                 reply_to=utils.get_reply_to(
                     reply_to_message_id=reply_to_message_id,
                     message_thread_id=message_thread_id,
-                    reply_to_peer=peer,
+                    reply_to_peer=await self.resolve_peer(reply_to_chat_id) if reply_to_chat_id else None,
                     reply_to_story_id=reply_to_story_id,
                     quote_text=quote_text,
                     quote_entities=quote_entities,

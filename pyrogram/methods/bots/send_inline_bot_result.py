@@ -32,6 +32,7 @@ class SendInlineBotResult:
         disable_notification: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        reply_to_chat_id: Union[int, str] = None,
         quote_text: str = None,
         parse_mode: Optional["enums.ParseMode"] = None,
         quote_entities: List["types.MessageEntity"] = None
@@ -64,6 +65,9 @@ class SendInlineBotResult:
             reply_to_message_id (``bool``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            reply_to_chat_id (``int``, *optional*):
+                If the message is a reply, ID of the original chat.
+
             quote_text (``str``):
                 Text of the quote to be sent.
 
@@ -93,6 +97,7 @@ class SendInlineBotResult:
                 silent=disable_notification or None,
                 reply_to=utils.get_reply_to(
                     reply_to_message_id=reply_to_message_id,
+                    reply_to_peer=await self.resolve_peer(reply_to_chat_id) if reply_to_chat_id else None,
                     message_thread_id=message_thread_id,
                     quote_text=quote_text,
                     quote_entities=quote_entities

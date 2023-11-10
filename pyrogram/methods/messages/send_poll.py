@@ -44,6 +44,7 @@ class SendPoll:
         protect_content: bool = None,
         message_thread_id: int = None,
         reply_to_message_id: int = None,
+        reply_to_chat_id: Union[int, str] = None,
         quote_text: str = None,
         parse_mode: Optional["enums.ParseMode"] = None,
         quote_entities: List["types.MessageEntity"] = None,
@@ -125,6 +126,9 @@ class SendPoll:
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
+            reply_to_chat_id (``int``, *optional*):
+                If the message is a reply, ID of the original chat.
+
             quote_text (``str``):
                 Text of the quote to be sent.
 
@@ -153,6 +157,7 @@ class SendPoll:
         solution, solution_entities = (await utils.parse_text_entities(
             self, explanation, explanation_parse_mode, explanation_entities
         )).values()
+
         quote_text, quote_entities = (await utils.parse_text_entities(self, quote_text, parse_mode, quote_entities)).values()
 
         r = await self.invoke(
@@ -182,6 +187,7 @@ class SendPoll:
                 reply_to=utils.get_reply_to(
                     reply_to_message_id=reply_to_message_id,
                     message_thread_id=message_thread_id,
+                    reply_to_peer=await self.resolve_peer(reply_to_chat_id) if reply_to_chat_id else None,
                     quote_text=quote_text,
                     quote_entities=quote_entities,
                 ),
