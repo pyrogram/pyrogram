@@ -52,6 +52,9 @@ class Chat(Object):
         is_creator (``bool``, *optional*):
             True, if this chat owner is the current user. Supergroups, channels and groups only.
 
+        is_admin (``bool``, *optional*):
+            True, if the current user is admin. Supergroups, channels and groups only.
+
         is_scam (``bool``, *optional*):
             True, if this chat has been flagged for scam.
 
@@ -166,6 +169,7 @@ class Chat(Object):
         is_participants_hidden: bool = None,
         is_restricted: bool = None,
         is_creator: bool = None,
+        is_admin: bool = None,
         is_scam: bool = None,
         is_fake: bool = None,
         is_support: bool = None,
@@ -204,6 +208,7 @@ class Chat(Object):
         self.is_participants_hidden = is_participants_hidden
         self.is_restricted = is_restricted
         self.is_creator = is_creator
+        self.is_admin = is_admin
         self.is_scam = is_scam
         self.is_fake = is_fake
         self.is_support = is_support
@@ -261,12 +266,14 @@ class Chat(Object):
     def _parse_chat_chat(client, chat: raw.types.Chat) -> "Chat":
         peer_id = -chat.id
         usernames = getattr(chat, "usernames", [])
+        admin_rights = getattr(chat, "admin_rights", None)
 
         return Chat(
             id=peer_id,
             type=enums.ChatType.GROUP,
             title=chat.title,
             is_creator=getattr(chat, "creator", None),
+            is_admin=True if admin_rights else None,
             usernames=types.List([types.Username._parse(r) for r in usernames]) or None,
             photo=types.ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id, 0),
             permissions=types.ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
@@ -281,6 +288,7 @@ class Chat(Object):
         peer_id = utils.get_channel_id(channel.id)
         restriction_reason = getattr(channel, "restriction_reason", [])
         usernames = getattr(channel, "usernames", [])
+        admin_rights = getattr(channel, "admin_rights", None)
 
         return Chat(
             id=peer_id,
@@ -289,6 +297,7 @@ class Chat(Object):
             is_verified=getattr(channel, "verified", None),
             is_restricted=getattr(channel, "restricted", None),
             is_creator=getattr(channel, "creator", None),
+            is_admin=True if admin_rights else None,
             is_scam=getattr(channel, "scam", None),
             is_fake=getattr(channel, "fake", None),
             is_stories_hidden=getattr(channel, "stories_hidden", None),
