@@ -127,6 +127,7 @@ FILE_REFERENCE_EMPTY	The file id contains an empty file reference, you must obta
 FILE_REFERENCE_EXPIRED	The file id contains an expired file reference, you must obtain a valid one by fetching the message from the origin context
 FILE_REFERENCE_INVALID	The file id contains an invalid file reference, you must obtain a valid one by fetching the message from the origin context
 FILTER_ID_INVALID	The specified filter ID is invalid
+FILTER_INCLUDE_EMPTY	The filter include is empty
 FIRSTNAME_INVALID	The first name is invalid
 FOLDER_ID_EMPTY	The folder you tried to delete was already empty
 FOLDER_ID_INVALID	The folder id is invalid
@@ -270,6 +271,7 @@ REPLY_MARKUP_BUY_EMPTY	Reply markup for buy button empty
 REPLY_MARKUP_GAME_EMPTY	The provided reply markup for the game is empty
 REPLY_MARKUP_INVALID	The provided reply markup is invalid
 REPLY_MARKUP_TOO_LONG	The reply markup is too long
+REPLY_MESSAGE_ID_INVALID	The reply message id is invalid
 RESULTS_TOO_MUCH	The result contains too many items
 RESULT_ID_DUPLICATE	The result contains items with duplicated identifiers
 RESULT_ID_EMPTY	Result ID empty
@@ -312,6 +314,7 @@ STICKER_TGS_NOTGS	A tgs sticker file was expected, but something else was provid
 STICKER_THUMB_PNG_NOPNG	A png sticker thumbnail file was expected, but something else was provided
 STICKER_VIDEO_NOWEBM	A webm video file was expected, but something else was provided
 STORIES_TOO_MUCH	Too many stories in the current account
+STORY_PERIOD_INVALID	The story period is invalid
 TAKEOUT_INVALID	The takeout id is invalid
 TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
 TEMP_AUTH_KEY_EMPTY	The temporary auth key provided is empty
