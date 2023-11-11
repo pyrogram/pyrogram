@@ -61,6 +61,9 @@ class Chat(Object):
         is_fake (``bool``, *optional*):
             True, if this chat has been flagged for impersonation.
 
+        is_deactivated (``bool``, *optional*):
+            True, if this chat has been flagged for deactivated.
+
         is_support (``bool``):
             True, if this chat is part of the Telegram support team. Users and bots only.
 
@@ -172,6 +175,7 @@ class Chat(Object):
         is_admin: bool = None,
         is_scam: bool = None,
         is_fake: bool = None,
+        is_deactivated: bool = None,
         is_support: bool = None,
         is_stories_hidden: bool = None,
         is_stories_unavailable: bool = None,
@@ -211,6 +215,7 @@ class Chat(Object):
         self.is_admin = is_admin
         self.is_scam = is_scam
         self.is_fake = is_fake
+        self.is_deactivated = is_deactivated
         self.is_support = is_support
         self.is_stories_hidden = is_stories_hidden
         self.is_stories_unavailable = is_stories_unavailable
@@ -274,6 +279,7 @@ class Chat(Object):
             title=chat.title,
             is_creator=getattr(chat, "creator", None),
             is_admin=True if admin_rights else None,
+            is_deactivated=getattr(chat, "deactivated", None),
             usernames=types.List([types.Username._parse(r) for r in usernames]) or None,
             photo=types.ChatPhoto._parse(client, getattr(chat, "photo", None), peer_id, 0),
             permissions=types.ChatPermissions._parse(getattr(chat, "default_banned_rights", None)),
