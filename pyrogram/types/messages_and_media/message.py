@@ -3626,6 +3626,8 @@ class Message(Object, Update):
                 message_thread_id=message_thread_id,
                 reply_to_chat_id=reply_to_chat_id,
                 reply_to_message_id=reply_to_message_id,
+                quote_text=quote_text,
+                quote_entities=quote_entities,
                 schedule_date=schedule_date,
                 protect_content=protect_content,
                 reply_markup=self.reply_markup if reply_markup is object else reply_markup
