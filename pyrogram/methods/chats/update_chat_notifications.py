@@ -29,7 +29,7 @@ class UpdateChatNotifications:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         mute: bool = None,
-        mute_until: datetime = utils.zero_datetime(),
+        mute_until: datetime = None,
         stories_muted: bool = None,
         stories_hide_sender: bool = None,
         show_previews: bool = None
@@ -44,7 +44,7 @@ class UpdateChatNotifications:
                 Pass True if you want to mute chat.
 
             until_date (:py:obj:`~datetime.datetime`, *optional*):
-                Date when the user will be unmuted. Defaults to epoch (mute forever).
+                Date when the user will be unmuted. Works only if the mute parameter is set to True. Defaults to forever.
 
             stories_muted (``bool``, *optional*):
                 N/A
@@ -74,6 +74,9 @@ class UpdateChatNotifications:
                 # Unmute a chat
                 app.update_chat_notifications(chat_id, mute=False)
         """
+        if not mute_until:
+            mute_until = utils.max_datetime() if mute else utils.zero_datetime()
+
         if isinstance(mute_until, datetime.timedelta):
             mute_until = datetime.datetime.now() + mute_until
 

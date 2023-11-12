@@ -461,6 +461,10 @@ def zero_datetime() -> datetime:
     return datetime.fromtimestamp(0, timezone.utc)
 
 
+def max_datetime() -> datetime:
+    return datetime.fromtimestamp((1 << 31) - 1, timezone.utc)
+
+
 def timestamp_to_datetime(ts: Optional[int]) -> Optional[datetime]:
     return datetime.fromtimestamp(ts) if ts else None
 
