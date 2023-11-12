@@ -658,6 +658,17 @@ via_bot = create(via_bot_filter)
 
 # endregion
 
+# region admin_filter
+async def admin_filter(_, __, m: Message):
+    return bool(m.chat and m.chat.is_admin)
+
+
+admin = create(admin_filter)
+"""Filter chats where you have admin rights"""
+
+
+# endregion
+
 # region video_chat_started_filter
 async def video_chat_started_filter(_, __, m: Message):
     return bool(m.video_chat_started)
