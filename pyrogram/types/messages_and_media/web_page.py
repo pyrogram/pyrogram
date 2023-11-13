@@ -36,9 +36,6 @@ class WebPage(Object):
         display_url (``str``):
             Display URL for this webpage.
 
-        has_large_media (``bool``, *optional*):
-            Whether the webpage preview is large.
-
         type (``str``, *optional*):
             Type of webpage preview, known types (at the time of writing) are:
             *"article"*, *"photo"*, *"gif"*, *"video"* and *"document"*,
@@ -80,11 +77,8 @@ class WebPage(Object):
         embed_height (``int``, *optional*):
             Embedded content height.
 
-        duration (``int``, *optional*):
-            Unknown at the time of writing.
-
-        author (``str``, *optional*):
-            Author of the webpage, eg the Twitter user for a tweet, or the author in an article.
+        has_large_media (``bool``, *optional*):
+            Whether the webpage preview is large.
 
         force_large_media (``bool``, *optional*):
             Request the client to enlarge the webpage preview.
@@ -94,6 +88,12 @@ class WebPage(Object):
 
         manual (``bool``, *optional*):
             Whether the webpage preview was changed by the user.
+
+        duration (``int``, *optional*):
+            Unknown at the time of writing.
+
+        author (``str``, *optional*):
+            Author of the webpage, eg the Twitter user for a tweet, or the author in an article.
     """
 
     def __init__(
@@ -103,7 +103,6 @@ class WebPage(Object):
         id: str,
         url: str,
         display_url: str,
-        has_large_media: bool = None,
         type: str = None,
         site_name: str = None,
         title: str = None,
@@ -117,18 +116,18 @@ class WebPage(Object):
         embed_type: str = None,
         embed_width: int = None,
         embed_height: int = None,
-        duration: int = None,
-        author: str = None,
+        has_large_media: bool = None,
         force_large_media: bool = None,
         force_small_media: bool = None,
-        manual: bool = None
+        manual: bool = None,
+        duration: int = None,
+        author: str = None
     ):
         super().__init__(client)
 
         self.id = id
         self.url = url
         self.display_url = display_url
-        self.has_large_media = has_large_media
         self.type = type
         self.site_name = site_name
         self.title = title
@@ -142,11 +141,12 @@ class WebPage(Object):
         self.embed_type = embed_type
         self.embed_width = embed_width
         self.embed_height = embed_height
-        self.duration = duration
-        self.author = author
+        self.has_large_media = has_large_media
         self.force_large_media = force_large_media
         self.force_small_media = force_small_media
         self.manual = manual
+        self.duration = duration
+        self.author = author
 
     @staticmethod
     def _parse(
@@ -195,7 +195,6 @@ class WebPage(Object):
             id=str(webpage.id),
             url=webpage.url,
             display_url=webpage.display_url,
-            has_large_media=webpage.has_large_media,
             type=webpage.type,
             site_name=webpage.site_name,
             title=webpage.title,
@@ -209,9 +208,10 @@ class WebPage(Object):
             embed_type=webpage.embed_type,
             embed_width=webpage.embed_width,
             embed_height=webpage.embed_height,
-            duration=webpage.duration,
-            author=webpage.author,
+            has_large_media=webpage.has_large_media,
             force_large_media=force_large_media,
             force_small_media=force_small_media,
-            manual=manual
+            manual=manual,
+            duration=webpage.duration,
+            author=webpage.author
         )
