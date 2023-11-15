@@ -32,6 +32,7 @@ from .chat_privileges import ChatPrivileges
 from .chat_reactions import ChatReactions
 from .dialog import Dialog
 from .emoji_status import EmojiStatus
+from .folder import Folder
 from .invite_link_importer import InviteLinkImporter
 from .restriction import Restriction
 from .peer_channel import PeerChannel
@@ -69,5 +70,6 @@ __all__ = [
     "ChatPrivileges",
     "ChatJoiner",
     "EmojiStatus",
+    "Folder",
     "ChatReactions"
 ]

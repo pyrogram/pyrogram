@@ -26,10 +26,12 @@ from .create_supergroup import CreateSupergroup
 from .close_forum_topic import CloseForumTopic
 from .delete_channel import DeleteChannel
 from .delete_chat_photo import DeleteChatPhoto
+from .delete_folder import DeleteFolder
 from .delete_forum_topic import DeleteForumTopic
 from .delete_supergroup import DeleteSupergroup
 from .delete_user_history import DeleteUserHistory
 from .edit_forum_topic import EditForumTopic
+from .export_folder_link import ExportFolderLink
 from .get_chat import GetChat
 from .get_chat_event_log import GetChatEventLog
 from .get_chat_member import GetChatMember
@@ -38,6 +40,8 @@ from .get_chat_members_count import GetChatMembersCount
 from .get_chat_online_count import GetChatOnlineCount
 from .get_dialogs import GetDialogs
 from .get_dialogs_count import GetDialogsCount
+from .get_folder import GetFolder
+from .get_folders import GetFolders
 from .get_forum_topics import GetForumTopics
 from .get_forum_topics_by_id import GetForumTopicsByID
 from .get_nearby_chats import GetNearbyChats
@@ -64,6 +68,7 @@ from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
 from .update_chat_notifications import UpdateChatNotifications
 from .update_color import UpdateColor
+from .update_folder import UpdateFolder
 
 
 class Chats(
@@ -78,17 +83,21 @@ class Chats(
     GetChatMember,
     SetChatPhoto,
     DeleteChatPhoto,
+    DeleteFolder,
     SetChatTitle,
     SetChatDescription,
     PinChatMessage,
     UnpinChatMessage,
     UpdateChatNotifications,
     UpdateColor,
+    UpdateFolder,
     GetDialogs,
     GetChatMembersCount,
     SetChatUsername,
     SetChatPermissions,
     GetDialogsCount,
+    GetFolder,
+    GetFolders,
     GetForumTopics,
     GetForumTopicsByID,
     ArchiveChats,
@@ -103,6 +112,7 @@ class Chats(
     DeleteForumTopic,
     DeleteSupergroup,
     EditForumTopic,
+    ExportFolderLink,
     GetNearbyChats,
     SetAdministratorTitle,
     SetSlowMode,
