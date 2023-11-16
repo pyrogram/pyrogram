@@ -317,6 +317,17 @@ game = create(game_filter)
 
 # endregion
 
+# region giveaway_filter
+async def giveaway_filter(_, __, m: Message):
+    return bool(m.giveaway)
+
+
+giveaway = create(giveaway_filter)
+"""Filter messages that contain :obj:`~pyrogram.types.Giveaway` objects."""
+
+
+# endregion
+
 # region video_filter
 async def video_filter(_, __, m: Message):
     return bool(m.video)
