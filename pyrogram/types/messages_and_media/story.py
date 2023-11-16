@@ -1767,3 +1767,25 @@ class Story(Object, Update):
             progress=progress,
             progress_args=progress_args,
         )
+
+    async def read(self) -> List[int]:
+        """Bound method *read* of :obj:`~pyrogram.types.Story`.
+
+        Example:
+            .. code-block:: python
+
+                await story.read()
+
+        Returns:
+            List of ``int``: On success, a list of read stories is returned.
+
+        Example:
+            .. code-block:: python
+
+                # Read stories
+                await app.read_stories(chat_id)
+        """
+        return await self._client.read_stories(
+            chat_id=self.chat.id,
+            max_id=self.id
+        )
