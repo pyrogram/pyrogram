@@ -24,6 +24,9 @@ from .auto_name import AutoName
 class MessageServiceType(AutoName):
     """Message service type enumeration used in :obj:`~pyrogram.types.Message`."""
 
+    CUSTOM_ACTION = auto()
+    "Custom action"
+
     NEW_CHAT_MEMBERS = auto()
     "New members join"
 

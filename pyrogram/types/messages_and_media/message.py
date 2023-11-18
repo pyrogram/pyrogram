@@ -588,6 +588,7 @@ class Message(Object, Update):
             message_thread_id = None
             action = message.action
 
+            text = None
             new_chat_members = None
             left_chat_member = None
             new_chat_title = None
@@ -643,6 +644,9 @@ class Message(Object, Update):
             elif isinstance(action, raw.types.MessageActionChatEditPhoto):
                 new_chat_photo = types.Photo._parse(client, action.photo)
                 service_type = enums.MessageServiceType.NEW_CHAT_PHOTO
+            elif isinstance(action, raw.types.MessageActionCustomAction):
+                text = message.action.message
+                service_type = enums.MessageServiceType.CUSTOM_ACTION
             elif isinstance(action, raw.types.MessageActionTopicCreate):
                 forum_topic_created = types.ForumTopicCreated._parse(message)
                 service_type = enums.MessageServiceType.FORUM_TOPIC_CREATED
@@ -695,6 +699,7 @@ class Message(Object, Update):
                 from_user=from_user,
                 sender_chat=sender_chat,
                 service=service_type,
+                text=text,
                 new_chat_members=new_chat_members,
                 left_chat_member=left_chat_member,
                 new_chat_title=new_chat_title,
