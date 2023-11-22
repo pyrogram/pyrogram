@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-import datetime
+from datetime import datetime, timedelta
 from typing import Union
 
 import pyrogram
@@ -77,8 +77,8 @@ class UpdateChatNotifications:
         if not mute_until:
             mute_until = utils.max_datetime() if mute else utils.zero_datetime()
 
-        if isinstance(mute_until, datetime.timedelta):
-            mute_until = datetime.datetime.now() + mute_until
+        if isinstance(mute_until, timedelta):
+            mute_until = datetime.now() + mute_until
 
         r = await self.invoke(
             raw.functions.account.UpdateNotifySettings(
