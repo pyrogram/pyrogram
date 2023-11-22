@@ -1031,3 +1031,50 @@ class Chat(Object):
         """
 
         return await self._client.unpin_all_chat_messages(self.id)
+
+    async def mute(self, mute_until: datetime = None) -> bool:
+        """Bound method *mute* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.update_chat_notifications(chat_id, mute=True, mute_until=mute_until)
+
+        Parameters:
+            mute (``bool``, *optional*):
+                Pass True if you want to mute chat.
+
+            until_date (:py:obj:`~datetime.datetime`, *optional*):
+                Date when the user will be unmuted. Defaults to forever.
+
+        Example:
+            .. code-block:: python
+
+                chat.mute()
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return await self._client.update_chat_notifications(self.id, mute=True, mute_until=mute_until)
+
+    async def unmute(self) -> bool:
+        """Bound method *unmute* of :obj:`~pyrogram.types.Chat`.
+
+        Use as a shortcut for:
+
+        .. code-block:: python
+
+            client.update_chat_notifications(chat_id, mute=False)
+
+        Example:
+            .. code-block:: python
+
+                chat.unmute()
+
+        Returns:
+            ``bool``: On success, True is returned.
+        """
+
+        return await self._client.update_chat_notifications(self.id, mute=False)
