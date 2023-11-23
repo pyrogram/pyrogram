@@ -30,7 +30,7 @@ class GetPinnedStories:
         chat_id: Union[int, str],
         offset_id: int = 0,
         limit: int = 0,
-    ) -> Optional[AsyncGenerator["types.Story", None]]:
+    ) -> AsyncGenerator["types.Story", None]:
         """Get pinned stories stories.
 
         .. include:: /_includes/usable-by/users.rst

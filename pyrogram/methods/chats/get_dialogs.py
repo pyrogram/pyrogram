@@ -26,7 +26,7 @@ class GetDialogs:
     async def get_dialogs(
         self: "pyrogram.Client",
         limit: int = 0
-    ) -> Optional[AsyncGenerator["types.Dialog", None]]:
+    ) -> AsyncGenerator["types.Dialog", None]:
         """Get a user's dialogs sequentially.
 
         .. include:: /_includes/usable-by/users.rst

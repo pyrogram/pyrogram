@@ -29,7 +29,7 @@ class GetAllStories:
         next: Optional[bool] = None,
         hidden: Optional[bool] = None,
         state: Optional[str] = None,
-    ) -> Optional[AsyncGenerator["types.Story", None]]:
+    ) -> AsyncGenerator["types.Story", None]:
         """Get all active stories.
 
         .. include:: /_includes/usable-by/users.rst

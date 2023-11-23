@@ -27,7 +27,7 @@ class GetPeerStories:
     async def get_peer_stories(
         self: "pyrogram.Client",
         chat_id: Union[int, str]
-    ) -> Optional[AsyncGenerator["types.Story", None]]:
+    ) -> AsyncGenerator["types.Story", None]:
         """Get all active stories from an user by using user identifiers.
 
         .. include:: /_includes/usable-by/users.rst

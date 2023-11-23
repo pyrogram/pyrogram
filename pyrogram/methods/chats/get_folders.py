@@ -25,7 +25,7 @@ from pyrogram import types, raw
 class GetFolders:
     async def get_folders(
         self: "pyrogram.Client",
-    ) -> Optional[AsyncGenerator["types.Folder", None]]:
+    ) -> AsyncGenerator["types.Folder", None]:
         """Get a user's folders with chats sequentially.
 
         .. include:: /_includes/usable-by/users.rst

@@ -821,7 +821,7 @@ class Client(Methods):
         offset: int = 0,
         progress: Callable = None,
         progress_args: tuple = ()
-    ) -> Optional[AsyncGenerator[bytes, None]]:
+    ) -> AsyncGenerator[bytes, None]:
         async with self.get_file_semaphore:
             file_type = file_id.file_type
 

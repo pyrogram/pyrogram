@@ -29,7 +29,7 @@ class GetStoriesArchive:
         chat_id: Union[int, str],
         limit: int = 0,
         offset_id: int = 0
-    ) -> Optional[AsyncGenerator["types.Story", None]]:
+    ) -> AsyncGenerator["types.Story", None]:
         """Get stories archive.
 
         .. include:: /_includes/usable-by/users.rst

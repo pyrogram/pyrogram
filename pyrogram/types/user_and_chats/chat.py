@@ -895,7 +895,7 @@ class Chat(Object):
         query: str = "",
         limit: int = 0,
         filter: "enums.ChatMembersFilter" = enums.ChatMembersFilter.SEARCH
-    ) -> Optional[AsyncGenerator["types.ChatMember", None]]:
+    ) -> AsyncGenerator["types.ChatMember", None]:
         """Bound method *get_members* of :obj:`~pyrogram.types.Chat`.
 
         Use as a shortcut for:

@@ -30,7 +30,7 @@ class SearchGlobal:
         query: str = "",
         filter: "enums.MessagesFilter" = enums.MessagesFilter.EMPTY,
         limit: int = 0,
-    ) -> Optional[AsyncGenerator["types.Message", None]]:
+    ) -> AsyncGenerator["types.Message", None]:
         """Search messages globally from all of your chats.
 
         If you want to get the messages count only, see :meth:`~pyrogram.Client.search_global_count`.
@@ -46,7 +46,7 @@ class SearchGlobal:
             query (``str``, *optional*):
                 Text query string.
                 Use "@" to search for mentions.
-            
+
             filter (:obj:`~pyrogram.enums.MessagesFilter`, *optional*):
                 Pass a filter in order to search for specific kind of messages only.
                 Defaults to any message (no filter).

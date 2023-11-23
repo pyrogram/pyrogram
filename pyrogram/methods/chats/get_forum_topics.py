@@ -28,7 +28,7 @@ class GetForumTopics:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         limit: int = 0
-    ) -> Optional[AsyncGenerator["types.ForumTopic", None]]:
+    ) -> AsyncGenerator["types.ForumTopic", None]:
         """Get one or more topic from a chat.
 
         .. include:: /_includes/usable-by/users.rst
