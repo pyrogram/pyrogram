@@ -1669,7 +1669,8 @@ class Story(Object, Update):
                 For a contact that exists in your Telegram address book you can use his phone number (str).
 
             message_thread_id (``int``, *optional*):
-                Unique identifier of a message thread to which the message belongs; for supergroups only
+                Unique identifier of a message thread to which the message belongs.
+                For supergroups only.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.

@@ -54,7 +54,8 @@ class ForwardMessages:
                 An iterable of message identifiers in the chat specified in *from_chat_id* or a single message id.
 
             message_thread_id (``int``, *optional*):
-                Unique identifier of a message thread to which the message belongs; for supergroups only
+                Unique identifier of a message thread to which the message belongs.
+                For supergroups only.
 
             disable_notification (``bool``, *optional*):
                 Sends the message silently.

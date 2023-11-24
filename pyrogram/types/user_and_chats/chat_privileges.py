@@ -63,7 +63,7 @@ class ChatPrivileges(Object):
             True, if the user is allowed to pin messages.
 
         can_manage_topics (``bool``, *optional*):
-            supergroups only.
+            Supergroups only.
             True, if the user is allowed to create, rename, close, and reopen forum topics.
 
         is_anonymous (``bool``, *optional*):

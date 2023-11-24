@@ -37,7 +37,7 @@ class Chat(Object):
             Type of chat.
 
         is_forum (``bool``, *optional*):
-            True, if the supergroup chat is a forum
+            True, if the supergroup chat is a forum.
 
         is_verified (``bool``, *optional*):
             True, if this chat has been verified by Telegram. Supergroups, channels and bots only.

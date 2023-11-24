@@ -56,7 +56,7 @@ class ChatPermissions(Object):
 
         can_manage_topics (``bool``, *optional*):
             True, if the user is allowed to create, rename, close, and reopen forum topics.
-            supergroups only.
+            Supergroups only.
     """
 
     def __init__(
