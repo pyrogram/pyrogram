@@ -1205,6 +1205,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_message(
             chat_id=self.chat.id,
             text=text,
@@ -1361,6 +1364,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_animation(
             chat_id=self.chat.id,
             animation=animation,
@@ -1516,6 +1522,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_audio(
             chat_id=self.chat.id,
             audio=audio,
@@ -1622,6 +1631,9 @@ class Message(Object, Update):
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
+
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
 
         return await self._client.send_cached_media(
             chat_id=self.chat.id,
@@ -1764,6 +1776,9 @@ class Message(Object, Update):
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
+
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
 
         return await self._client.send_contact(
             chat_id=self.chat.id,
@@ -1921,6 +1936,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_document(
             chat_id=self.chat.id,
             document=document,
@@ -2006,6 +2024,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_game(
             chat_id=self.chat.id,
             game_short_name=game_short_name,
@@ -2087,6 +2108,9 @@ class Message(Object, Update):
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
+
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
 
         return await self._client.send_inline_bot_result(
             chat_id=self.chat.id,
@@ -2178,6 +2202,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_location(
             chat_id=self.chat.id,
             latitude=latitude,
@@ -2260,6 +2287,9 @@ class Message(Object, Update):
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
+
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
 
         return await self._client.send_media_group(
             chat_id=self.chat.id,
@@ -2396,6 +2426,9 @@ class Message(Object, Update):
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
+
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
 
         return await self._client.send_photo(
             chat_id=self.chat.id,
@@ -2556,6 +2589,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_poll(
             chat_id=self.chat.id,
             question=question,
@@ -2688,6 +2724,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_sticker(
             chat_id=self.chat.id,
             sticker=sticker,
@@ -2803,6 +2842,9 @@ class Message(Object, Update):
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
+
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
 
         return await self._client.send_venue(
             chat_id=self.chat.id,
@@ -2969,6 +3011,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_video(
             chat_id=self.chat.id,
             video=video,
@@ -3114,6 +3159,9 @@ class Message(Object, Update):
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
 
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
+
         return await self._client.send_video_note(
             chat_id=self.chat.id,
             video_note=video_note,
@@ -3249,6 +3297,9 @@ class Message(Object, Update):
 
         if reply_to_message_id is None and quote:
             reply_to_message_id = self.id
+
+        if message_thread_id is None:
+            message_thread_id = self.message_thread_id
 
         return await self._client.send_voice(
             chat_id=self.chat.id,
