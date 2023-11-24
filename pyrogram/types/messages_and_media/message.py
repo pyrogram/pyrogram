@@ -201,6 +201,9 @@ class Message(Object, Update):
         game (:obj:`~pyrogram.types.Game`, *optional*):
             Message is a game, information about the game.
 
+        giveaway (:obj:`~pyrogram.types.Giveaway`, *optional*):
+            Message is a giveaway, information about the giveaway.
+
         story (:obj:`~pyrogram.types.MessageStory`, *optional*):
             Message is a story, information about the story.
 
@@ -349,6 +352,9 @@ class Message(Object, Update):
         web_app_data (:obj:`~pyrogram.types.WebAppData`, *optional*):
             Service message: web app data sent to the bot.
 
+        gift_code (:obj:`~pyrogram.types.GiftCode`, *optional*):
+            Service message: gift code information.
+
         reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
             Additional interface options. An object for an inline keyboard, custom reply keyboard,
             instructions to remove reply keyboard or to force a reply from the user.
@@ -451,6 +457,7 @@ class Message(Object, Update):
         video_chat_ended: "types.VideoChatEnded" = None,
         video_chat_members_invited: "types.VideoChatMembersInvited" = None,
         web_app_data: "types.WebAppData" = None,
+        gift_code: "types.GiftCode" = None,
         giveaway_launched: bool = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
@@ -548,6 +555,7 @@ class Message(Object, Update):
         self.video_chat_ended = video_chat_ended
         self.video_chat_members_invited = video_chat_members_invited
         self.web_app_data = web_app_data
+        self.gift_code = gift_code
         self.giveaway_launched = giveaway_launched
         self.reactions = reactions
 
@@ -610,6 +618,7 @@ class Message(Object, Update):
             video_chat_ended = None
             video_chat_members_invited = None
             web_app_data = None
+            gift_code = None
             giveaway_launched = None
 
             service_type = None
@@ -686,6 +695,10 @@ class Message(Object, Update):
             elif isinstance(action, raw.types.MessageActionGiveawayLaunch):
                 giveaway_launched = True
                 service_type = enums.MessageServiceType.GIVEAWAY_LAUNCH
+            elif isinstance(action, raw.types.MessageActionGiftCode):
+                gift_code = types.GiftCode._parse(client, action, chats)
+                service_type = enums.MessageServiceType.GIFT_CODE
+
 
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
@@ -722,6 +735,7 @@ class Message(Object, Update):
                 video_chat_members_invited=video_chat_members_invited,
                 web_app_data=web_app_data,
                 giveaway_launched=giveaway_launched,
+                gift_code=gift_code,
                 client=client
                 # TODO: supergroup_chat_created
             )

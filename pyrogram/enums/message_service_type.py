@@ -81,6 +81,9 @@ class MessageServiceType(AutoName):
     GIVEAWAY_LAUNCH = auto()
     "Giveaway launch"
 
+    GIFT_CODE = auto()
+    "Gift code"
+
     VIDEO_CHAT_STARTED = auto()
     "Video chat started"
 
