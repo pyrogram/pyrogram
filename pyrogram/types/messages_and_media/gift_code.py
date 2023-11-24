@@ -70,3 +70,7 @@ class GiftCode(Object):
             months=giftcode.months,
             slug=giftcode.slug
         )
+
+    @property
+    def link(self) -> str:
+        return f"https://t.me/giftcode/{self.slug}"
