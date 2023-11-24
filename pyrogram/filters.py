@@ -328,6 +328,17 @@ giveaway = create(giveaway_filter)
 
 # endregion
 
+# region gift_code_filter
+async def gift_code_filter(_, __, m: Message):
+    return bool(m.gift_code)
+
+
+gift_code = create(gift_code_filter)
+"""Filter messages that contain :obj:`~pyrogram.types.GiftCode` objects."""
+
+
+# endregion
+
 # region video_filter
 async def video_filter(_, __, m: Message):
     return bool(m.video)
