@@ -3714,6 +3714,7 @@ class Message(Object, Update):
                 disable_notification=disable_notification,
                 message_thread_id=message_thread_id,
                 reply_to_message_id=reply_to_message_id,
+                reply_to_chat_id=reply_to_chat_id,
                 quote_text=quote_text,
                 quote_entities=quote_entities,
                 schedule_date=schedule_date,

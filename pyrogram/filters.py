@@ -184,6 +184,17 @@ bot = create(bot_filter)
 
 # endregion
 
+# region sender_chat_filter
+async def sender_chat_filter(_, __, m: Message):
+    return bool(m.sender_chat)
+
+
+sender_chat = create(sender_chat_filter)
+"""Filter messages coming from sender chat."""
+
+
+# endregion
+
 # region incoming_filter
 async def incoming_filter(_, __, m: Message):
     return not m.outgoing
