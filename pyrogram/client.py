@@ -500,15 +500,15 @@ class Client(Methods):
                 is_min = True
                 continue
 
-            username = None
+            usernames = None
             phone_number = None
 
             if isinstance(peer, raw.types.User):
                 peer_id = peer.id
                 access_hash = peer.access_hash
-                username = (
-                    peer.username.lower() if peer.username
-                    else peer.usernames[0].username.lower() if peer.usernames
+                usernames = (
+                    [peer.username.lower()] if peer.username
+                    else [username.username.lower() for username in peer.usernames] if peer.usernames
                     else None
                 )
                 phone_number = peer.phone
@@ -520,9 +520,9 @@ class Client(Methods):
             elif isinstance(peer, raw.types.Channel):
                 peer_id = utils.get_channel_id(peer.id)
                 access_hash = peer.access_hash
-                username = (
-                    peer.username.lower() if peer.username
-                    else peer.usernames[0].username.lower() if peer.usernames
+                usernames = (
+                    [peer.username.lower()] if peer.username
+                    else [username.username.lower() for username in peer.usernames] if peer.usernames
                     else None
                 )
                 peer_type = "channel" if peer.broadcast else "supergroup"
@@ -533,7 +533,7 @@ class Client(Methods):
             else:
                 continue
 
-            parsed_peers.append((peer_id, access_hash, peer_type, username, phone_number))
+            parsed_peers.append((peer_id, access_hash, peer_type, usernames, phone_number))
 
         await self.storage.update_peers(parsed_peers)
 

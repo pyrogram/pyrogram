@@ -25,6 +25,17 @@ from .sqlite_storage import SQLiteStorage
 
 log = logging.getLogger(__name__)
 
+SCHEMA = """
+CREATE TABLE usernames
+(
+    id       INTEGER,
+    username TEXT,
+    FOREIGN KEY (id) REFERENCES peers(id)
+);
+
+CREATE INDEX idx_usernames_username ON usernames (username);
+"""
+
 
 class FileStorage(SQLiteStorage):
     FILE_EXTENSION = ".session"
@@ -46,6 +57,12 @@ class FileStorage(SQLiteStorage):
         if version == 2:
             with self.conn:
                 self.conn.execute("ALTER TABLE sessions ADD api_id INTEGER")
+
+            version += 1
+
+        if version == 3:
+            with self.conn:
+                self.conn.executescript(SCHEMA)
 
             version += 1
 
