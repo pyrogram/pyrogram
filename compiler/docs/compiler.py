@@ -237,6 +237,20 @@ def pyrogram_api():
             get_send_as_chats
             set_send_as_chat
             set_chat_protected_content
+            close_forum_topic
+            create_forum_topic
+            delete_forum_topic
+            edit_forum_topic
+            get_forum_topics
+            get_forum_topics_by_id
+            update_color
+            update_chat_notifications
+            toggle_forum_topics
+            delete_folder
+            export_folder_link
+            get_folder
+            get_folders
+            update_folder
         """,
         users="""
         Users
@@ -330,6 +344,29 @@ def pyrogram_api():
             invoke
             resolve_peer
             save_file
+        """,
+        stories="""
+        Stories
+            delete_stories
+            edit_story
+            export_story_link
+            get_all_stories
+            get_stories_archive
+            increment_story_views
+            read_stories
+            send_story
+            pin_stories
+            hide_stories
+            can_send_story
+            get_pinned_stories
+            copy_story
+            forward_story
+        """,
+        premium="""
+        Premium
+            apply_boost
+            get_boosts
+            get_boosts_status
         """
     )
 
@@ -388,6 +425,7 @@ def pyrogram_api():
             Dialog
             Restriction
             EmojiStatus
+            Folder
         """,
         messages_media="""
         Messages & Media
@@ -418,6 +456,15 @@ def pyrogram_api():
             WebAppData
             MessageReactions
             ChatReactions
+            MessageStory
+            Story
+            StoryDeleted
+            StorySkipped
+            StoryViews
+            MyBoost
+            BoostsStatus
+            Giveaway
+            GiftCode
         """,
         bot_keyboards="""
         Bot keyboards
@@ -437,6 +484,7 @@ def pyrogram_api():
             MenuButtonWebApp
             MenuButtonDefault
             SentWebAppMessage
+            ForumTopic
         """,
         bot_commands="""
         Bot commands
@@ -579,6 +627,8 @@ def pyrogram_api():
             Chat.mark_unread
             Chat.set_protected_content
             Chat.unpin_all_messages
+            Chat.mute
+            Chat.unmute
         """,
         user="""
         User
@@ -603,6 +653,37 @@ def pyrogram_api():
         ChatJoinRequest
             ChatJoinRequest.approve
             ChatJoinRequest.decline
+        """,
+        story="""
+        Story
+            Story.reply_text
+            Story.reply_animation
+            Story.reply_audio
+            Story.reply_cached_media
+            Story.reply_media_group
+            Story.reply_photo
+            Story.reply_sticker
+            Story.reply_video
+            Story.reply_video_note
+            Story.reply_voice
+            Story.delete
+            Story.edit
+            Story.edit_caption
+            Story.edit_privacy
+            Story.export_link
+            Story.react
+            Story.copy
+            Story.forward
+            Story.read
+        """,
+        folder="""
+        Folder
+            Folder.delete
+            Folder.update_peers
+            Folder.pin_chat
+            Folder.include_chat
+            Folder.exclude_chat
+            Folder.export_link
         """
     )
 

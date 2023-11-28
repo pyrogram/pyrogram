@@ -124,7 +124,7 @@ class Story(Object, Update):
         caption: str = None,
         caption_entities: List["types.MessageEntity"] = None,
         views: "types.StoryViews" = None,
-        privacy: "enums.StoryPrivacy" = None,
+        privacy: "enums.StoryPrivacyRules" = None,
         allowed_users: List[Union[int, str]] = None,
         disallowed_users: List[Union[int, str]] = None,
     ):
