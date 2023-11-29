@@ -485,6 +485,10 @@ def pyrogram_api():
             MenuButtonDefault
             SentWebAppMessage
             ForumTopic
+            RequestPeerTypeBroadcastInfo
+            RequestPeerTypeChatInfo
+            RequestPeerTypeUserInfo
+            RequestPeerPollInfo
         """,
         bot_commands="""
         Bot commands
