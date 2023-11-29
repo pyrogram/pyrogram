@@ -31,20 +31,20 @@ class UpdateColor:
     ) -> "types.Chat":
         """Update color
 
-        .. include:: /_includes/usable-by/users-bots.rst
+        .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
             color (``int``):
-                Color
+                Numeric color identifier.
 
             background_emoji_id (``int``, *optional*):
-                Background emoji
+                Unique identifier of the custom emoji.
 
         Returns:
-            ``bool``: True on success.
+            :obj:`~pyrogram.types.Chat`: On success, a chat object is returned.
 
         Example:
             .. code-block:: python
@@ -63,7 +63,7 @@ class UpdateColor:
             )
 
             r = await self.invoke(raw.functions.users.GetUsers(id=[raw.types.InputPeerSelf()]))
-            return types.Chat._parse_user_chat(self, r[0])
+            chat = r[0]
         else:
             r = await self.invoke(
                 raw.functions.channels.UpdateColor(
@@ -72,5 +72,6 @@ class UpdateColor:
                     background_emoji_id=background_emoji_id
                 )
             )
+            chat = r.chats[0]
 
-            return types.Chat._parse_channel_chat(self, r.chats[0])
+        return types.Chat._parse_chat(self, chat)
