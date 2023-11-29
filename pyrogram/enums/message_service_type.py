@@ -98,3 +98,6 @@ class MessageServiceType(AutoName):
 
     WEB_APP_DATA = auto()
     "Web app data"
+
+    REQUESTED_CHAT = auto()
+    "Requested chat"
