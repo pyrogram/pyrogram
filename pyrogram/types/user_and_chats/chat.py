@@ -154,8 +154,8 @@ class Chat(Object):
             Available reactions in the chat.
             Returned only in :meth:`~pyrogram.Client.get_chat`.
 
-        color (``int``, *optional*)
-            Chat color.
+        color (:obj:`~pyrogram.enums.ProfileColor`, *optional*)
+            Chat reply color.
 
         background_emoji_id (``int``, *optional*)
             Chat background emoji id.
@@ -200,7 +200,7 @@ class Chat(Object):
         linked_chat: "types.Chat" = None,
         send_as_chat: "types.Chat" = None,
         available_reactions: Optional["types.ChatReactions"] = None,
-        color: int = None,
+        color: "enums.ProfileColor" = None,
         background_emoji_id: int = None
     ):
         super().__init__(client)
@@ -262,7 +262,7 @@ class Chat(Object):
             photo=types.ChatPhoto._parse(client, user.photo, peer_id, user.access_hash),
             restrictions=types.List([types.Restriction._parse(r) for r in user.restriction_reason]) or None,
             dc_id=getattr(getattr(user, "photo", None), "dc_id", None),
-            color=getattr(user, "color", None),
+            color=enums.ProfileColor(user.color) if getattr(user, "color", None) else None,
             background_emoji_id=getattr(user, "background_emoji_id", None),
             client=client
         )
@@ -318,7 +318,7 @@ class Chat(Object):
             members_count=getattr(channel, "participants_count", None),
             dc_id=getattr(getattr(channel, "photo", None), "dc_id", None),
             has_protected_content=getattr(channel, "noforwards", None),
-            color=getattr(channel, "color", None),
+            color=enums.ProfileColor(channel.color) if getattr(channel, "color", None) else None,
             background_emoji_id=getattr(channel, "background_emoji_id", None),
             client=client
         )

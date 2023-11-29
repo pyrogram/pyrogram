@@ -28,6 +28,7 @@ from .messages_filter import MessagesFilter
 from .next_code_type import NextCodeType
 from .parse_mode import ParseMode
 from .poll_type import PollType
+from .profile_color import ProfileColor
 from .sent_code_type import SentCodeType
 from .stories_privacy_rules import StoriesPrivacyRules
 from .user_status import UserStatus
@@ -45,6 +46,7 @@ __all__ = [
     'NextCodeType',
     'ParseMode',
     'PollType',
+    'ProfileColor',
     'SentCodeType',
     'StoriesPrivacyRules',
     'UserStatus'

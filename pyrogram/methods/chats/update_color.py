@@ -20,13 +20,14 @@ from typing import Union
 
 import pyrogram
 from pyrogram import raw
+from pyrogram import enums
 from pyrogram import types
 
 class UpdateColor:
     async def update_color(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        color: int,
+        color: "enums.ProfileColor",
         background_emoji_id: int = None
     ) -> "types.Chat":
         """Update color
@@ -37,8 +38,8 @@ class UpdateColor:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
 
-            color (``int``):
-                Numeric color identifier.
+            color (:obj:`~pyrogram.enums.ProfileColor`):
+                Color type.
 
             background_emoji_id (``int``, *optional*):
                 Unique identifier of the custom emoji.
