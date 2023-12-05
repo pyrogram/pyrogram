@@ -50,7 +50,7 @@ class GetChatHistoryCount:
         Example:
             .. code-block:: python
 
-                await app.get_history_count(chat_id)
+                await app.get_chat_history_count(chat_id)
         """
 
         r = await self.invoke(
