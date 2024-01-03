@@ -55,6 +55,7 @@ from .unarchive_chats import UnarchiveChats
 from .unban_chat_member import UnbanChatMember
 from .unpin_all_chat_messages import UnpinAllChatMessages
 from .unpin_chat_message import UnpinChatMessage
+from .set_chat_ttl import SetChatTTL
 
 
 class Chats(
@@ -96,6 +97,7 @@ class Chats(
     GetChatOnlineCount,
     GetSendAsChats,
     SetSendAsChat,
-    SetChatProtectedContent
+    SetChatProtectedContent,
+    SetChatTTL,
 ):
     pass

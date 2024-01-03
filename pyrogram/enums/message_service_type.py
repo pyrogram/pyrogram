@@ -71,3 +71,6 @@ class MessageServiceType(AutoName):
 
     WEB_APP_DATA = auto()
     "Web app data"
+
+    CHAT_TTL_CHANGED = auto()
+    "Chat TTL changed"
