@@ -52,5 +52,5 @@ class TermsOfService(Object):
             entities=[
                 types.MessageEntity._parse(None, entity, {})
                 for entity in terms_of_service.entities
-            ]
+            ] if terms_of_service.entities else None
         )

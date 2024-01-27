@@ -42,7 +42,7 @@ class TCPAbridgedO(TCP):
         while True:
             nonce = bytearray(os.urandom(64))
 
-            if nonce[0] != b"\xef" and nonce[:4] not in self.RESERVED and nonce[4:4] != b"\x00" * 4:
+            if bytes([nonce[0]]) != b"\xef" and nonce[:4] not in self.RESERVED and nonce[4:8] != b"\x00" * 4:
                 nonce[56] = nonce[57] = nonce[58] = nonce[59] = 0xef
                 break
 

@@ -33,6 +33,8 @@ class RequestCallbackAnswer:
         """Request a callback answer from bots.
         This is the equivalent of clicking an inline button containing callback data.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

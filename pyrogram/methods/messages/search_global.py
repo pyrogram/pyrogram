@@ -40,6 +40,8 @@ class SearchGlobal:
             Due to server-side limitations, you can only get up to around ~10,000 messages and each message
             retrieved will not have any *reply_to_message* field.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             query (``str``, *optional*):
                 Text query string.

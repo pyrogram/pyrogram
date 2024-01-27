@@ -29,6 +29,8 @@ class DeleteSupergroup:
     ) -> bool:
         """Delete a supergroup.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 The id of the supergroup to be deleted.

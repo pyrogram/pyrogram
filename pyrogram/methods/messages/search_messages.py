@@ -72,6 +72,8 @@ class SearchMessages:
 
         If you want to get the messages count only, see :meth:`~pyrogram.Client.search_messages_count`.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

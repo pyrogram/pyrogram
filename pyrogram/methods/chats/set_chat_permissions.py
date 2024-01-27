@@ -34,6 +34,8 @@ class SetChatPermissions:
         You must be an administrator in the group or a supergroup for this to work and must have the
         *can_restrict_members* admin rights.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

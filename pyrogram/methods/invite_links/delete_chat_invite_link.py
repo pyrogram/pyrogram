@@ -30,6 +30,8 @@ class DeleteChatInviteLink:
     ) -> bool:
         """Delete an already revoked invite link.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup

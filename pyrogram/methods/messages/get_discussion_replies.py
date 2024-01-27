@@ -31,6 +31,8 @@ class GetDiscussionReplies:
     ) -> Optional[AsyncGenerator["types.Message", None]]:
         """Get the message replies of a discussion thread.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

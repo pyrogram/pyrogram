@@ -4,4 +4,6 @@
 .. module:: {module}
 
 .. toctree::
+    :titlesonly:
+
     {entities}

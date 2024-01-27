@@ -105,6 +105,12 @@ class Markdown:
                 delims.remove(delim)
                 tag = CLOSING_TAG.format(tag)
 
+            if delim == PRE_DELIM and delim in delims:
+                delim_and_language = text[text.find(PRE_DELIM):].split("\n")[0]
+                language = delim_and_language[len(PRE_DELIM):]
+                text = utils.replace_once(text, delim_and_language, f'<pre language="{language}">', start)
+                continue
+
             text = utils.replace_once(text, delim, tag, start)
 
         return await self.html.parse(text)
@@ -130,7 +136,11 @@ class Markdown:
                 start_tag = end_tag = STRIKE_DELIM
             elif entity_type == MessageEntityType.CODE:
                 start_tag = end_tag = CODE_DELIM
-            elif entity_type in (MessageEntityType.PRE, MessageEntityType.BLOCKQUOTE):
+            elif entity_type == MessageEntityType.PRE:
+                language = getattr(entity, "language", "") or ""
+                start_tag = f"{PRE_DELIM}{language}\n"
+                end_tag = f"\n{PRE_DELIM}"
+            elif entity_type == MessageEntityType.BLOCKQUOTE:
                 start_tag = end_tag = PRE_DELIM
             elif entity_type == MessageEntityType.SPOILER:
                 start_tag = end_tag = SPOILER_DELIM

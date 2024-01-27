@@ -30,9 +30,11 @@ class SendInlineBotResult:
         result_id: str,
         disable_notification: bool = None,
         reply_to_message_id: int = None
-    ):
+    ) -> "raw.base.Updates":
         """Send an inline bot result.
         Bot results can be retrieved using :meth:`~pyrogram.Client.get_inline_bot_results`
+
+        .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -54,7 +56,7 @@ class SendInlineBotResult:
                 If the message is a reply, ID of the original message.
 
         Returns:
-            :obj:`~pyrogram.types.Message`: On success, the sent inline result message is returned.
+            :obj:`~pyrogram.raw.base.Updates`: Currently, on success, a raw result is returned.
 
         Example:
             .. code-block:: python

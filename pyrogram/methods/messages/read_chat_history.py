@@ -30,6 +30,8 @@ class ReadChatHistory:
     ) -> bool:
         """Mark a chat's message history as read.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

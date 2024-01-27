@@ -29,6 +29,8 @@ class GetDialogs:
     ) -> Optional[AsyncGenerator["types.Dialog", None]]:
         """Get a user's dialogs sequentially.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             limit (``int``, *optional*):
                 Limits the number of dialogs to be retrieved.

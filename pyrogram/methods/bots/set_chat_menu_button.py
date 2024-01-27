@@ -31,6 +31,8 @@ class SetChatMenuButton:
     ) -> bool:
         """Change the bot's menu button in a private chat, or the default menu button.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``, *optional*):
                 Unique identifier (int) or username (str) of the target chat.

@@ -41,6 +41,8 @@ class BanChatMember:
             off in the target group. Otherwise members may only be removed by the group's creator or by the member
             that added them.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

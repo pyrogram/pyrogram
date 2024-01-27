@@ -34,6 +34,8 @@ class SetBotCommands:
         The commands passed will overwrite any command set previously.
         This method can be used by the own bot only.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             commands (List of :obj:`~pyrogram.types.BotCommand`):
                 A list of bot commands.

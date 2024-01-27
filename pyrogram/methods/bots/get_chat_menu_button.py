@@ -30,6 +30,8 @@ class GetChatMenuButton:
     ) -> "types.MenuButton":
         """Get the current value of the bot's menu button in a private chat, or the default menu button.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

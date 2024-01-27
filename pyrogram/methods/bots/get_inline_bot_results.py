@@ -35,6 +35,8 @@ class GetInlineBotResults:
         """Get bot results via inline queries.
         You can then send a result using :meth:`~pyrogram.Client.send_inline_bot_result`
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             bot (``int`` | ``str``):
                 Unique identifier of the inline bot you want to get results from. You can specify

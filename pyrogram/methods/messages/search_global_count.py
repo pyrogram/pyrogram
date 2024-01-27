@@ -30,6 +30,8 @@ class SearchGlobalCount:
 
         If you want to get the actual messages, see :meth:`~pyrogram.Client.search_global`.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             query (``str``, *optional*):
                 Text query string.

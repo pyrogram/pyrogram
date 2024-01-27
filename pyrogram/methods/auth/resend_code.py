@@ -36,6 +36,8 @@ class ResendCode:
         The type of the code to be re-sent is specified in the *next_type* attribute of the
         :obj:`~pyrogram.types.SentCode` object returned by :meth:`send_code`.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             phone_number (``str``):
                 Phone number in international format (includes the country prefix).

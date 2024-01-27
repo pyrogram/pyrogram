@@ -16,9 +16,10 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
+import asyncio
+import io
 import os
 import re
-import asyncio
 
 import pyrogram
 from pyrogram import raw
@@ -42,6 +43,8 @@ class EditInlineMedia:
 
         When the inline message is edited, a new file can't be uploaded. Use a previously uploaded file via its file_id
         or specify a URL.
+
+        .. include:: /_includes/usable-by/bots.rst
 
         Parameters:
             inline_message_id (``str``):
@@ -76,104 +79,114 @@ class EditInlineMedia:
         caption = media.caption
         parse_mode = media.parse_mode
 
-        if isinstance(media, types.InputMediaPhoto):
-            if os.path.isfile(media.media):
-                media = raw.types.InputMediaUploadedPhoto(
-                    file=await self.save_file(media.media)
+        is_bytes_io = isinstance(media.media, io.BytesIO)
+        is_uploaded_file = is_bytes_io or os.path.isfile(media.media)
+
+        is_external_url = not is_uploaded_file and re.match("^https?://", media.media)
+
+        if is_bytes_io and not hasattr(media.media, "name"):
+            media.media.name = "media"
+
+        if is_uploaded_file:
+            filename_attribute = [
+                raw.types.DocumentAttributeFilename(
+                    file_name=media.media.name if is_bytes_io else os.path.basename(media.media)
                 )
-            elif re.match("^https?://", media.media):
+            ]
+        else:
+            filename_attribute = []
+
+        if isinstance(media, types.InputMediaPhoto):
+            if is_uploaded_file:
+                media = raw.types.InputMediaUploadedPhoto(
+                    file=await self.save_file(media.media),
+                    spoiler=media.has_spoiler
+                )
+            elif is_external_url:
                 media = raw.types.InputMediaPhotoExternal(
-                    url=media.media
+                    url=media.media,
+                    spoiler=media.has_spoiler
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.PHOTO)
         elif isinstance(media, types.InputMediaVideo):
-            if os.path.isfile(media.media):
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(media.media) or "video/mp4",
+                    mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "video/mp4",
                     thumb=await self.save_file(media.thumb),
                     file=await self.save_file(media.media),
+                    spoiler=media.has_spoiler,
                     attributes=[
-                        raw.types.DocumentAttributeVideo(
-                            supports_streaming=media.supports_streaming or None,
-                            duration=media.duration,
-                            w=media.width,
-                            h=media.height
-                        ),
-                        raw.types.DocumentAttributeFilename(
-                            file_name=os.path.basename(media.media)
-                        )
-                    ]
+                                   raw.types.DocumentAttributeVideo(
+                                       supports_streaming=media.supports_streaming or None,
+                                       duration=media.duration,
+                                       w=media.width,
+                                       h=media.height
+                                   )
+                               ] + filename_attribute
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaDocumentExternal(
-                    url=media.media
+                    url=media.media,
+                    spoiler=media.has_spoiler
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.VIDEO)
         elif isinstance(media, types.InputMediaAudio):
-            if os.path.isfile(media.media):
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
+                    mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "audio/mpeg",
                     thumb=await self.save_file(media.thumb),
                     file=await self.save_file(media.media),
                     attributes=[
-                        raw.types.DocumentAttributeAudio(
-                            duration=media.duration,
-                            performer=media.performer,
-                            title=media.title
-                        ),
-                        raw.types.DocumentAttributeFilename(
-                            file_name=os.path.basename(media.media)
-                        )
-                    ]
+                                   raw.types.DocumentAttributeAudio(
+                                       duration=media.duration,
+                                       performer=media.performer,
+                                       title=media.title
+                                   )
+                               ] + filename_attribute
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.AUDIO)
         elif isinstance(media, types.InputMediaAnimation):
-            if os.path.isfile(media.media):
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(media.media) or "video/mp4",
+                    mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "video/mp4",
                     thumb=await self.save_file(media.thumb),
                     file=await self.save_file(media.media),
+                    spoiler=media.has_spoiler,
                     attributes=[
-                        raw.types.DocumentAttributeVideo(
-                            supports_streaming=True,
-                            duration=media.duration,
-                            w=media.width,
-                            h=media.height
-                        ),
-                        raw.types.DocumentAttributeFilename(
-                            file_name=os.path.basename(media.media)
-                        ),
-                        raw.types.DocumentAttributeAnimated()
-                    ],
+                                   raw.types.DocumentAttributeVideo(
+                                       supports_streaming=True,
+                                       duration=media.duration,
+                                       w=media.width,
+                                       h=media.height
+                                   ),
+                                   raw.types.DocumentAttributeAnimated()
+                               ] + filename_attribute,
                     nosound_video=True
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaDocumentExternal(
-                    url=media.media
+                    url=media.media,
+                    spoiler=media.has_spoiler
                 )
             else:
                 media = utils.get_input_media_from_file_id(media.media, FileType.ANIMATION)
         elif isinstance(media, types.InputMediaDocument):
-            if os.path.isfile(media.media):
+            if is_uploaded_file:
                 media = raw.types.InputMediaUploadedDocument(
-                    mime_type=self.guess_mime_type(media.media) or "application/zip",
+                    mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "application/zip",
                     thumb=await self.save_file(media.thumb),
                     file=await self.save_file(media.media),
-                    attributes=[
-                        raw.types.DocumentAttributeFilename(
-                            file_name=os.path.basename(media.media)
-                        )
-                    ],
+                    attributes=filename_attribute,
                     force_file=True
                 )
-            elif re.match("^https?://", media.media):
+            elif is_external_url:
                 media = raw.types.InputMediaDocumentExternal(
                     url=media.media
                 )
@@ -185,25 +198,38 @@ class EditInlineMedia:
 
         session = await get_session(self, dc_id)
 
-        actual_media = await self.invoke(
-            raw.functions.messages.UploadMedia(
-                peer=raw.types.InputPeerSelf(),
-                media=media
+        if is_uploaded_file:
+            uploaded_media = await self.invoke(
+                raw.functions.messages.UploadMedia(
+                    peer=raw.types.InputPeerSelf(),
+                    media=media
+                )
             )
-        )
+
+            actual_media = raw.types.InputMediaPhoto(
+                id=raw.types.InputPhoto(
+                    id=uploaded_media.photo.id,
+                    access_hash=uploaded_media.photo.access_hash,
+                    file_reference=uploaded_media.photo.file_reference
+                ),
+                spoiler=getattr(media, "has_spoiler", None)
+            ) if isinstance(media, types.InputMediaPhoto) else raw.types.InputMediaDocument(
+                id=raw.types.InputDocument(
+                    id=uploaded_media.document.id,
+                    access_hash=uploaded_media.document.access_hash,
+                    file_reference=uploaded_media.document.file_reference
+                ),
+                spoiler=getattr(media, "has_spoiler", None)
+            )
+        else:
+            actual_media = media
 
         for i in range(self.MAX_RETRIES):
             try:
                 return await session.invoke(
                     raw.functions.messages.EditInlineBotMessage(
                         id=unpacked,
-                        media=raw.types.InputMediaDocument(
-                            id=raw.types.InputDocument(
-                                id=actual_media.document.id,
-                                access_hash=actual_media.document.access_hash,
-                                file_reference=actual_media.document.file_reference
-                            )
-                        ),
+                        media=actual_media,
                         reply_markup=await reply_markup.write(self) if reply_markup else None,
                         **await self.parser.parse(caption, parse_mode)
                     ),

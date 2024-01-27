@@ -32,6 +32,8 @@ class GetNearbyChats:
     ) -> List["types.Chat"]:
         """Get nearby chats.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             latitude (``float``):
                 Latitude of the location.

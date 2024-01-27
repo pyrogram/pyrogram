@@ -45,6 +45,9 @@ class InputMediaPhoto(InputMedia):
 
         caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
             List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+
+        has_spoiler (``bool``, *optional*):
+            Pass True if the photo needs to be covered with a spoiler animation.
     """
 
     def __init__(
@@ -52,6 +55,9 @@ class InputMediaPhoto(InputMedia):
         media: Union[str, BinaryIO],
         caption: str = "",
         parse_mode: Optional["enums.ParseMode"] = None,
-        caption_entities: List[MessageEntity] = None
+        caption_entities: List[MessageEntity] = None,
+        has_spoiler: bool = None
     ):
         super().__init__(media, caption, parse_mode, caption_entities)
+
+        self.has_spoiler = has_spoiler

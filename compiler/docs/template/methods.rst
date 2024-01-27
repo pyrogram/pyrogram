@@ -14,10 +14,6 @@ the main package directly.
     with app:
         app.send_message("me", "hi")
 
-.. contents:: Contents
-    :backlinks: none
-    :local:
-
 -----
 
 .. currentmodule:: pyrogram.Client

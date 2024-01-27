@@ -30,6 +30,8 @@ class ImportContacts:
     ):
         """Import contacts to your Telegram address book.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             contacts (List of :obj:`~pyrogram.types.InputPhoneContact`):
                 The contact list to be added

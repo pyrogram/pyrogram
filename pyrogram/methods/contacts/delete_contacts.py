@@ -29,9 +29,11 @@ class DeleteContacts:
     ) -> Union["types.User", List["types.User"], None]:
         """Delete contacts from your Telegram address book.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             user_ids (``int`` | ``str`` | List of ``int`` or ``str``):
-                A single user id/username o a list of user identifiers (id or username).
+                A single user id/username or a list of user identifiers (id or username).
 
         Returns:
             :obj:`~pyrogram.types.User` | List of :obj:`~pyrogram.types.User` | ``None``: In case *user_ids* was an

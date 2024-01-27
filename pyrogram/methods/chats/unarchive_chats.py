@@ -29,6 +29,8 @@ class UnarchiveChats:
     ) -> bool:
         """Unarchive one or more chats.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_ids (``int`` | ``str`` | List[``int``, ``str``]):
                 Unique identifier (int) or username (str) of the target chat.

@@ -40,6 +40,8 @@ class DownloadMedia:
     ) -> Optional[Union[str, BinaryIO]]:
         """Download the media from a message.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             message (:obj:`~pyrogram.types.Message` | ``str``):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or a file id

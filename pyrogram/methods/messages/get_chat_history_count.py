@@ -38,6 +38,8 @@ class GetChatHistoryCount:
             a **private** or a **basic group** chat has with a single method call. To overcome this limitation, Pyrogram
             has to iterate over all the messages. Channels and supergroups are not affected by this limitation.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

@@ -34,6 +34,8 @@ class SetAdministratorTitle:
         If you are an administrator of a supergroup (i.e. not the owner), you can only set the title of other
         administrators who have been promoted by you. If you are the owner, you can change every administrator's title.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

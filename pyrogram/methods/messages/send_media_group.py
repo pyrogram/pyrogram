@@ -49,6 +49,8 @@ class SendMediaGroup:
     ) -> List["types.Message"]:
         """Send a group of photos or videos as an album.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.
@@ -98,7 +100,8 @@ class SendMediaGroup:
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaUploadedPhoto(
-                                    file=await self.save_file(i.media)
+                                    file=await self.save_file(i.media),
+                                    spoiler=i.has_spoiler
                                 )
                             )
                         )
@@ -108,14 +111,16 @@ class SendMediaGroup:
                                 id=media.photo.id,
                                 access_hash=media.photo.access_hash,
                                 file_reference=media.photo.file_reference
-                            )
+                            ),
+                            spoiler=i.has_spoiler
                         )
                     elif re.match("^https?://", i.media):
                         media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaPhotoExternal(
-                                    url=i.media
+                                    url=i.media,
+                                    spoiler=i.has_spoiler
                                 )
                             )
                         )
@@ -125,7 +130,8 @@ class SendMediaGroup:
                                 id=media.photo.id,
                                 access_hash=media.photo.access_hash,
                                 file_reference=media.photo.file_reference
-                            )
+                            ),
+                            spoiler=i.has_spoiler
                         )
                     else:
                         media = utils.get_input_media_from_file_id(i.media, FileType.PHOTO)
@@ -134,7 +140,8 @@ class SendMediaGroup:
                         raw.functions.messages.UploadMedia(
                             peer=await self.resolve_peer(chat_id),
                             media=raw.types.InputMediaUploadedPhoto(
-                                file=await self.save_file(i.media)
+                                file=await self.save_file(i.media),
+                                spoiler=i.has_spoiler
                             )
                         )
                     )
@@ -144,7 +151,8 @@ class SendMediaGroup:
                             id=media.photo.id,
                             access_hash=media.photo.access_hash,
                             file_reference=media.photo.file_reference
-                        )
+                        ),
+                        spoiler=i.has_spoiler
                     )
             elif isinstance(i, types.InputMediaVideo):
                 if isinstance(i.media, str):
@@ -155,6 +163,7 @@ class SendMediaGroup:
                                 media=raw.types.InputMediaUploadedDocument(
                                     file=await self.save_file(i.media),
                                     thumb=await self.save_file(i.thumb),
+                                    spoiler=i.has_spoiler,
                                     mime_type=self.guess_mime_type(i.media) or "video/mp4",
                                     attributes=[
                                         raw.types.DocumentAttributeVideo(
@@ -174,14 +183,16 @@ class SendMediaGroup:
                                 id=media.document.id,
                                 access_hash=media.document.access_hash,
                                 file_reference=media.document.file_reference
-                            )
+                            ),
+                            spoiler=i.has_spoiler
                         )
                     elif re.match("^https?://", i.media):
                         media = await self.invoke(
                             raw.functions.messages.UploadMedia(
                                 peer=await self.resolve_peer(chat_id),
                                 media=raw.types.InputMediaDocumentExternal(
-                                    url=i.media
+                                    url=i.media,
+                                    spoiler=i.has_spoiler
                                 )
                             )
                         )
@@ -191,7 +202,8 @@ class SendMediaGroup:
                                 id=media.document.id,
                                 access_hash=media.document.access_hash,
                                 file_reference=media.document.file_reference
-                            )
+                            ),
+                            spoiler=i.has_spoiler
                         )
                     else:
                         media = utils.get_input_media_from_file_id(i.media, FileType.VIDEO)
@@ -202,6 +214,7 @@ class SendMediaGroup:
                             media=raw.types.InputMediaUploadedDocument(
                                 file=await self.save_file(i.media),
                                 thumb=await self.save_file(i.thumb),
+                                spoiler=i.has_spoiler,
                                 mime_type=self.guess_mime_type(getattr(i.media, "name", "video.mp4")) or "video/mp4",
                                 attributes=[
                                     raw.types.DocumentAttributeVideo(
@@ -221,7 +234,8 @@ class SendMediaGroup:
                             id=media.document.id,
                             access_hash=media.document.access_hash,
                             file_reference=media.document.file_reference
-                        )
+                        ),
+                        spoiler=i.has_spoiler
                     )
             elif isinstance(i, types.InputMediaAudio):
                 if isinstance(i.media, str):

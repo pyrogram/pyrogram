@@ -39,6 +39,7 @@ class SendAnimation:
         unsave: bool = False,
         parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
+        has_spoiler: bool = None,
         duration: int = 0,
         width: int = 0,
         height: int = 0,
@@ -58,6 +59,8 @@ class SendAnimation:
         progress_args: tuple = ()
     ) -> Optional["types.Message"]:
         """Send animation files (animation or H.264/MPEG-4 AVC video without sound).
+
+        .. include:: /_includes/usable-by/users-bots.rst
 
         Parameters:
             chat_id (``int`` | ``str``):
@@ -85,6 +88,9 @@ class SendAnimation:
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
+
+            has_spoiler (``bool``, *optional*):
+                Pass True if the animation needs to be covered with a spoiler animation.
 
             duration (``int``, *optional*):
                 Duration of sent animation in seconds.
@@ -178,6 +184,7 @@ class SendAnimation:
                         mime_type=self.guess_mime_type(animation) or "video/mp4",
                         file=file,
                         thumb=thumb,
+                        spoiler=has_spoiler,
                         attributes=[
                             raw.types.DocumentAttributeVideo(
                                 supports_streaming=True,
@@ -191,7 +198,8 @@ class SendAnimation:
                     )
                 elif re.match("^https?://", animation):
                     media = raw.types.InputMediaDocumentExternal(
-                        url=animation
+                        url=animation,
+                        spoiler=has_spoiler
                     )
                 else:
                     media = utils.get_input_media_from_file_id(animation, FileType.ANIMATION)
@@ -202,6 +210,7 @@ class SendAnimation:
                     mime_type=self.guess_mime_type(file_name or animation.name) or "video/mp4",
                     file=file,
                     thumb=thumb,
+                    spoiler=has_spoiler,
                     attributes=[
                         raw.types.DocumentAttributeVideo(
                             supports_streaming=True,

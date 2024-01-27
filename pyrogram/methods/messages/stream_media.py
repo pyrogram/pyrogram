@@ -36,6 +36,8 @@ class StreamMedia:
         You can use this method to partially download a file into memory or to selectively download chunks of file.
         The chunk maximum size is 1 MiB (1024 * 1024 bytes).
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             message (:obj:`~pyrogram.types.Message` | ``str``):
                 Pass a Message containing the media, the media itself (message.audio, message.video, ...) or a file id

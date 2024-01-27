@@ -17,10 +17,6 @@ are only returned by other methods. You also don't need to import them, unless y
 
     To tell whether a field is set or not, do a simple boolean check: ``if message.photo: ...``.
 
-.. contents:: Contents
-    :backlinks: none
-    :local:
-
 -----
 
 .. currentmodule:: pyrogram.types

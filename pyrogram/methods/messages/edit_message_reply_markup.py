@@ -32,6 +32,8 @@ class EditMessageReplyMarkup:
     ) -> "types.Message":
         """Edit only the reply markup of messages sent by the bot.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

@@ -32,6 +32,8 @@ class AnswerCallbackQuery:
         """Send answers to callback queries sent from inline keyboards.
         The answer will be displayed to the user as a notification at the top of the chat screen or as an alert.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             callback_query_id (``str``):
                 Unique identifier for the query to be answered.

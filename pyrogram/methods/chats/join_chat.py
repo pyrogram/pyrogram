@@ -30,6 +30,8 @@ class JoinChat:
     ) -> "types.Chat":
         """Join a group chat or channel.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat in form of a *t.me/joinchat/* link, a username of the target

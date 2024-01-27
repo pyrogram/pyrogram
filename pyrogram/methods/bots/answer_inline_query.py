@@ -39,6 +39,8 @@ class AnswerInlineQuery:
 
         A maximum of 50 results per query is allowed.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             inline_query_id (``str``):
                 Unique identifier for the answered query.

@@ -39,6 +39,8 @@ class ExportChatInviteLink:
             :meth:`~pyrogram.Client.get_chat` method. If your bot needs to generate a new invite link replacing its
             previous one, use this method again.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier for the target chat or username of the target channel/supergroup

@@ -31,6 +31,8 @@ class SetBotDefaultPrivileges:
 
         These privileges will be suggested to users, but they are are free to modify the list before adding the bot.
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             privileges (:obj:`~pyrogram.types.ChatPrivileges`):
                 New default privileges. None to clear.

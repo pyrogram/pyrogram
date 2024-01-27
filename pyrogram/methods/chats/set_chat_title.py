@@ -36,6 +36,8 @@ class SetChatTitle:
             In regular groups (non-supergroups), this method will only work if the "All Members Are Admins"
             setting is off.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

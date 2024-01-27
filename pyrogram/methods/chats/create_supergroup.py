@@ -32,6 +32,8 @@ class CreateSupergroup:
 
             If you want to create a new basic group, use :meth:`~pyrogram.Client.create_group` instead.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             title (``str``):
                 The supergroup title.

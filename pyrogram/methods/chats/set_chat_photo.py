@@ -41,6 +41,8 @@ class SetChatPhoto:
 
         You must be an administrator in the chat for this to work and must have the appropriate admin rights.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

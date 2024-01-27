@@ -17,7 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 from datetime import datetime
-from typing import List
+from typing import List, Dict, Type
 
 import pyrogram
 from pyrogram import raw, utils
@@ -146,10 +146,18 @@ class Sticker(Object):
     async def _parse(
         client,
         sticker: "raw.types.Document",
-        image_size_attributes: "raw.types.DocumentAttributeImageSize",
-        sticker_attributes: "raw.types.DocumentAttributeSticker",
-        file_name: str
+        document_attributes: Dict[Type["raw.base.DocumentAttribute"], "raw.base.DocumentAttribute"],
     ) -> "Sticker":
+        sticker_attributes = (
+            document_attributes[raw.types.DocumentAttributeSticker]
+            if raw.types.DocumentAttributeSticker in document_attributes
+            else document_attributes[raw.types.DocumentAttributeCustomEmoji]
+        )
+
+        image_size_attributes = document_attributes.get(raw.types.DocumentAttributeImageSize, None)
+        file_name = getattr(document_attributes.get(raw.types.DocumentAttributeFilename, None), "file_name", None)
+        video_attributes = document_attributes.get(raw.types.DocumentAttributeVideo, None)
+
         sticker_set = sticker_attributes.stickerset
 
         if isinstance(sticker_set, raw.types.InputStickerSetID):
@@ -170,8 +178,20 @@ class Sticker(Object):
                 file_unique_type=FileUniqueType.DOCUMENT,
                 media_id=sticker.id
             ).encode(),
-            width=image_size_attributes.w if image_size_attributes else 512,
-            height=image_size_attributes.h if image_size_attributes else 512,
+            width=(
+                image_size_attributes.w
+                if image_size_attributes
+                else video_attributes.w
+                if video_attributes
+                else 512
+            ),
+            height=(
+                image_size_attributes.h
+                if image_size_attributes
+                else video_attributes.h
+                if video_attributes
+                else 512
+            ),
             is_animated=sticker.mime_type == "application/x-tgsticker",
             is_video=sticker.mime_type == "video/webm",
             # TODO: mask_position

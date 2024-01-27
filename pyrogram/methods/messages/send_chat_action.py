@@ -30,6 +30,8 @@ class SendChatAction:
     ) -> bool:
         """Tell the other party that something is happening on your side.
 
+        .. include:: /_includes/usable-by/users-bots.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 Unique identifier (int) or username (str) of the target chat.

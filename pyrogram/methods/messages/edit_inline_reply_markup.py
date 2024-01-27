@@ -31,6 +31,8 @@ class EditInlineReplyMarkup:
     ) -> bool:
         """Edit only the reply markup of inline messages sent via the bot (for inline bots).
 
+        .. include:: /_includes/usable-by/bots.rst
+
         Parameters:
             inline_message_id (``str``):
                 Identifier of the inline message.

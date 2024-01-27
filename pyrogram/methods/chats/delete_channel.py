@@ -29,6 +29,8 @@ class DeleteChannel:
     ) -> bool:
         """Delete a channel.
 
+        .. include:: /_includes/usable-by/users.rst
+
         Parameters:
             chat_id (``int`` | ``str``):
                 The id of the channel to be deleted.

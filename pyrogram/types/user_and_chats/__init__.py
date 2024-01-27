@@ -29,7 +29,9 @@ from .chat_permissions import ChatPermissions
 from .chat_photo import ChatPhoto
 from .chat_preview import ChatPreview
 from .chat_privileges import ChatPrivileges
+from .chat_reactions import ChatReactions
 from .dialog import Dialog
+from .emoji_status import EmojiStatus
 from .invite_link_importer import InviteLinkImporter
 from .restriction import Restriction
 from .user import User
@@ -59,5 +61,7 @@ __all__ = [
     "VideoChatScheduled",
     "ChatJoinRequest",
     "ChatPrivileges",
-    "ChatJoiner"
+    "ChatJoiner",
+    "EmojiStatus",
+    "ChatReactions"
 ]
