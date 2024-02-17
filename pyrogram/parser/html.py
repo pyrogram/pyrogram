@@ -182,7 +182,6 @@ class HTML:
                 MessageEntityType.BLOCKQUOTE,
                 MessageEntityType.SPOILER,
             ):
-                print(name)
                 name = entity_type.name.lower()
                 start_tag = f"<{name}>"
                 end_tag = f"</{name}>"
