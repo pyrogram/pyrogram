@@ -18,7 +18,7 @@
 
 import inspect
 import re
-from typing import Callable, Literal, Union, List, Pattern
+from typing import Any, Callable, Literal, Union, List, Pattern
 
 import pyrogram
 from pyrogram import enums
@@ -49,9 +49,9 @@ class Filter:
 
 class InvertFilter(Filter):
     def __init__(self, base) -> None:
-        self.base = base
+        self.base: Any = base
 
-    async def __call__(self, client: "pyrogram.Client", update: Update):
+    async def __call__(self, client: "pyrogram.Client", update: Update) -> bool:
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
@@ -63,11 +63,13 @@ class InvertFilter(Filter):
 
 
 class AndFilter(Filter):
-    def __init__(self, base, other):
+    def __init__(self, base, other) -> None:
         self.base = base
         self.other = other
 
-    async def __call__(self, client: "pyrogram.Client", update: Update):
+    async def __call__(
+        self, client: "pyrogram.Client", update: Update
+    ) -> Any | Literal[False]:
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
@@ -94,7 +96,9 @@ class OrFilter(Filter):
         self.base = base
         self.other = other
 
-    async def __call__(self, client: "pyrogram.Client", update: Update):
+    async def __call__(
+        self, client: "pyrogram.Client", update: Update
+    ) -> Any | Literal[True]:
         if inspect.iscoroutinefunction(self.base.__call__):
             x = await self.base(client, update)
         else:
