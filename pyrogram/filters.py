@@ -18,29 +18,37 @@
 
 import inspect
 import re
-from typing import Callable, Union, List, Pattern
+from typing import Callable, Literal, Union, List, Pattern
 
 import pyrogram
 from pyrogram import enums
-from pyrogram.types import Message, CallbackQuery, InlineQuery, InlineKeyboardMarkup, ReplyKeyboardMarkup, Update
+from pyrogram.types import (
+    Message,
+    CallbackQuery,
+    InlineQuery,
+    InlineKeyboardMarkup,
+    ReplyKeyboardMarkup,
+    Update,
+)
+from pyrogram.types.messages_and_media.message import Str
 
 
 class Filter:
-    async def __call__(self, client: "pyrogram.Client", update: Update):
+    async def __call__(self, client: "pyrogram.Client", update: Update) -> None:
         raise NotImplementedError
 
-    def __invert__(self):
+    def __invert__(self) -> "InvertFilter":
         return InvertFilter(self)
 
-    def __and__(self, other):
+    def __and__(self, other) -> "AndFilter":
         return AndFilter(self, other)
 
-    def __or__(self, other):
+    def __or__(self, other) -> "OrFilter":
         return OrFilter(self, other)
 
 
 class InvertFilter(Filter):
-    def __init__(self, base):
+    def __init__(self, base) -> None:
         self.base = base
 
     async def __call__(self, client: "pyrogram.Client", update: Update):
@@ -48,9 +56,7 @@ class InvertFilter(Filter):
             x = await self.base(client, update)
         else:
             x = await client.loop.run_in_executor(
-                client.executor,
-                self.base,
-                client, update
+                client.executor, self.base, client, update
             )
 
         return not x
@@ -66,9 +72,7 @@ class AndFilter(Filter):
             x = await self.base(client, update)
         else:
             x = await client.loop.run_in_executor(
-                client.executor,
-                self.base,
-                client, update
+                client.executor, self.base, client, update
             )
 
         # short circuit
@@ -79,16 +83,14 @@ class AndFilter(Filter):
             y = await self.other(client, update)
         else:
             y = await client.loop.run_in_executor(
-                client.executor,
-                self.other,
-                client, update
+                client.executor, self.other, client, update
             )
 
         return x and y
 
 
 class OrFilter(Filter):
-    def __init__(self, base, other):
+    def __init__(self, base, other) -> None:
         self.base = base
         self.other = other
 
@@ -97,9 +99,7 @@ class OrFilter(Filter):
             x = await self.base(client, update)
         else:
             x = await client.loop.run_in_executor(
-                client.executor,
-                self.base,
-                client, update
+                client.executor, self.base, client, update
             )
 
         # short circuit
@@ -110,9 +110,7 @@ class OrFilter(Filter):
             y = await self.other(client, update)
         else:
             y = await client.loop.run_in_executor(
-                client.executor,
-                self.other,
-                client, update
+                client.executor, self.other, client, update
             )
 
         return x or y
@@ -129,10 +127,10 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
     Parameters:
         func (``Callable``):
             A function that accepts three positional arguments *(filter, client, update)* and returns a boolean: True if the
-            update should be handled, False otherwise. 
-            The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below). 
+            update should be handled, False otherwise.
+            The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below).
             The *client* argument refers to the :obj:`~pyrogram.Client` that received the update.
-            The *update* argument type will vary depending on which `Handler <handlers>`_ is coming from. 
+            The *update* argument type will vary depending on which `Handler <handlers>`_ is coming from.
             For example, in a :obj:`~pyrogram.handlers.MessageHandler` the *update* argument will be a :obj:`~pyrogram.types.Message`; in a :obj:`~pyrogram.handlers.CallbackQueryHandler` the *update* will be a :obj:`~pyrogram.types.CallbackQuery`.
             Your function body can then access the incoming update attributes and decide whether to allow it or not.
 
@@ -147,12 +145,12 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
     return type(
         name or func.__name__ or CUSTOM_FILTER_NAME,
         (Filter,),
-        {"__call__": func, **kwargs}
+        {"__call__": func, **kwargs},
     )()
 
 
 # region all_filter
-async def all_filter(_, __, ___):
+async def all_filter(_, __, ___) -> Literal[True]:
     return True
 
 
@@ -162,19 +160,21 @@ all = create(all_filter)
 
 # endregion
 
+
 # region me_filter
-async def me_filter(_, __, m: Message):
+async def me_filter(_, __, m: Message) -> bool:
     return bool(m.from_user and m.from_user.is_self or getattr(m, "outgoing", False))
 
 
-me = create(me_filter)
+me: Filter = create(me_filter)
 """Filter messages generated by you yourself."""
 
 
 # endregion
 
+
 # region bot_filter
-async def bot_filter(_, __, m: Message):
+async def bot_filter(_, __, m: Message) -> bool:
     return bool(m.from_user and m.from_user.is_bot)
 
 
@@ -184,19 +184,21 @@ bot = create(bot_filter)
 
 # endregion
 
+
 # region incoming_filter
-async def incoming_filter(_, __, m: Message):
+async def incoming_filter(_, __, m: Message) -> bool:
     return not m.outgoing
 
 
-incoming = create(incoming_filter)
+incoming: Filter = create(incoming_filter)
 """Filter incoming messages. Messages sent to your own chat (Saved Messages) are also recognised as incoming."""
 
 
 # endregion
 
+
 # region outgoing_filter
-async def outgoing_filter(_, __, m: Message):
+async def outgoing_filter(_, __, m: Message) -> bool:
     return m.outgoing
 
 
@@ -206,19 +208,21 @@ outgoing = create(outgoing_filter)
 
 # endregion
 
+
 # region text_filter
-async def text_filter(_, __, m: Message):
+async def text_filter(_, __, m: Message) -> bool:
     return bool(m.text)
 
 
-text = create(text_filter)
+text: Filter = create(text_filter)
 """Filter text messages."""
 
 
 # endregion
 
+
 # region reply_filter
-async def reply_filter(_, __, m: Message):
+async def reply_filter(_, __, m: Message) -> bool:
     return bool(m.reply_to_message_id)
 
 
@@ -228,8 +232,9 @@ reply = create(reply_filter)
 
 # endregion
 
+
 # region forwarded_filter
-async def forwarded_filter(_, __, m: Message):
+async def forwarded_filter(_, __, m: Message) -> bool:
     return bool(m.forward_date)
 
 
@@ -239,12 +244,13 @@ forwarded = create(forwarded_filter)
 
 # endregion
 
+
 # region caption_filter
-async def caption_filter(_, __, m: Message):
+async def caption_filter(_, __, m: Message) -> bool:
     return bool(m.caption)
 
 
-caption = create(caption_filter)
+caption: Filter = create(caption_filter)
 """Filter media messages that contain captions."""
 
 
@@ -252,18 +258,19 @@ caption = create(caption_filter)
 
 
 # region audio_filter
-async def audio_filter(_, __, m: Message):
+async def audio_filter(_, __, m: Message) -> bool:
     return bool(m.audio)
 
 
-audio = create(audio_filter)
+audio: Filter = create(audio_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Audio` objects."""
 
 
 # endregion
 
+
 # region document_filter
-async def document_filter(_, __, m: Message):
+async def document_filter(_, __, m: Message) -> bool:
     return bool(m.document)
 
 
@@ -273,419 +280,459 @@ document = create(document_filter)
 
 # endregion
 
+
 # region photo_filter
-async def photo_filter(_, __, m: Message):
+async def photo_filter(_, __, m: Message) -> bool:
     return bool(m.photo)
 
 
-photo = create(photo_filter)
+photo: Filter = create(photo_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Photo` objects."""
 
 
 # endregion
 
+
 # region sticker_filter
-async def sticker_filter(_, __, m: Message):
+async def sticker_filter(_, __, m: Message) -> bool:
     return bool(m.sticker)
 
 
-sticker = create(sticker_filter)
+sticker: Filter = create(sticker_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Sticker` objects."""
 
 
 # endregion
 
+
 # region animation_filter
-async def animation_filter(_, __, m: Message):
+async def animation_filter(_, __, m: Message) -> bool:
     return bool(m.animation)
 
 
-animation = create(animation_filter)
+animation: Filter = create(animation_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Animation` objects."""
 
 
 # endregion
 
+
 # region game_filter
-async def game_filter(_, __, m: Message):
+async def game_filter(_, __, m: Message) -> bool:
     return bool(m.game)
 
 
-game = create(game_filter)
+game: Filter = create(game_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Game` objects."""
 
 
 # endregion
 
+
 # region video_filter
-async def video_filter(_, __, m: Message):
+async def video_filter(_, __, m: Message) -> bool:
     return bool(m.video)
 
 
-video = create(video_filter)
+video: Filter = create(video_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Video` objects."""
 
 
 # endregion
 
+
 # region media_group_filter
-async def media_group_filter(_, __, m: Message):
+async def media_group_filter(_, __, m: Message) -> bool:
     return bool(m.media_group_id)
 
 
-media_group = create(media_group_filter)
+media_group: Filter = create(media_group_filter)
 """Filter messages containing photos or videos being part of an album."""
 
 
 # endregion
 
+
 # region voice_filter
-async def voice_filter(_, __, m: Message):
+async def voice_filter(_, __, m: Message) -> bool:
     return bool(m.voice)
 
 
-voice = create(voice_filter)
+voice: Filter = create(voice_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Voice` note objects."""
 
 
 # endregion
 
+
 # region video_note_filter
-async def video_note_filter(_, __, m: Message):
+async def video_note_filter(_, __, m: Message) -> bool:
     return bool(m.video_note)
 
 
-video_note = create(video_note_filter)
+video_note: Filter = create(video_note_filter)
 """Filter messages that contain :obj:`~pyrogram.types.VideoNote` objects."""
 
 
 # endregion
 
+
 # region contact_filter
-async def contact_filter(_, __, m: Message):
+async def contact_filter(_, __, m: Message) -> bool:
     return bool(m.contact)
 
 
-contact = create(contact_filter)
+contact: Filter = create(contact_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Contact` objects."""
 
 
 # endregion
 
+
 # region location_filter
-async def location_filter(_, __, m: Message):
+async def location_filter(_, __, m: Message) -> bool:
     return bool(m.location)
 
 
-location = create(location_filter)
+location: Filter = create(location_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Location` objects."""
 
 
 # endregion
 
+
 # region venue_filter
-async def venue_filter(_, __, m: Message):
+async def venue_filter(_, __, m: Message) -> bool:
     return bool(m.venue)
 
 
-venue = create(venue_filter)
+venue: Filter = create(venue_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Venue` objects."""
 
 
 # endregion
 
+
 # region web_page_filter
-async def web_page_filter(_, __, m: Message):
+async def web_page_filter(_, __, m: Message) -> bool:
     return bool(m.web_page)
 
 
-web_page = create(web_page_filter)
+web_page: Filter = create(web_page_filter)
 """Filter messages sent with a webpage preview."""
 
 
 # endregion
 
+
 # region poll_filter
-async def poll_filter(_, __, m: Message):
+async def poll_filter(_, __, m: Message) -> bool:
     return bool(m.poll)
 
 
-poll = create(poll_filter)
+poll: Filter = create(poll_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Poll` objects."""
 
 
 # endregion
 
+
 # region dice_filter
-async def dice_filter(_, __, m: Message):
+async def dice_filter(_, __, m: Message) -> bool:
     return bool(m.dice)
 
 
-dice = create(dice_filter)
+dice: Filter = create(dice_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Dice` objects."""
 
 
 # endregion
 
+
 # region media_spoiler
-async def media_spoiler_filter(_, __, m: Message):
+async def media_spoiler_filter(_, __, m: Message) -> bool:
     return bool(m.has_media_spoiler)
 
 
-media_spoiler = create(media_spoiler_filter)
+media_spoiler: Filter = create(media_spoiler_filter)
 """Filter media messages that contain a spoiler."""
 
 
 # endregion
 
+
 # region private_filter
-async def private_filter(_, __, m: Message):
+async def private_filter(_, __, m: Message) -> bool:
     return bool(m.chat and m.chat.type in {enums.ChatType.PRIVATE, enums.ChatType.BOT})
 
 
-private = create(private_filter)
+private: Filter = create(private_filter)
 """Filter messages sent in private chats."""
 
 
 # endregion
 
+
 # region group_filter
-async def group_filter(_, __, m: Message):
-    return bool(m.chat and m.chat.type in {enums.ChatType.GROUP, enums.ChatType.SUPERGROUP})
+async def group_filter(_, __, m: Message) -> bool:
+    return bool(
+        m.chat and m.chat.type in {enums.ChatType.GROUP, enums.ChatType.SUPERGROUP}
+    )
 
 
-group = create(group_filter)
+group: Filter = create(group_filter)
 """Filter messages sent in group or supergroup chats."""
 
 
 # endregion
 
+
 # region channel_filter
-async def channel_filter(_, __, m: Message):
+async def channel_filter(_, __, m: Message) -> bool:
     return bool(m.chat and m.chat.type == enums.ChatType.CHANNEL)
 
 
-channel = create(channel_filter)
+channel: Filter = create(channel_filter)
 """Filter messages sent in channels."""
 
 
 # endregion
 
+
 # region new_chat_members_filter
-async def new_chat_members_filter(_, __, m: Message):
+async def new_chat_members_filter(_, __, m: Message) -> bool:
     return bool(m.new_chat_members)
 
 
-new_chat_members = create(new_chat_members_filter)
+new_chat_members: Filter = create(new_chat_members_filter)
 """Filter service messages for new chat members."""
 
 
 # endregion
 
+
 # region left_chat_member_filter
-async def left_chat_member_filter(_, __, m: Message):
+async def left_chat_member_filter(_, __, m: Message) -> bool:
     return bool(m.left_chat_member)
 
 
-left_chat_member = create(left_chat_member_filter)
+left_chat_member: Filter = create(left_chat_member_filter)
 """Filter service messages for members that left the chat."""
 
 
 # endregion
 
+
 # region new_chat_title_filter
-async def new_chat_title_filter(_, __, m: Message):
+async def new_chat_title_filter(_, __, m: Message) -> bool:
     return bool(m.new_chat_title)
 
 
-new_chat_title = create(new_chat_title_filter)
+new_chat_title: Filter = create(new_chat_title_filter)
 """Filter service messages for new chat titles."""
 
 
 # endregion
 
+
 # region new_chat_photo_filter
-async def new_chat_photo_filter(_, __, m: Message):
+async def new_chat_photo_filter(_, __, m: Message) -> bool:
     return bool(m.new_chat_photo)
 
 
-new_chat_photo = create(new_chat_photo_filter)
+new_chat_photo: Filter = create(new_chat_photo_filter)
 """Filter service messages for new chat photos."""
 
 
 # endregion
 
+
 # region delete_chat_photo_filter
-async def delete_chat_photo_filter(_, __, m: Message):
+async def delete_chat_photo_filter(_, __, m: Message) -> bool:
     return bool(m.delete_chat_photo)
 
 
-delete_chat_photo = create(delete_chat_photo_filter)
+delete_chat_photo: Filter = create(delete_chat_photo_filter)
 """Filter service messages for deleted photos."""
 
 
 # endregion
 
+
 # region group_chat_created_filter
-async def group_chat_created_filter(_, __, m: Message):
+async def group_chat_created_filter(_, __, m: Message) -> bool:
     return bool(m.group_chat_created)
 
 
-group_chat_created = create(group_chat_created_filter)
+group_chat_created: Filter = create(group_chat_created_filter)
 """Filter service messages for group chat creations."""
 
 
 # endregion
 
+
 # region supergroup_chat_created_filter
-async def supergroup_chat_created_filter(_, __, m: Message):
+async def supergroup_chat_created_filter(_, __, m: Message) -> bool:
     return bool(m.supergroup_chat_created)
 
 
-supergroup_chat_created = create(supergroup_chat_created_filter)
+supergroup_chat_created: Filter = create(supergroup_chat_created_filter)
 """Filter service messages for supergroup chat creations."""
 
 
 # endregion
 
+
 # region channel_chat_created_filter
-async def channel_chat_created_filter(_, __, m: Message):
+async def channel_chat_created_filter(_, __, m: Message) -> bool:
     return bool(m.channel_chat_created)
 
 
-channel_chat_created = create(channel_chat_created_filter)
+channel_chat_created: Filter = create(channel_chat_created_filter)
 """Filter service messages for channel chat creations."""
 
 
 # endregion
 
+
 # region migrate_to_chat_id_filter
-async def migrate_to_chat_id_filter(_, __, m: Message):
+async def migrate_to_chat_id_filter(_, __, m: Message) -> bool:
     return bool(m.migrate_to_chat_id)
 
 
-migrate_to_chat_id = create(migrate_to_chat_id_filter)
+migrate_to_chat_id: Filter = create(migrate_to_chat_id_filter)
 """Filter service messages that contain migrate_to_chat_id."""
 
 
 # endregion
 
+
 # region migrate_from_chat_id_filter
-async def migrate_from_chat_id_filter(_, __, m: Message):
+async def migrate_from_chat_id_filter(_, __, m: Message) -> bool:
     return bool(m.migrate_from_chat_id)
 
 
-migrate_from_chat_id = create(migrate_from_chat_id_filter)
+migrate_from_chat_id: Filter = create(migrate_from_chat_id_filter)
 """Filter service messages that contain migrate_from_chat_id."""
 
 
 # endregion
 
+
 # region pinned_message_filter
-async def pinned_message_filter(_, __, m: Message):
+async def pinned_message_filter(_, __, m: Message) -> bool:
     return bool(m.pinned_message)
 
 
-pinned_message = create(pinned_message_filter)
+pinned_message: Filter = create(pinned_message_filter)
 """Filter service messages for pinned messages."""
 
 
 # endregion
 
+
 # region game_high_score_filter
-async def game_high_score_filter(_, __, m: Message):
+async def game_high_score_filter(_, __, m: Message) -> bool:
     return bool(m.game_high_score)
 
 
-game_high_score = create(game_high_score_filter)
+game_high_score: Filter = create(game_high_score_filter)
 """Filter service messages for game high scores."""
 
 
 # endregion
 
+
 # region reply_keyboard_filter
-async def reply_keyboard_filter(_, __, m: Message):
+async def reply_keyboard_filter(_, __, m: Message) -> bool:
     return isinstance(m.reply_markup, ReplyKeyboardMarkup)
 
 
-reply_keyboard = create(reply_keyboard_filter)
+reply_keyboard: Filter = create(reply_keyboard_filter)
 """Filter messages containing reply keyboard markups"""
 
 
 # endregion
 
+
 # region inline_keyboard_filter
-async def inline_keyboard_filter(_, __, m: Message):
+async def inline_keyboard_filter(_, __, m: Message) -> bool:
     return isinstance(m.reply_markup, InlineKeyboardMarkup)
 
 
-inline_keyboard = create(inline_keyboard_filter)
+inline_keyboard: Filter = create(inline_keyboard_filter)
 """Filter messages containing inline keyboard markups"""
 
 
 # endregion
 
+
 # region mentioned_filter
-async def mentioned_filter(_, __, m: Message):
+async def mentioned_filter(_, __, m: Message) -> bool:
     return bool(m.mentioned)
 
 
-mentioned = create(mentioned_filter)
+mentioned: Filter = create(mentioned_filter)
 """Filter messages containing mentions"""
 
 
 # endregion
 
+
 # region via_bot_filter
-async def via_bot_filter(_, __, m: Message):
+async def via_bot_filter(_, __, m: Message) -> bool:
     return bool(m.via_bot)
 
 
-via_bot = create(via_bot_filter)
+via_bot: Filter = create(via_bot_filter)
 """Filter messages sent via inline bots"""
 
 
 # endregion
 
+
 # region video_chat_started_filter
-async def video_chat_started_filter(_, __, m: Message):
+async def video_chat_started_filter(_, __, m: Message) -> bool:
     return bool(m.video_chat_started)
 
 
-video_chat_started = create(video_chat_started_filter)
+video_chat_started: Filter = create(video_chat_started_filter)
 """Filter messages for started video chats"""
 
 
 # endregion
 
+
 # region video_chat_ended_filter
-async def video_chat_ended_filter(_, __, m: Message):
+async def video_chat_ended_filter(_, __, m: Message) -> bool:
     return bool(m.video_chat_ended)
 
 
-video_chat_ended = create(video_chat_ended_filter)
+video_chat_ended: Filter = create(video_chat_ended_filter)
 """Filter messages for ended video chats"""
 
 
 # endregion
 
+
 # region video_chat_members_invited_filter
-async def video_chat_members_invited_filter(_, __, m: Message):
+async def video_chat_members_invited_filter(_, __, m: Message) -> bool:
     return bool(m.video_chat_members_invited)
 
 
-video_chat_members_invited = create(video_chat_members_invited_filter)
+video_chat_members_invited: Filter = create(video_chat_members_invited_filter)
 """Filter messages for voice chat invited members"""
 
 
 # endregion
 
+
 # region service_filter
-async def service_filter(_, __, m: Message):
+async def service_filter(_, __, m: Message) -> bool:
     return bool(m.service)
 
 
-service = create(service_filter)
+service: Filter = create(service_filter)
 """Filter service messages.
 
 A service message contains any of the following fields set: *left_chat_member*,
@@ -697,12 +744,13 @@ A service message contains any of the following fields set: *left_chat_member*,
 
 # endregion
 
+
 # region media_filter
-async def media_filter(_, __, m: Message):
+async def media_filter(_, __, m: Message) -> bool:
     return bool(m.media)
 
 
-media = create(media_filter)
+media: Filter = create(media_filter)
 """Filter media messages.
 
 A media message contains any of the following fields set: *audio*, *document*, *photo*, *sticker*, *video*,
@@ -712,34 +760,37 @@ A media message contains any of the following fields set: *audio*, *document*, *
 
 # endregion
 
+
 # region scheduled_filter
-async def scheduled_filter(_, __, m: Message):
+async def scheduled_filter(_, __, m: Message) -> bool:
     return bool(m.scheduled)
 
 
-scheduled = create(scheduled_filter)
+scheduled: Filter = create(scheduled_filter)
 """Filter messages that have been scheduled (not yet sent)."""
 
 
 # endregion
 
+
 # region from_scheduled_filter
-async def from_scheduled_filter(_, __, m: Message):
+async def from_scheduled_filter(_, __, m: Message) -> bool:
     return bool(m.from_scheduled)
 
 
-from_scheduled = create(from_scheduled_filter)
+from_scheduled: Filter = create(from_scheduled_filter)
 """Filter new automatically sent messages that were previously scheduled."""
 
 
 # endregion
 
+
 # region linked_channel_filter
-async def linked_channel_filter(_, __, m: Message):
+async def linked_channel_filter(_, __, m: Message) -> bool:
     return bool(m.forward_from_chat and not m.from_user)
 
 
-linked_channel = create(linked_channel_filter)
+linked_channel: Filter = create(linked_channel_filter)
 """Filter messages that are automatically forwarded from the linked channel to the group chat."""
 
 
@@ -747,7 +798,11 @@ linked_channel = create(linked_channel_filter)
 
 
 # region command_filter
-def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "/", case_sensitive: bool = False):
+def command(
+    commands: Union[str, List[str]],
+    prefixes: Union[str, List[str]] = "/",
+    case_sensitive: bool = False,
+) -> Filter:
     """Filter commands, i.e.: text messages starting with "/" or any other custom prefix.
 
     Parameters:
@@ -766,11 +821,11 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             Pass True if you want your command(s) to be case sensitive. Defaults to False.
             Examples: when True, command="Start" would trigger /Start but not /start.
     """
-    command_re = re.compile(r"([\"'])(.*?)(?<!\\)\1|(\S+)")
+    command_re: Pattern[str] = re.compile(pattern=r"([\"'])(.*?)(?<!\\)\1|(\S+)")
 
-    async def func(flt, client: pyrogram.Client, message: Message):
-        username = client.me.username or ""
-        text = message.text or message.caption
+    async def func(flt, client: pyrogram.Client, message: Message) -> bool:
+        username: str = client.me.username or ""
+        text: Str = message.text or message.caption
         message.command = None
 
         if not text:
@@ -780,23 +835,35 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
             if not text.startswith(prefix):
                 continue
 
-            without_prefix = text[len(prefix):]
+            without_prefix = text[len(prefix) :]
 
             for cmd in flt.commands:
-                if not re.match(rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)", without_prefix,
-                                flags=re.IGNORECASE if not flt.case_sensitive else 0):
+                if not re.match(
+                    pattern=rf"^(?:{cmd}(?:@?{username})?)(?:\s|$)",
+                    string=without_prefix,
+                    flags=re.IGNORECASE if not flt.case_sensitive else 0,
+                ):
                     continue
 
-                without_command = re.sub(rf"{cmd}(?:@?{username})?\s?", "", without_prefix, count=1,
-                                         flags=re.IGNORECASE if not flt.case_sensitive else 0)
+                without_command: str = re.sub(
+                    pattern=rf"{cmd}(?:@?{username})?\s?",
+                    repl="",
+                    string=without_prefix,
+                    count=1,
+                    flags=re.IGNORECASE if not flt.case_sensitive else 0,
+                )
 
                 # match.groups are 1-indexed, group(1) is the quote, group(2) is the text
                 # between the quotes, group(3) is unquoted, whitespace-split text
 
                 # Remove the escape character from the arguments
                 message.command = [cmd] + [
-                    re.sub(r"\\([\"'])", r"\1", m.group(2) or m.group(3) or "")
-                    for m in command_re.finditer(without_command)
+                    re.sub(
+                        pattern=r"\\([\"'])",
+                        repl=r"\1",
+                        string=m.group(2) or m.group(3) or "",
+                    )
+                    for m in command_re.finditer(string=without_command)
                 ]
 
                 return True
@@ -811,17 +878,18 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
     prefixes = set(prefixes) if prefixes else {""}
 
     return create(
-        func,
-        "CommandFilter",
+        func=func,
+        name="CommandFilter",
         commands=commands,
         prefixes=prefixes,
-        case_sensitive=case_sensitive
+        case_sensitive=case_sensitive,
     )
 
 
 # endregion
 
-def regex(pattern: Union[str, Pattern], flags: int = 0):
+
+def regex(pattern: Union[str, Pattern], flags: int = 0) -> Filter:
     """Filter updates that match a given regular expression pattern.
 
     Can be applied to handlers that receive one of the following updates:
@@ -841,13 +909,13 @@ def regex(pattern: Union[str, Pattern], flags: int = 0):
             Regex flags.
     """
 
-    async def func(flt, _, update: Update):
+    async def func(flt, _, update: Update) -> bool:
         if isinstance(update, Message):
-            value = update.text or update.caption
+            value: Str = update.text or update.caption
         elif isinstance(update, CallbackQuery):
-            value = update.data
+            value: str | bytes = update.data
         elif isinstance(update, InlineQuery):
-            value = update.query
+            value: str = update.query
         else:
             raise ValueError(f"Regex filter doesn't work with {type(update)}")
 
@@ -857,9 +925,9 @@ def regex(pattern: Union[str, Pattern], flags: int = 0):
         return bool(update.matches)
 
     return create(
-        func,
-        "RegexFilter",
-        p=pattern if isinstance(pattern, Pattern) else re.compile(pattern, flags)
+        func=func,
+        name="RegexFilter",
+        p=pattern if isinstance(pattern, Pattern) else re.compile(pattern, flags),
     )
 
 
@@ -877,22 +945,27 @@ class user(Filter, set):
             Defaults to None (no users).
     """
 
-    def __init__(self, users: Union[int, str, List[Union[int, str]]] = None):
+    def __init__(self, users: Union[int, str, List[Union[int, str]]] = None) -> None:
         users = [] if users is None else users if isinstance(users, list) else [users]
 
         super().__init__(
-            "me" if u in ["me", "self"]
-            else u.lower().strip("@") if isinstance(u, str)
-            else u for u in users
+            (
+                "me"
+                if u in ["me", "self"]
+                else u.lower().strip("@") if isinstance(u, str) else u
+            )
+            for u in users
         )
 
-    async def __call__(self, _, message: Message):
-        return (message.from_user
-                and (message.from_user.id in self
-                     or (message.from_user.username
-                         and message.from_user.username.lower() in self)
-                     or ("me" in self
-                         and message.from_user.is_self)))
+    async def __call__(self, _, message: Message) -> bool:
+        return message.from_user and (
+            message.from_user.id in self
+            or (
+                message.from_user.username
+                and message.from_user.username.lower() in self
+            )
+            or ("me" in self and message.from_user.is_self)
+        )
 
 
 # noinspection PyPep8Naming
@@ -909,21 +982,26 @@ class chat(Filter, set):
             Defaults to None (no chats).
     """
 
-    def __init__(self, chats: Union[int, str, List[Union[int, str]]] = None):
+    def __init__(self, chats: Union[int, str, List[Union[int, str]]] = None) -> None:
         chats = [] if chats is None else chats if isinstance(chats, list) else [chats]
 
         super().__init__(
-            "me" if c in ["me", "self"]
-            else c.lower().strip("@") if isinstance(c, str)
-            else c for c in chats
+            (
+                "me"
+                if c in ["me", "self"]
+                else c.lower().strip("@") if isinstance(c, str) else c
+            )
+            for c in chats
         )
 
-    async def __call__(self, _, message: Message):
-        return (message.chat
-                and (message.chat.id in self
-                     or (message.chat.username
-                         and message.chat.username.lower() in self)
-                     or ("me" in self
-                         and message.from_user
-                         and message.from_user.is_self
-                         and not message.outgoing)))
+    async def __call__(self, _, message: Message) -> bool:
+        return message.chat and (
+            message.chat.id in self
+            or (message.chat.username and message.chat.username.lower() in self)
+            or (
+                "me" in self
+                and message.from_user
+                and message.from_user.is_self
+                and not message.outgoing
+            )
+        )
