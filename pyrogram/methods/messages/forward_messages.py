@@ -33,7 +33,8 @@ class ForwardMessages:
         disable_notification: bool = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
-        hide_author: bool = False
+        hide_author: bool = False,
+        hide_captions: bool = False
     ) -> Union["types.Message", List["types.Message"]]:
         """Forward messages of any kind.
 
@@ -66,6 +67,9 @@ class ForwardMessages:
             hide_author (``bool``, *optional -> defualt = False*)
                 Hide the sender name if it is True.
 
+            hide_captions (``bool``, *optional```only works for medias``` -> defualt = False*)
+                Hide the captions of medias name if it is True.
+
         Returns:
             :obj:`~pyrogram.types.Message` | List of :obj:`~pyrogram.types.Message`: In case *message_ids* was not
             a list, a single message is returned, otherwise a list of messages is returned.
@@ -92,7 +96,8 @@ class ForwardMessages:
                 random_id=[self.rnd_id() for _ in message_ids],
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
                 noforwards=protect_content,
-                drop_author=hide_author
+                drop_author=hide_author,
+                drop_media_captions=hide_captions
             )
         )
 
