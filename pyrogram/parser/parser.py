@@ -30,8 +30,8 @@ class Parser:
         self.html = HTML(client)
         self.markdown = Markdown(client)
 
-    async def parse(self, text: str, mode: Optional[enums.ParseMode] = None):
-        text = str(text if text else "").strip()
+    async def parse(self, text: str, mode: Optional[enums.ParseMode] = None) -> dict:
+        text = str(text or "").strip()
 
         if mode is None:
             if self.client:
@@ -54,7 +54,7 @@ class Parser:
         raise ValueError(f'Invalid parse mode "{mode}"')
 
     @staticmethod
-    def unparse(text: str, entities: list, is_html: bool):
+    def unparse(text: str, entities: list, is_html: bool) -> str:
         if is_html:
             return HTML.unparse(text, entities)
         else:

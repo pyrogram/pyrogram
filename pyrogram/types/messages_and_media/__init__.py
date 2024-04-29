@@ -18,18 +18,34 @@
 
 from .animation import Animation
 from .audio import Audio
+from .boosts_status import BoostsStatus
+from .business_message import BusinessMessage
+from .checked_gift_code import CheckedGiftCode
 from .contact import Contact
 from .dice import Dice
 from .document import Document
+from .forum_topic import ForumTopic
+from .forum_topic_closed import ForumTopicClosed
+from .forum_topic_created import ForumTopicCreated
+from .forum_topic_edited import ForumTopicEdited
+from .forum_topic_reopened import ForumTopicReopened
 from .game import Game
+from .general_forum_topic_hidden import GeneralTopicHidden
+from .general_forum_topic_unhidden import GeneralTopicUnhidden
+from .gift_code import GiftCode
+from .giveaway import Giveaway
+from .giveaway_result import GiveawayResult
 from .location import Location
 from .message import Message
 from .message_entity import MessageEntity
+from .message_reactions import MessageReactions
+from .my_boost import MyBoost
 from .photo import Photo
 from .poll import Poll
 from .poll_option import PollOption
 from .reaction import Reaction
 from .sticker import Sticker
+from .story import Story
 from .stripped_thumbnail import StrippedThumbnail
 from .thumbnail import Thumbnail
 from .venue import Venue
@@ -38,10 +54,44 @@ from .video_note import VideoNote
 from .voice import Voice
 from .web_app_data import WebAppData
 from .web_page import WebPage
-from .message_reactions import MessageReactions
 
 __all__ = [
-    "Animation", "Audio", "Contact", "Document", "Game", "Location", "Message", "MessageEntity", "Photo", "Thumbnail",
-    "StrippedThumbnail", "Poll", "PollOption", "Sticker", "Venue", "Video", "VideoNote", "Voice", "WebPage", "Dice",
-    "Reaction", "WebAppData", "MessageReactions"
+    "Animation",
+    "Audio",
+    "BoostsStatus",
+    "BusinessMessage",
+    "CheckedGiftCode",
+    "Contact",
+    "Dice",
+    "Document",
+    "ForumTopic",
+    "ForumTopicClosed",
+    "ForumTopicCreated",
+    "ForumTopicEdited",
+    "ForumTopicReopened",
+    "Game",
+    "GeneralTopicHidden",
+    "GeneralTopicUnhidden",
+    "GiftCode",
+    "Giveaway",
+    "GiveawayResult",
+    "Location",
+    "Message",
+    "MessageEntity",
+    "MessageReactions",
+    "MyBoost",
+    "Photo",
+    "Poll",
+    "PollOption",
+    "Reaction",
+    "Sticker",
+    "Story",
+    "StrippedThumbnail",
+    "Thumbnail",
+    "Venue",
+    "Video",
+    "VideoNote",
+    "Voice",
+    "WebAppData",
+    "WebPage",
 ]

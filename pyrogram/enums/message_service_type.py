@@ -24,6 +24,9 @@ from .auto_name import AutoName
 class MessageServiceType(AutoName):
     """Message service type enumeration used in :obj:`~pyrogram.types.Message`."""
 
+    CUSTOM_ACTION = auto()
+    "Custom action"
+
     NEW_CHAT_MEMBERS = auto()
     "New members join"
 
@@ -38,6 +41,24 @@ class MessageServiceType(AutoName):
 
     DELETE_CHAT_PHOTO = auto()
     "Deleted chat photo"
+
+    FORUM_TOPIC_CREATED = auto()
+    "a new forum topic created in the chat"
+
+    FORUM_TOPIC_CLOSED = auto()
+    "a new forum topic closed in the chat"
+
+    FORUM_TOPIC_REOPENED = auto()
+    "a new forum topic reopened in the chat"
+
+    FORUM_TOPIC_EDITED = auto()
+    "a new forum topic renamed in the chat"
+
+    GENERAL_TOPIC_HIDDEN = auto()
+    "a forum general topic hidden in the chat"
+
+    GENERAL_TOPIC_UNHIDDEN = auto()
+    "a forum general topic unhidden in the chat"
 
     GROUP_CHAT_CREATED = auto()
     "Group chat created"
@@ -57,6 +78,12 @@ class MessageServiceType(AutoName):
     GAME_HIGH_SCORE = auto()
     "Game high score"
 
+    GIVEAWAY_LAUNCH = auto()
+    "Giveaway launch"
+
+    GIFT_CODE = auto()
+    "Gift code"
+
     VIDEO_CHAT_STARTED = auto()
     "Video chat started"
 
@@ -71,3 +98,15 @@ class MessageServiceType(AutoName):
 
     WEB_APP_DATA = auto()
     "Web app data"
+
+    REQUESTED_CHAT = auto()
+    "Requested chat"
+
+    CHAT_TTL_CHANGED = auto()
+    "Chat TTL changed"
+
+    BOOST_APPLY = auto()
+    "Boost apply"
+
+    JOIN_REQUEST_APPROVED = auto()
+    "Join request approved"

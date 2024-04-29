@@ -64,4 +64,4 @@ class CreateGroup:
             )
         )
 
-        return types.Chat._parse_chat(self, r.chats[0])
+        return types.Chat._parse_chat(self, r.updates.chats[0])

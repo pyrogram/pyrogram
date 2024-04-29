@@ -4,23 +4,38 @@ CHANNEL_PUBLIC_GROUP_NA	The channel/supergroup is not available
 CHAT_ADMIN_INVITE_REQUIRED	You don't have rights to invite other users
 CHAT_ADMIN_REQUIRED	The method requires chat admin privileges
 CHAT_FORBIDDEN	You cannot write in this chat
+CHAT_GUEST_SEND_FORBIDDEN	You need to join the discussion group before commenting
+CHAT_SEND_AUDIOS_FORBIDDEN	You can't send audio messages in this chat
+CHAT_SEND_GAME_FORBIDDEN	You can't send a game to this chat
 CHAT_SEND_GIFS_FORBIDDEN	You can't send animations in this chat
 CHAT_SEND_INLINE_FORBIDDEN	You cannot use inline bots to send messages in this chat
 CHAT_SEND_MEDIA_FORBIDDEN	You can't send media messages in this chat
+CHAT_SEND_PHOTOS_FORBIDDEN	You can't send photos in this chat
+CHAT_SEND_PLAIN_FORBIDDEN	You can't send non-media (text) messages in this chat
 CHAT_SEND_POLL_FORBIDDEN	You can't send polls in this chat
 CHAT_SEND_STICKERS_FORBIDDEN	You can't send stickers in this chat
+CHAT_SEND_VIDEOS_FORBIDDEN	You can't send videos in this chat
+CHAT_SEND_VOICES_FORBIDDEN	You can't send voice recordings in this chat
 CHAT_WRITE_FORBIDDEN	You don't have rights to send messages in this chat
 EDIT_BOT_INVITE_FORBIDDEN	Bots' chat invite links can't be edited
+GROUPCALL_ALREADY_STARTED	The groupcall has already started, you can join directly using phone.joinGroupCall
+GROUPCALL_FORBIDDEN	The group call has already ended
 INLINE_BOT_REQUIRED	The action must be performed through an inline bot callback
+LIVE_DISABLED	Story is disabled server-side
 MESSAGE_AUTHOR_REQUIRED	You are not the author of this message
 MESSAGE_DELETE_FORBIDDEN	You don't have rights to delete messages in this chat, most likely because you are not the author of them
+NOT_ALLOWED	Not allowed
+PARTICIPANT_JOIN_MISSING	Trying to enable a presentation, when the user hasn't joined the Video Chat with phone.joinGroupCall
 POLL_VOTE_REQUIRED	Cast a vote in the poll before calling this method
 PREMIUM_ACCOUNT_REQUIRED	This action requires a premium account
+PRIVACY_PREMIUM_REQUIRED	The user has restricted from sending messages or this action requires a premium account
+PUBLIC_CHANNEL_MISSING	You can only export group call invite links for public chats or channels
 RIGHT_FORBIDDEN	You don't have enough rights for this action, or you tried to set one or more admin rights that can't be applied to this kind of chat (channel or supergroup)
 SENSITIVE_CHANGE_FORBIDDEN	Your sensitive content settings can't be changed at this time
 TAKEOUT_REQUIRED	The method must be invoked inside a takeout session
 USER_BOT_INVALID	This method can only be called by a bot
 USER_CHANNELS_TOO_MUCH	One of the users you tried to add is already in too many channels/supergroups
+USER_DELETED	You can't send this secret message because the other participant deleted their account
 USER_INVALID	The provided user is invalid
 USER_IS_BLOCKED	The user is blocked
 USER_NOT_MUTUAL_CONTACT	The provided user is not a mutual contact

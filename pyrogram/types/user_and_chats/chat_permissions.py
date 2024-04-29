@@ -53,6 +53,10 @@ class ChatPermissions(Object):
         can_pin_messages (``bool``, *optional*):
             True, if the user is allowed to pin messages.
             Ignored in public supergroups.
+
+        can_manage_topics (``bool``, *optional*):
+            True, if the user is allowed to create, rename, close, and reopen forum topics.
+            Supergroups only.
     """
 
     def __init__(
@@ -65,7 +69,8 @@ class ChatPermissions(Object):
         can_add_web_page_previews: bool = None,
         can_change_info: bool = None,
         can_invite_users: bool = None,
-        can_pin_messages: bool = None
+        can_pin_messages: bool = None,
+        can_manage_topics: bool = None
     ):
         super().__init__(None)
 
@@ -77,6 +82,7 @@ class ChatPermissions(Object):
         self.can_change_info = can_change_info
         self.can_invite_users = can_invite_users
         self.can_pin_messages = can_pin_messages
+        self.can_manage_topics = can_manage_topics
 
     @staticmethod
     def _parse(denied_permissions: "raw.base.ChatBannedRights") -> "ChatPermissions":
@@ -94,5 +100,6 @@ class ChatPermissions(Object):
                 can_send_polls=not denied_permissions.send_polls,
                 can_change_info=not denied_permissions.change_info,
                 can_invite_users=not denied_permissions.invite_users,
-                can_pin_messages=not denied_permissions.pin_messages
+                can_pin_messages=not denied_permissions.pin_messages,
+                can_manage_topics=not denied_permissions.manage_topics
             )

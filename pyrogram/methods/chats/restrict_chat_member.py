@@ -92,6 +92,7 @@ class RestrictChatMember:
                     change_info=not permissions.can_change_info,
                     invite_users=not permissions.can_invite_users,
                     pin_messages=not permissions.can_pin_messages,
+                    manage_topics=not permissions.can_manage_topics,
                 )
             )
         )

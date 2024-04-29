@@ -17,6 +17,7 @@
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
 import logging
+from typing import List
 
 import pyrogram
 from pyrogram import raw
@@ -30,7 +31,15 @@ log = logging.getLogger(__name__)
 class SendCode:
     async def send_code(
         self: "pyrogram.Client",
-        phone_number: str
+        phone_number: str,
+        current_number: bool = None,
+        allow_flashcall: bool = None,
+        allow_app_hash: bool = None,
+        allow_missed_call: bool = None,
+        allow_firebase: bool = None,
+        logout_tokens: List[bytes] = None,
+        token: str = None,
+        app_sandbox: bool = None,
     ) -> "types.SentCode":
         """Send the confirmation code to the given phone number.
 
@@ -39,6 +48,38 @@ class SendCode:
         Parameters:
             phone_number (``str``):
                 Phone number in international format (includes the country prefix).
+
+            current_number (``bool``, *optional*):
+                Whether the phone number is the current one.
+                Defaults to None.
+
+            allow_flashcall (``bool``, *optional*):
+                Whether to allow a flash call.
+                Defaults to None.
+
+            allow_app_hash (``bool``, *optional*):
+                Whether to allow an app hash.
+                Defaults to None.
+
+            allow_missed_call (``bool``, *optional*):
+                Whether to allow a missed call.
+                Defaults to None.
+
+            allow_firebase (``bool``, *optional*):
+                Whether to allow firebase.
+                Defaults to None.
+
+            logout_tokens (List of ``bytes``, *optional*):
+                List of logout tokens.
+                Defaults to None.
+
+            token (``str``, *optional*):
+                Token.
+                Defaults to None.
+
+            app_sandbox (``bool``, *optional*):
+                Whether to use the app sandbox.
+                Defaults to None.
 
         Returns:
             :obj:`~pyrogram.types.SentCode`: On success, an object containing information on the sent confirmation code
@@ -56,7 +97,16 @@ class SendCode:
                         phone_number=phone_number,
                         api_id=self.api_id,
                         api_hash=self.api_hash,
-                        settings=raw.types.CodeSettings()
+                        settings=raw.types.CodeSettings(
+                            allow_flashcall=allow_flashcall,
+                            current_number=current_number,
+                            allow_app_hash=allow_app_hash,
+                            allow_missed_call=allow_missed_call,
+                            allow_firebase=allow_firebase,
+                            logout_tokens=logout_tokens,
+                            token=token,
+                            app_sandbox=app_sandbox
+                        )
                     )
                 )
             except (PhoneMigrate, NetworkMigrate) as e:

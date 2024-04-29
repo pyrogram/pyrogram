@@ -125,10 +125,11 @@ class Session:
                                 app_version=self.client.app_version,
                                 device_model=self.client.device_model,
                                 system_version=self.client.system_version,
-                                system_lang_code=self.client.lang_code,
+                                system_lang_code=self.client.system_lang_code,
+                                lang_pack=self.client.lang_pack,
                                 lang_code=self.client.lang_code,
-                                lang_pack="",
                                 query=raw.functions.help.GetConfig(),
+                                params=self.client.init_connection_params,
                             )
                         ),
                         timeout=self.START_TIMEOUT
@@ -285,7 +286,10 @@ class Session:
                         ping_id=0, disconnect_delay=self.WAIT_TIMEOUT + 10
                     ), False
                 )
-            except (OSError, RPCError):
+            except OSError:
+                self.loop.create_task(self.restart())
+                break
+            except RPCError:
                 pass
 
         log.info("PingTask stopped")
@@ -299,6 +303,12 @@ class Session:
             if packet is None or len(packet) == 4:
                 if packet:
                     error_code = -Int.read(BytesIO(packet))
+
+                    if error_code == 404:
+                        raise Exception(
+                            "Auth key not found in the system. You must delete your session file"
+                            "and log in again with your phone number or bot token"
+                        )
 
                     log.warning(
                         "Server sent transport error: %s (%s)",

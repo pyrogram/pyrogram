@@ -60,16 +60,22 @@ class Object:
         if isinstance(obj, datetime):
             return str(obj)
 
+        attributes_to_hide = [
+            "raw"
+        ]
+
+        filtered_attributes = {
+            attr: ("*" * 9 if attr == "phone_number" else getattr(obj, attr))
+            for attr in filter(
+                lambda x: not x.startswith("_") and x not in attributes_to_hide,
+                obj.__dict__,
+            )
+            if getattr(obj, attr) is not None
+        }
+
         return {
             "_": obj.__class__.__name__,
-            **{
-                attr: (
-                    "*" * 9 if attr == "phone_number" else
-                    getattr(obj, attr)
-                )
-                for attr in filter(lambda x: not x.startswith("_"), obj.__dict__)
-                if getattr(obj, attr) is not None
-            }
+            **filtered_attributes
         }
 
     def __str__(self) -> str:

@@ -31,7 +31,7 @@ class GetChatInviteLink:
     ) -> "types.ChatInviteLink":
         """Get detailed information about a chat invite link.
 
-        .. include:: /_includes/usable-by/users-bots.rst
+        .. include:: /_includes/usable-by/users.rst
 
         Parameters:
             chat_id (``int`` | ``str``):

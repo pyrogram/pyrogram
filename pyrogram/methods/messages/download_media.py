@@ -31,7 +31,7 @@ DEFAULT_DOWNLOAD_DIR = "downloads/"
 class DownloadMedia:
     async def download_media(
         self: "pyrogram.Client",
-        message: Union["types.Message", str],
+        message: Union["types.Message", "types.Story", str],
         file_name: str = DEFAULT_DOWNLOAD_DIR,
         in_memory: bool = False,
         block: bool = True,
@@ -43,8 +43,8 @@ class DownloadMedia:
         .. include:: /_includes/usable-by/users-bots.rst
 
         Parameters:
-            message (:obj:`~pyrogram.types.Message` | ``str``):
-                Pass a Message containing the media, the media itself (message.audio, message.video, ...) or a file id
+            message (:obj:`~pyrogram.types.Message` | :obj:`~pyrogram.types.Story` | ``str``):
+                Pass a Message or Story containing the media, the media itself (message.audio, message.video, ...) or a file id
                 as string.
 
             file_name (``str``, *optional*):
@@ -104,6 +104,9 @@ class DownloadMedia:
                 # Download from file id
                 await app.download_media(message.photo.file_id)
 
+                # Download document of a message
+                await app.download_media(message.document)
+
                 # Keep track of the progress while downloading
                 async def progress(current, total):
                     print(f"{current * 100 / total:.1f}%")
@@ -122,16 +125,27 @@ class DownloadMedia:
         available_media = ("audio", "document", "photo", "sticker", "animation", "video", "voice", "video_note",
                            "new_chat_photo")
 
-        if isinstance(message, types.Message):
+        media = None
+
+        if isinstance(message, types.Message) and message.media:
             for kind in available_media:
-                media = getattr(message, kind, None)
+                story = message.story or message.reply_to_story
+                if story:
+                    media = getattr(story, kind, None)
+                else:
+                    media = getattr(message, kind, None)
 
                 if media is not None:
                     break
-            else:
-                raise ValueError("This message doesn't contain any downloadable media")
-        else:
+        elif isinstance(message, types.Story):
+            media = getattr(message, message.media.value, None)
+        elif isinstance(message, str):
             media = message
+        elif hasattr(message, "file_id"):
+            media = getattr(message, "file_id")
+
+        if not media:
+            raise ValueError("This message doesn't contain any downloadable media")
 
         if isinstance(media, str):
             file_id_str = media

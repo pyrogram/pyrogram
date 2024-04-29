@@ -29,7 +29,7 @@ class GetChatInviteLinkJoiners:
         chat_id: Union[int, str],
         invite_link: str,
         limit: int = 0
-    ) -> Optional[AsyncGenerator["types.ChatJoiner", None]]:
+    ) -> AsyncGenerator["types.ChatJoiner", None]:
         """Get the members who joined the chat with the invite link.
 
         .. include:: /_includes/usable-by/users.rst

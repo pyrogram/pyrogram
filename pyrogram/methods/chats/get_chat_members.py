@@ -64,7 +64,7 @@ class GetChatMembers:
         query: str = "",
         limit: int = 0,
         filter: "enums.ChatMembersFilter" = enums.ChatMembersFilter.SEARCH
-    ) -> Optional[AsyncGenerator["types.ChatMember", None]]:
+    ) -> AsyncGenerator["types.ChatMember", None]:
         """Get the members list of a chat.
 
         A chat can be either a basic group, a supergroup or a channel.

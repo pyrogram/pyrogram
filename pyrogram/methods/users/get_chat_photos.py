@@ -27,7 +27,7 @@ class GetChatPhotos:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         limit: int = 0,
-    ) -> Optional[AsyncGenerator["types.Photo", None]]:
+    ) -> AsyncGenerator["types.Photo", None]:
         """Get a chat or a user profile photos sequentially.
 
         .. include:: /_includes/usable-by/users-bots.rst

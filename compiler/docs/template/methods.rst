@@ -151,6 +151,32 @@ Authorization
 
     {authorization}
 
+Stories
+-------------
+
+.. autosummary::
+    :nosignatures:
+
+    {stories}
+
+.. toctree::
+    :hidden:
+
+    {stories}
+
+Premium
+-------------
+
+.. autosummary::
+    :nosignatures:
+
+    {premium}
+
+.. toctree::
+    :hidden:
+
+    {premium}
+
 Advanced
 --------
 
