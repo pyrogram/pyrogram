@@ -28,7 +28,7 @@ class GetDiscussionReplies:
         chat_id: Union[int, str],
         message_id: int,
         limit: int = 0,
-    ) -> Optional[AsyncGenerator["types.Message", None]]:
+    ) -> AsyncGenerator["types.Message", None]:
         """Get the message replies of a discussion thread.
 
         .. include:: /_includes/usable-by/users.rst

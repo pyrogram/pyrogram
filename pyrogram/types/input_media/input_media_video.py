@@ -66,6 +66,10 @@ class InputMediaVideo(InputMedia):
 
         has_spoiler (``bool``, *optional*):
             Pass True if the photo needs to be covered with a spoiler animation.
+
+        no_sound (``bool``, *optional*):
+            Pass True, if the uploaded video is a video message with no sound.
+            Doesn't work for external links.
     """
 
     def __init__(
@@ -80,6 +84,7 @@ class InputMediaVideo(InputMedia):
         duration: int = 0,
         supports_streaming: bool = True,
         has_spoiler: bool = None,
+        no_sound: bool = None,
     ):
         super().__init__(media, caption, parse_mode, caption_entities)
 
@@ -89,3 +94,4 @@ class InputMediaVideo(InputMedia):
         self.duration = duration
         self.supports_streaming = supports_streaming
         self.has_spoiler = has_spoiler
+        self.no_sound = no_sound

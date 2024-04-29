@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Callable
+from typing import Callable, Optional, Union
 
 import pyrogram
 from pyrogram.filters import Filter
@@ -24,9 +24,9 @@ from pyrogram.filters import Filter
 
 class OnChosenInlineResult:
     def on_chosen_inline_result(
-        self=None,
-        filters=None,
-        group: int = 0
+        self: Union["OnChosenInlineResult", Filter, None] = None,
+        filters: Optional[Filter] = None,
+        group: int = 0,
     ) -> Callable:
         """Decorator for handling chosen inline results.
 

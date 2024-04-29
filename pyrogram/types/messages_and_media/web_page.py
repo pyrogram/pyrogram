@@ -77,6 +77,21 @@ class WebPage(Object):
         embed_height (``int``, *optional*):
             Embedded content height.
 
+        has_large_media (``bool``, *optional*):
+            Whether the webpage preview is large.
+
+        prefer_large_media (``bool``, *optional*):
+            Whether the webpage preview is large.
+
+        prefer_small_media (``bool``, *optional*):
+            Whether the webpage preview is small.
+
+        manual (``bool``, *optional*):
+            Whether the webpage preview was changed by the user.
+
+        safe (``bool``, *optional*):
+            Whether the webpage preview is safe.
+
         duration (``int``, *optional*):
             Unknown at the time of writing.
 
@@ -104,6 +119,11 @@ class WebPage(Object):
         embed_type: str = None,
         embed_width: int = None,
         embed_height: int = None,
+        has_large_media: bool = None,
+        prefer_large_media: bool = None,
+        prefer_small_media: bool = None,
+        manual: bool = None,
+        safe: bool = None,
         duration: int = None,
         author: str = None
     ):
@@ -125,11 +145,23 @@ class WebPage(Object):
         self.embed_type = embed_type
         self.embed_width = embed_width
         self.embed_height = embed_height
+        self.has_large_media = has_large_media
+        self.prefer_large_media = prefer_large_media
+        self.prefer_small_media = prefer_small_media
+        self.manual = manual
+        self.safe = safe
         self.duration = duration
         self.author = author
 
     @staticmethod
-    def _parse(client, webpage: "raw.types.WebPage") -> "WebPage":
+    def _parse(
+        client,
+        webpage: "raw.types.WebPage",
+        prefer_large_media: bool = None,
+        prefer_small_media: bool = None,
+        manual: bool = None,
+        safe: bool = None
+    ) -> "WebPage":
         audio = None
         document = None
         photo = None
@@ -182,6 +214,11 @@ class WebPage(Object):
             embed_type=webpage.embed_type,
             embed_width=webpage.embed_width,
             embed_height=webpage.embed_height,
+            has_large_media=webpage.has_large_media,
+            prefer_large_media=prefer_large_media,
+            prefer_small_media=prefer_small_media,
+            manual=manual,
+            safe=safe,
             duration=webpage.duration,
             author=webpage.author
         )

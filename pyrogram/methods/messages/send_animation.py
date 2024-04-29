@@ -46,9 +46,16 @@ class SendAnimation:
         thumb: Union[str, BinaryIO] = None,
         file_name: str = None,
         disable_notification: bool = None,
+        message_thread_id: int = None,
         reply_to_message_id: int = None,
+        reply_to_chat_id: Union[int, str] = None,
+        reply_to_story_id: int = None,
+        quote_text: str = None,
+        quote_entities: List["types.MessageEntity"] = None,
+        quote_offset: int = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
+        business_connection_id: str = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -115,14 +122,36 @@ class SendAnimation:
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
+            message_thread_id (``int``, *optional*):
+                Unique identifier for the target message thread (topic) of the forum.
+                For supergroups only.
+
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            reply_to_chat_id (``int``, *optional*):
+                If the message is a reply, ID of the original chat.
+
+            reply_to_story_id (``int``, *optional*):
+                Unique identifier for the target story.
+
+            quote_text (``str``, *optional*):
+                Text of the quote to be sent.
+
+            quote_entities (List of :obj:`~pyrogram.types.MessageEntity`, *optional*):
+                List of special entities that appear in quote text, which can be specified instead of *parse_mode*.
+
+            quote_offset (``int``, *optional*):
+                Offset for quote in original message.
 
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
+
+            business_connection_id (``str``, *optional*):
+                Unique identifier of the business connection on behalf of which the message will be sent.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -202,7 +231,7 @@ class SendAnimation:
                         spoiler=has_spoiler
                     )
                 else:
-                    media = utils.get_input_media_from_file_id(animation, FileType.ANIMATION)
+                    media = utils.get_input_media_from_file_id(animation, FileType.ANIMATION, has_spoiler=has_spoiler)
             else:
                 thumb = await self.save_file(thumb)
                 file = await self.save_file(animation, progress=progress, progress_args=progress_args)
@@ -223,20 +252,32 @@ class SendAnimation:
                     ]
                 )
 
+            quote_text, quote_entities = (await utils.parse_text_entities(self, quote_text, parse_mode, quote_entities)).values()
+
             while True:
                 try:
+                    peer = await self.resolve_peer(chat_id)
                     r = await self.invoke(
                         raw.functions.messages.SendMedia(
-                            peer=await self.resolve_peer(chat_id),
+                            peer=peer,
                             media=media,
                             silent=disable_notification or None,
-                            reply_to_msg_id=reply_to_message_id,
+                            reply_to=utils.get_reply_to(
+                                reply_to_message_id=reply_to_message_id,
+                                message_thread_id=message_thread_id,
+                                reply_to_peer=await self.resolve_peer(reply_to_chat_id) if reply_to_chat_id else None,
+                                reply_to_story_id=reply_to_story_id,
+                                quote_text=quote_text,
+                                quote_entities=quote_entities,
+                                quote_offset=quote_offset,
+                            ),
                             random_id=self.rnd_id(),
                             schedule_date=utils.datetime_to_timestamp(schedule_date),
                             noforwards=protect_content,
                             reply_markup=await reply_markup.write(self) if reply_markup else None,
                             **await utils.parse_text_entities(self, caption, parse_mode, caption_entities)
-                        )
+                        ),
+                        business_connection_id=business_connection_id
                     )
                 except FilePartMissing as e:
                     await self.save_file(animation, file_id=file.id, file_part=e.value)
@@ -244,26 +285,23 @@ class SendAnimation:
                     for i in r.updates:
                         if isinstance(i, (raw.types.UpdateNewMessage,
                                           raw.types.UpdateNewChannelMessage,
-                                          raw.types.UpdateNewScheduledMessage)):
+                                          raw.types.UpdateNewScheduledMessage,
+                                          raw.types.UpdateBotNewBusinessMessage)):
                             message = await types.Message._parse(
                                 self, i.message,
                                 {i.id: i for i in r.users},
                                 {i.id: i for i in r.chats},
-                                is_scheduled=isinstance(i, raw.types.UpdateNewScheduledMessage)
+                                is_scheduled=isinstance(i, raw.types.UpdateNewScheduledMessage),
+                                business_connection_id=getattr(i, "connection_id", None),
                             )
 
-                            if unsave:
-                                document = message.animation or message.document
+                            if unsave and message.animation:
                                 document_id = utils.get_input_media_from_file_id(
-                                    document.file_id, FileType.ANIMATION
+                                    message.animation.file_id,
+                                    FileType.ANIMATION,
                                 ).id
 
-                                await self.invoke(
-                                    raw.functions.messages.SaveGif(
-                                        id=document_id,
-                                        unsave=True
-                                    )
-                                )
+                                await self.invoke(raw.functions.messages.SaveGif(id=document_id, unsave=True))  # type: ignore[arg-type]
 
                             return message
 

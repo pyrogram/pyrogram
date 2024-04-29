@@ -29,7 +29,7 @@ class GetChatJoinRequests:
         chat_id: Union[int, str],
         limit: int = 0,
         query: str = ""
-    ) -> Optional[AsyncGenerator["types.ChatJoiner", None]]:
+    ) -> AsyncGenerator["types.ChatJoiner", None]:
         """Get the pending join requests of a chat.
 
         .. include:: /_includes/usable-by/users.rst

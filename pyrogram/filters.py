@@ -129,10 +129,10 @@ def create(func: Callable, name: str = None, **kwargs) -> Filter:
     Parameters:
         func (``Callable``):
             A function that accepts three positional arguments *(filter, client, update)* and returns a boolean: True if the
-            update should be handled, False otherwise. 
-            The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below). 
+            update should be handled, False otherwise.
+            The *filter* argument refers to the filter itself and can be used to access keyword arguments (read below).
             The *client* argument refers to the :obj:`~pyrogram.Client` that received the update.
-            The *update* argument type will vary depending on which `Handler <handlers>`_ is coming from. 
+            The *update* argument type will vary depending on which `Handler <handlers>`_ is coming from.
             For example, in a :obj:`~pyrogram.handlers.MessageHandler` the *update* argument will be a :obj:`~pyrogram.types.Message`; in a :obj:`~pyrogram.handlers.CallbackQueryHandler` the *update* will be a :obj:`~pyrogram.types.CallbackQuery`.
             Your function body can then access the incoming update attributes and decide whether to allow it or not.
 
@@ -184,6 +184,17 @@ bot = create(bot_filter)
 
 # endregion
 
+# region sender_chat_filter
+async def sender_chat_filter(_, __, m: Message):
+    return bool(m.sender_chat)
+
+
+sender_chat = create(sender_chat_filter)
+"""Filter messages coming from sender chat."""
+
+
+# endregion
+
 # region incoming_filter
 async def incoming_filter(_, __, m: Message):
     return not m.outgoing
@@ -219,11 +230,11 @@ text = create(text_filter)
 
 # region reply_filter
 async def reply_filter(_, __, m: Message):
-    return bool(m.reply_to_message_id)
+    return bool(m.reply_to_message_id or m.reply_to_story_id)
 
 
 reply = create(reply_filter)
-"""Filter messages that are replies to other messages."""
+"""Filter messages that are replies to other messages or stories."""
 
 
 # endregion
@@ -313,6 +324,50 @@ async def game_filter(_, __, m: Message):
 
 game = create(game_filter)
 """Filter messages that contain :obj:`~pyrogram.types.Game` objects."""
+
+
+# endregion
+
+# region giveaway_filter
+async def giveaway_filter(_, __, m: Message):
+    return bool(m.giveaway)
+
+
+giveaway = create(giveaway_filter)
+"""Filter messages that contain :obj:`~pyrogram.types.Giveaway` objects."""
+
+
+# endregion
+
+# region giveaway_result_filter
+async def giveaway_result_filter(_, __, m: Message):
+    return bool(m.giveaway_result)
+
+
+giveaway_result = create(giveaway_result_filter)
+"""Filter messages that contain :obj:`~pyrogram.types.GiveawayResult` objects."""
+
+
+# endregion
+
+# region gift_code_filter
+async def gift_code_filter(_, __, m: Message):
+    return bool(m.gift_code)
+
+
+gift_code = create(gift_code_filter)
+"""Filter messages that contain :obj:`~pyrogram.types.GiftCode` objects."""
+
+
+# endregion
+
+# region requested_chats_filter
+async def requested_chats_filter(_, __, m: Message):
+    return bool(m.requested_chats)
+
+
+requested_chats = create(requested_chats_filter)
+"""Filter service messages for request chats."""
 
 
 # endregion
@@ -427,6 +482,17 @@ dice = create(dice_filter)
 
 # endregion
 
+# region quote_filter
+async def quote_filter(_, __, m: Message):
+    return bool(m.quote)
+
+
+quote = create(quote_filter)
+"""Filter quote messages."""
+
+
+# endregion
+
 # region media_spoiler
 async def media_spoiler_filter(_, __, m: Message):
     return bool(m.has_media_spoiler)
@@ -467,6 +533,28 @@ async def channel_filter(_, __, m: Message):
 
 channel = create(channel_filter)
 """Filter messages sent in channels."""
+
+
+# endregion
+
+# region forum_filter
+async def forum_filter(_, __, m: Message):
+    return bool(m.chat and m.chat.is_forum)
+
+
+forum = create(forum_filter)
+"""Filter messages sent in forums."""
+
+
+# endregion
+
+# region story_filter
+async def story_filter(_, __, m: Message):
+    return bool(m.story)
+
+
+story = create(story_filter)
+"""Filter messages that contain :obj:`~pyrogram.types.Story` objects."""
 
 
 # endregion
@@ -647,6 +735,17 @@ via_bot = create(via_bot_filter)
 
 # endregion
 
+# region admin_filter
+async def admin_filter(_, __, m: Message):
+    return bool(m.chat and m.chat.is_admin)
+
+
+admin = create(admin_filter)
+"""Filter chats where you have admin rights"""
+
+
+# endregion
+
 # region video_chat_started_filter
 async def video_chat_started_filter(_, __, m: Message):
     return bool(m.video_chat_started)
@@ -665,6 +764,17 @@ async def video_chat_ended_filter(_, __, m: Message):
 
 video_chat_ended = create(video_chat_ended_filter)
 """Filter messages for ended video chats"""
+
+
+# endregion
+
+# region business
+async def business_filter(_, __, m: Message):
+    return bool(m.business_connection_id)
+
+
+business = create(business_filter)
+"""Filter messages sent via business bot"""
 
 
 # endregion

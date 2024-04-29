@@ -30,8 +30,11 @@ class ForwardMessages:
         chat_id: Union[int, str],
         from_chat_id: Union[int, str],
         message_ids: Union[int, Iterable[int]],
+        message_thread_id: int = None,
         disable_notification: bool = None,
         schedule_date: datetime = None,
+        hide_sender_name: bool = None,
+        hide_captions: bool = None,
         protect_content: bool = None
     ) -> Union["types.Message", List["types.Message"]]:
         """Forward messages of any kind.
@@ -52,12 +55,22 @@ class ForwardMessages:
             message_ids (``int`` | Iterable of ``int``):
                 An iterable of message identifiers in the chat specified in *from_chat_id* or a single message id.
 
+            message_thread_id (``int``, *optional*):
+                Unique identifier of a message thread to which the message belongs.
+                For supergroups only.
+
             disable_notification (``bool``, *optional*):
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
+
+            hide_sender_name (``bool``, *optional*):
+                If True, the original author of the message will not be shown.
+
+            hide_captions (``bool``, *optional*):
+                If True, the original media captions will be removed.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
@@ -87,7 +100,10 @@ class ForwardMessages:
                 silent=disable_notification or None,
                 random_id=[self.rnd_id() for _ in message_ids],
                 schedule_date=utils.datetime_to_timestamp(schedule_date),
-                noforwards=protect_content
+                drop_author=hide_sender_name,
+                drop_media_captions=hide_captions,
+                noforwards=protect_content,
+                top_msg_id=message_thread_id
             )
         )
 

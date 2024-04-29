@@ -85,13 +85,17 @@ class PromoteChatMember:
                     anonymous=privileges.is_anonymous,
                     change_info=privileges.can_change_info,
                     post_messages=privileges.can_post_messages,
+                    post_stories=privileges.can_post_stories,
                     edit_messages=privileges.can_edit_messages,
+                    edit_stories=privileges.can_edit_stories,
                     delete_messages=privileges.can_delete_messages,
+                    delete_stories=privileges.can_delete_stories,
                     ban_users=privileges.can_restrict_members,
                     invite_users=privileges.can_invite_users,
                     pin_messages=privileges.can_pin_messages,
                     add_admins=privileges.can_promote_members,
                     manage_call=privileges.can_manage_video_chats,
+                    manage_topics=privileges.can_manage_topics,
                     other=privileges.can_manage_chat
                 ),
                 rank=rank or ""

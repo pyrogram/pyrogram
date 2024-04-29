@@ -32,7 +32,7 @@ class GetChatEventLog:
         limit: int = 0,
         filters: "types.ChatEventFilter" = None,
         user_ids: List[Union[int, str]] = None
-    ) -> Optional[AsyncGenerator["types.ChatEvent", None]]:
+    ) -> AsyncGenerator["types.ChatEvent", None]:
         """Get the actions taken by chat members and administrators in the last 48h.
 
         Only available for supergroups and channels. Requires administrator rights.

@@ -23,7 +23,7 @@ from struct import unpack
 SMP_RE = re.compile(r"[\U00010000-\U0010FFFF]")
 
 
-def add_surrogates(text):
+def add_surrogates(text: str) -> str:
     # Replace each SMP code point with a surrogate pair
     return SMP_RE.sub(
         lambda match:  # Split SMP in two surrogates
@@ -32,7 +32,7 @@ def add_surrogates(text):
     )
 
 
-def remove_surrogates(text):
+def remove_surrogates(text: str) -> str:
     # Replace each surrogate pair with a SMP code point
     return text.encode("utf-16", "surrogatepass").decode("utf-16")
 

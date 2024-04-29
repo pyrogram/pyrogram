@@ -18,7 +18,7 @@
 
 import html
 from datetime import datetime
-from typing import List, Optional
+from typing import List, Optional, Union
 
 import pyrogram
 from pyrogram import enums, utils
@@ -100,11 +100,29 @@ class User(Object, Update):
         is_premium (``bool``, *optional*):
             True, if this user is a premium user.
 
+        is_contact_require_premium (``bool``, *optional*):
+            True, if this user requires premium to send messages to him.
+
+        is_close_friend (``bool``, *optional*):
+            True, if this user is a close friend.
+
+        is_stories_hidden (``bool``, *optional*):
+            True, if this user has hidden stories.
+
+        is_stories_unavailable (``bool``, *optional*):
+            True, if this user stories is unavailable.
+
+        is_business_bot (``bool``, *optional*):
+            True, if this bot can connect to business account.
+
         first_name (``str``, *optional*):
             User's or bot's first name.
 
         last_name (``str``, *optional*):
             User's or bot's last name.
+
+        full_name (``str``, *property*):
+            Full name of the other party in a private chat, for private chats and bots.
 
         status (:obj:`~pyrogram.enums.UserStatus`, *optional*):
             User's last seen & online status. ``None``, for bots.
@@ -117,6 +135,9 @@ class User(Object, Update):
 
         username (``str``, *optional*):
             User's or bot's username.
+
+        usernames (List of :obj:`~pyrogram.types.Username`, *optional*):
+            The list of user's collectible (and basic) usernames if available.
 
         language_code (``str``, *optional*):
             IETF language tag of the user's language.
@@ -145,6 +166,15 @@ class User(Object, Update):
             You can use ``user.mention()`` to mention the user using their first name (styled using html), or
             ``user.mention("another name")`` for a custom name. To choose a different style
             ("html" or "md"/"markdown") use ``user.mention(style="md")``.
+
+        reply_color (:obj:`~pyrogram.types.ChatColor`, *optional*):
+            Chat reply color.
+
+        profile_color (:obj:`~pyrogram.types.ChatColor`, *optional*):
+            Chat profile color.
+
+        raw (:obj:`~pyrogram.raw.base.User` | :obj:`~pyrogram.raw.base.UserStatus`, *optional*):
+            The raw user or user status object, as received from the Telegram API.
     """
 
     def __init__(
@@ -163,18 +193,27 @@ class User(Object, Update):
         is_fake: bool = None,
         is_support: bool = None,
         is_premium: bool = None,
+        is_contact_require_premium: bool = None,
+        is_close_friend: bool = None,
+        is_stories_hidden: bool = None,
+        is_stories_unavailable: bool = None,
+        is_business_bot: bool = None,
         first_name: str = None,
         last_name: str = None,
         status: "enums.UserStatus" = None,
         last_online_date: datetime = None,
         next_offline_date: datetime = None,
         username: str = None,
+        usernames: List["types.Username"] = None,
         language_code: str = None,
         emoji_status: Optional["types.EmojiStatus"] = None,
         dc_id: int = None,
         phone_number: str = None,
         photo: "types.ChatPhoto" = None,
-        restrictions: List["types.Restriction"] = None
+        restrictions: List["types.Restriction"] = None,
+        reply_color: "types.ChatColor" = None,
+        profile_color: "types.ChatColor" = None,
+        raw: Union["raw.base.User", "raw.base.UserStatus"] = None
     ):
         super().__init__(client)
 
@@ -190,18 +229,31 @@ class User(Object, Update):
         self.is_fake = is_fake
         self.is_support = is_support
         self.is_premium = is_premium
+        self.is_contact_require_premium = is_contact_require_premium
+        self.is_close_friend = is_close_friend
+        self.is_stories_hidden = is_stories_hidden
+        self.is_stories_unavailable = is_stories_unavailable
+        self.is_business_bot = is_business_bot
         self.first_name = first_name
         self.last_name = last_name
         self.status = status
         self.last_online_date = last_online_date
         self.next_offline_date = next_offline_date
         self.username = username
+        self.usernames = usernames
         self.language_code = language_code
         self.emoji_status = emoji_status
         self.dc_id = dc_id
         self.phone_number = phone_number
         self.photo = photo
         self.restrictions = restrictions
+        self.reply_color = reply_color
+        self.profile_color = profile_color
+        self.raw = raw
+
+    @property
+    def full_name(self) -> str:
+        return " ".join(filter(None, [self.first_name, self.last_name])) or None
 
     @property
     def mention(self):
@@ -229,16 +281,25 @@ class User(Object, Update):
             is_fake=user.fake,
             is_support=user.support,
             is_premium=user.premium,
+            is_contact_require_premium=user.contact_require_premium,
+            is_close_friend=user.close_friend,
+            is_stories_hidden=user.stories_hidden,
+            is_stories_unavailable=user.stories_unavailable,
+            is_business_bot=user.bot_business,
             first_name=user.first_name,
             last_name=user.last_name,
             **User._parse_status(user.status, user.bot),
-            username=user.username,
+            username=user.username or (user.usernames[0].username if user.usernames else None),
+            usernames=types.List([types.Username._parse(r) for r in user.usernames]) or None,
             language_code=user.lang_code,
             emoji_status=types.EmojiStatus._parse(client, user.emoji_status),
             dc_id=getattr(user.photo, "dc_id", None),
             phone_number=user.phone,
             photo=types.ChatPhoto._parse(client, user.photo, user.id, user.access_hash),
             restrictions=types.List([types.Restriction._parse(r) for r in user.restriction_reason]) or None,
+            reply_color=types.ChatColor._parse(getattr(user, "color", None)),
+            profile_color=types.ChatColor._parse_profile_color(getattr(user, "profile_color", None)),
+            raw=user,
             client=client
         )
 
@@ -280,6 +341,7 @@ class User(Object, Update):
         return User(
             id=user_status.user_id,
             **User._parse_status(user_status.status),
+            raw=user_status,
             client=client
         )
 

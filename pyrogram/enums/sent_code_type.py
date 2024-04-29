@@ -43,3 +43,9 @@ class SentCodeType(AutoName):
 
     EMAIL_CODE = raw.types.auth.SentCodeTypeEmailCode
     "The code was sent via email."
+
+    FIREBASE_SMS = raw.types.auth.SentCodeTypeFirebaseSms
+    "The code should be delivered via SMS after Firebase attestation."
+
+    SETUP_EMAIL_REQUIRED = raw.types.auth.SentCodeTypeSetUpEmailRequired
+    "The user should add and verify an email address in order to login."

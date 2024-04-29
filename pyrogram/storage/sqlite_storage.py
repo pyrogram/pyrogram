@@ -43,9 +43,24 @@ CREATE TABLE peers
     id             INTEGER PRIMARY KEY,
     access_hash    INTEGER,
     type           INTEGER NOT NULL,
-    username       TEXT,
     phone_number   TEXT,
     last_update_on INTEGER NOT NULL DEFAULT (CAST(STRFTIME('%s', 'now') AS INTEGER))
+);
+
+CREATE TABLE usernames
+(
+    id       INTEGER,
+    username TEXT,
+    FOREIGN KEY (id) REFERENCES peers(id)
+);
+
+CREATE TABLE update_state
+(
+    id   INTEGER PRIMARY KEY,
+    pts  INTEGER,
+    qts  INTEGER,
+    date INTEGER,
+    seq  INTEGER
 );
 
 CREATE TABLE version
@@ -54,8 +69,8 @@ CREATE TABLE version
 );
 
 CREATE INDEX idx_peers_id ON peers (id);
-CREATE INDEX idx_peers_username ON peers (username);
 CREATE INDEX idx_peers_phone_number ON peers (phone_number);
+CREATE INDEX idx_usernames_username ON usernames (username);
 
 CREATE TRIGGER trg_peers_last_update_on
     AFTER UPDATE
@@ -90,7 +105,7 @@ def get_input_peer(peer_id: int, access_hash: int, peer_type: str):
 
 
 class SQLiteStorage(Storage):
-    VERSION = 3
+    VERSION = 5
     USERNAME_TTL = 8 * 60 * 60
 
     def __init__(self, name: str):
@@ -125,12 +140,50 @@ class SQLiteStorage(Storage):
     async def delete(self):
         raise NotImplementedError
 
-    async def update_peers(self, peers: List[Tuple[int, int, str, str, str]]):
+    async def update_peers(self, peers: List[Tuple[int, int, str, List[str], str]]):
+        peers_data = []
+        usernames_data = []
+        ids_to_delete = []
+
+        for id, access_hash, type, usernames, phone_number in peers:
+            ids_to_delete.append((id,))
+            peers_data.append((id, access_hash, type, phone_number))
+
+            if usernames:
+                usernames_data.extend([(id, username) for username in usernames])
+
         self.conn.executemany(
-            "REPLACE INTO peers (id, access_hash, type, username, phone_number)"
-            "VALUES (?, ?, ?, ?, ?)",
-            peers
-        )
+            "REPLACE INTO peers (id, access_hash, type, phone_number) VALUES (?, ?, ?, ?)",
+            peers_data)
+
+        self.conn.executemany(
+            "DELETE FROM usernames WHERE id = ?",
+            ids_to_delete)
+
+        if usernames_data:
+            self.conn.executemany(
+                "REPLACE INTO usernames (id, username) VALUES (?, ?)",
+                usernames_data)
+
+    async def update_state(self, value: Tuple[int, int, int, int, int] = object):
+        if value == object:
+            return self.conn.execute(
+                "SELECT id, pts, qts, date, seq FROM update_state "
+                "ORDER BY date ASC"
+            ).fetchall()
+        else:
+            with self.conn:
+                if isinstance(value, int):
+                    self.conn.execute(
+                        "DELETE FROM update_state WHERE id = ?",
+                        (value,)
+                    )
+                else:
+                    self.conn.execute(
+                        "REPLACE INTO update_state (id, pts, qts, date, seq)"
+                        "VALUES (?, ?, ?, ?, ?)",
+                        value
+                    )
 
     async def get_peer_by_id(self, peer_id: int):
         r = self.conn.execute(
@@ -145,8 +198,10 @@ class SQLiteStorage(Storage):
 
     async def get_peer_by_username(self, username: str):
         r = self.conn.execute(
-            "SELECT id, access_hash, type, last_update_on FROM peers WHERE username = ?"
-            "ORDER BY last_update_on DESC",
+            "SELECT p.id, p.access_hash, p.type, p.last_update_on FROM peers p "
+            "JOIN usernames u ON p.id = u.id "
+            "WHERE u.username = ? "
+            "ORDER BY p.last_update_on DESC",
             (username,)
         ).fetchone()
 

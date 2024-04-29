@@ -21,7 +21,7 @@ from datetime import datetime
 from typing import Union, List, Optional
 
 import pyrogram
-from pyrogram import types, enums
+from pyrogram import types, enums, utils
 
 log = logging.getLogger(__name__)
 
@@ -36,9 +36,13 @@ class CopyMessage:
         parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List["types.MessageEntity"] = None,
         disable_notification: bool = None,
+        message_thread_id: int = None,
         reply_to_message_id: int = None,
+        reply_to_chat_id: Union[int, str] = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
+        has_spoiler: bool = None,
+        business_connection_id: str = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -83,14 +87,27 @@ class CopyMessage:
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
+            message_thread_id (``int``, *optional*):
+                Unique identifier for the target message thread (topic) of the forum.
+                For supergroups only.
+
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
+
+            reply_to_chat_id (``int``, *optional*):
+                If the message is a reply, ID of the original chat.
 
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
 
             protect_content (``bool``, *optional*):
                 Protects the contents of the sent message from forwarding and saving.
+
+            has_spoiler (``bool``, *optional*):
+                True, if the message media is covered by a spoiler animation.
+
+            business_connection_id (``str``, *optional*):
+                Unique identifier of the business connection on behalf of which the message will be sent.
 
             reply_markup (:obj:`~pyrogram.types.InlineKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardMarkup` | :obj:`~pyrogram.types.ReplyKeyboardRemove` | :obj:`~pyrogram.types.ForceReply`, *optional*):
                 Additional interface options. An object for an inline keyboard, custom reply keyboard,
@@ -114,8 +131,12 @@ class CopyMessage:
             parse_mode=parse_mode,
             caption_entities=caption_entities,
             disable_notification=disable_notification,
+            message_thread_id=message_thread_id,
             reply_to_message_id=reply_to_message_id,
+            reply_to_chat_id=reply_to_chat_id,
             schedule_date=schedule_date,
             protect_content=protect_content,
-            reply_markup=reply_markup
+            has_spoiler=has_spoiler,
+            reply_markup=reply_markup,
+            business_connection_id=business_connection_id
         )

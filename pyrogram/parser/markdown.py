@@ -32,8 +32,9 @@ STRIKE_DELIM = "~~"
 SPOILER_DELIM = "||"
 CODE_DELIM = "`"
 PRE_DELIM = "```"
+BLOCKQUOTE_DELIM = ">"
 
-MARKDOWN_RE = re.compile(r"({d})|\[(.+?)\]\((.+?)\)".format(
+MARKDOWN_RE = re.compile(r"({d})|(!?)\[(.+?)\]\((.+?)\)".format(
     d="|".join(
         ["".join(i) for i in [
             [rf"\{j}" for j in i]
@@ -52,6 +53,7 @@ MARKDOWN_RE = re.compile(r"({d})|\[(.+?)\]\((.+?)\)".format(
 OPENING_TAG = "<{}>"
 CLOSING_TAG = "</{}>"
 URL_MARKUP = '<a href="{}">{}</a>'
+EMOJI_MARKUP = '<emoji id={}>{}</emoji>'
 FIXED_WIDTH_DELIMS = [CODE_DELIM, PRE_DELIM]
 
 
@@ -59,16 +61,41 @@ class Markdown:
     def __init__(self, client: Optional["pyrogram.Client"]):
         self.html = HTML(client)
 
+    def _parse_blockquotes(self, text: str):
+        text = html.unescape(text)
+        lines = text.split('\n')
+        result = []
+        in_blockquote = False
+        current_blockquote = []
+
+        for line in lines:
+            if line.startswith(BLOCKQUOTE_DELIM):
+                in_blockquote = True
+                current_blockquote.append(line[1:].strip())
+            else:
+                if in_blockquote:
+                    in_blockquote = False
+                    result.append(OPENING_TAG.format("blockquote") + '\n'.join(current_blockquote) + CLOSING_TAG.format("blockquote"))
+                    current_blockquote = []
+                result.append(line)
+
+        if in_blockquote:
+            result.append(OPENING_TAG.format("blockquote") + '\n'.join(current_blockquote) + CLOSING_TAG.format("blockquote"))
+
+        return '\n'.join(result)
+
     async def parse(self, text: str, strict: bool = False):
         if strict:
             text = html.escape(text)
+
+        text = self._parse_blockquotes(text)
 
         delims = set()
         is_fixed_width = False
 
         for i, match in enumerate(re.finditer(MARKDOWN_RE, text)):
             start, _ = match.span()
-            delim, text_url, url = match.groups()
+            delim, is_emoji, text_url, url = match.groups()
             full = match.group(0)
 
             if delim in FIXED_WIDTH_DELIMS:
@@ -77,8 +104,14 @@ class Markdown:
             if is_fixed_width and delim not in FIXED_WIDTH_DELIMS:
                 continue
 
-            if text_url:
+            if not is_emoji and text_url:
                 text = utils.replace_once(text, full, URL_MARKUP.format(url, text_url), start)
+                continue
+
+            if is_emoji:
+                emoji = text_url
+                emoji_id = url.lstrip("tg://emoji?id=")
+                text = utils.replace_once(text, full, EMOJI_MARKUP.format(emoji_id, emoji), start)
                 continue
 
             if delim == BOLD_DELIM:
@@ -141,7 +174,21 @@ class Markdown:
                 start_tag = f"{PRE_DELIM}{language}\n"
                 end_tag = f"\n{PRE_DELIM}"
             elif entity_type == MessageEntityType.BLOCKQUOTE:
-                start_tag = end_tag = PRE_DELIM
+                start_tag = BLOCKQUOTE_DELIM + " "
+                end_tag = ""
+                blockquote_text = text[start:end]
+                lines = blockquote_text.split("\n")
+                last_length = 0
+                for line in lines:
+                    if len(line) == 0 and last_length == end:
+                        continue
+                    start_offset = start+last_length
+                    last_length = last_length+len(line)
+                    end_offset = start_offset+last_length
+                    entities_offsets.append((start_tag, start_offset,))
+                    entities_offsets.append((end_tag, end_offset,))
+                    last_length = last_length+1
+                continue
             elif entity_type == MessageEntityType.SPOILER:
                 start_tag = end_tag = SPOILER_DELIM
             elif entity_type == MessageEntityType.TEXT_LINK:
@@ -152,6 +199,10 @@ class Markdown:
                 user = entity.user
                 start_tag = "["
                 end_tag = f"](tg://user?id={user.id})"
+            elif entity_type == MessageEntityType.CUSTOM_EMOJI:
+                emoji_id = entity.custom_emoji_id
+                start_tag = "!["
+                end_tag = f"](tg://emoji?id={emoji_id})"
             else:
                 continue
 

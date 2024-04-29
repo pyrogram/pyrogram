@@ -16,7 +16,7 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from typing import Union, BinaryIO
+from typing import Union, BinaryIO, Optional
 
 import pyrogram
 from pyrogram import raw
@@ -26,8 +26,9 @@ class SetProfilePhoto:
     async def set_profile_photo(
         self: "pyrogram.Client",
         *,
-        photo: Union[str, BinaryIO] = None,
-        video: Union[str, BinaryIO] = None
+        photo: Optional[Union[str, BinaryIO]] = None,
+        video: Optional[Union[str, BinaryIO]] = None,
+        is_public: Optional[bool] = None
     ) -> bool:
         """Set a new profile photo or video (H.264/MPEG-4 AVC video, max 5 seconds).
 
@@ -52,6 +53,11 @@ class SetProfilePhoto:
                 Pass a file path as string to upload a new video that exists on your local machine or
                 pass a binary file-like object with its attribute ".name" set for in-memory uploads.
 
+            is_public (``bool``, *optional*):
+                If set to True, the chosen profile photo will be shown to users that can't display
+                your main profile photo due to your privacy settings.
+                Defaults to None.
+
         Returns:
             ``bool``: True on success.
 
@@ -63,11 +69,15 @@ class SetProfilePhoto:
 
                 # Set a new profile video
                 await app.set_profile_photo(video="new_video.mp4")
+
+                # Set/update your account's public profile photo
+                await app.set_profile_photo(photo="new_photo.jpg", is_public=True)
         """
 
         return bool(
             await self.invoke(
                 raw.functions.photos.UploadProfilePhoto(
+                    fallback=is_public,
                     file=await self.save_file(photo),
                     video=await self.save_file(video)
                 )

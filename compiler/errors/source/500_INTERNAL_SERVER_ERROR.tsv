@@ -8,6 +8,7 @@ CHAT_OCCUPY_USERNAME_FAILED	Failure to occupy chat username due to Telegram havi
 CHP_CALL_FAIL	Telegram is having internal problems. Please try again later
 ENCRYPTION_OCCUPY_ADMIN_FAILED	Failed occupying memory for admin info due to Telegram having internal problems. Please try again later
 ENCRYPTION_OCCUPY_FAILED	Internal server error while accepting secret chat
+FILE_WRITE_FAILED	Telegram is having internal problems. Please try again later
 FOLDER_DEAC_AUTOFIX_ALL	Telegram is having internal problems. Please try again later
 GROUPCALL_ADD_PARTICIPANTS_FAILED	Failure while adding voice chat member due to Telegram having internal problems. Please try again later
 GROUPED_ID_OCCUPY_FAILED	Telegram is having internal problems. Please try again later
@@ -38,6 +39,7 @@ RPC_MCGET_FAIL	Telegram is having internal problems. Please try again later
 SIGN_IN_FAILED	Failure while signing in due to Telegram having internal problems. Please try again later
 STORAGE_CHECK_FAILED	Server storage check failed due to Telegram having internal problems. Please try again later
 STORE_INVALID_SCALAR_TYPE	Telegram is having internal problems. Please try again later
+TIMEOUT	A timeout occurred while fetching data from the worker
 UNKNOWN_METHOD	The method you tried to call cannot be called on non-CDN DCs
 UPLOAD_NO_VOLUME	Telegram is having internal problems. Please try again later
 VOLUME_LOC_NOT_FOUND	Telegram is having internal problems. Please try again later

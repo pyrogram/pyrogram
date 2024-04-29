@@ -19,6 +19,7 @@
 from io import BytesIO
 from typing import cast, Union, Any
 
+from .bool import BoolFalse, BoolTrue, Bool
 from .int import Int, Long
 from ..list import List
 from ..tl_object import TLObject
@@ -32,6 +33,12 @@ class Vector(bytes, TLObject):
     @staticmethod
     def read_bare(b: BytesIO, size: int) -> Union[int, Any]:
         if size == 4:
+            e = int.from_bytes(b.read(4), "little")
+            b.seek(-4, 1)
+
+            if e in {BoolFalse.ID, BoolTrue.ID}:
+                return Bool.read(b)
+
             return Int.read(b)
 
         if size == 8:
