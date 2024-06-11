@@ -54,6 +54,7 @@ class GetChatHistory:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         limit: int = 0,
+        reverse: bool = False,
         offset: int = 0,
         offset_id: int = 0,
         offset_date: datetime = utils.zero_datetime()
@@ -74,6 +75,11 @@ class GetChatHistory:
                 Limits the number of messages to be retrieved.
                 By default, no limit is applied and all messages are returned.
 
+            reverse (``bool``, *optional*):
+                Set the direction of messages.
+                By default, from the most recent time to the oldest time.
+                From the oldest time to the most recent time on reverse is True.
+                
             offset (``int``, *optional*):
                 Sequential number of the first message to be returned..
                 Negative values are also accepted and become useful in case you set offset_id or offset_date.
@@ -110,6 +116,9 @@ class GetChatHistory:
             if not messages:
                 return
 
+            if reverse:
+                messages = list(reversed(messages))
+                
             offset_id = messages[-1].id
 
             for message in messages:
