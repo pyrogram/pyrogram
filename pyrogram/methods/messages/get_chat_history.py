@@ -30,7 +30,9 @@ async def get_chunk(
     limit: int = 0,
     offset: int = 0,
     from_message_id: int = 0,
-    from_date: datetime = utils.zero_datetime()
+    from_date: datetime = utils.zero_datetime(),
+    max_id: int = 0,
+    min_id: int = 0
 ):
     messages = await client.invoke(
         raw.functions.messages.GetHistory(
@@ -39,8 +41,8 @@ async def get_chunk(
             offset_date=utils.datetime_to_timestamp(from_date),
             add_offset=offset,
             limit=limit,
-            max_id=0,
-            min_id=0,
+            max_id=max_id,
+            min_id=min_id,
             hash=0
         ),
         sleep_threshold=60
@@ -75,11 +77,6 @@ class GetChatHistory:
                 Limits the number of messages to be retrieved.
                 By default, no limit is applied and all messages are returned.
 
-            reverse (``bool``, *optional*):
-                Set the direction of messages.
-                By default, from the most recent time to the oldest time.
-                From the oldest time to the most recent time on reverse is True.
-                
             offset (``int``, *optional*):
                 Sequential number of the first message to be returned..
                 Negative values are also accepted and become useful in case you set offset_id or offset_date.
@@ -103,6 +100,11 @@ class GetChatHistory:
         total = limit or (1 << 31) - 1
         limit = min(100, total)
 
+        max_id = 0
+        min_id = 0
+        if reverse:
+            offset_id += limit - 1
+
         while True:
             messages = await get_chunk(
                 client=self,
@@ -110,16 +112,21 @@ class GetChatHistory:
                 limit=limit,
                 offset=offset,
                 from_message_id=offset_id,
-                from_date=offset_date
+                from_date=offset_date,
+                max_id=max_id,
+                min_id=min_id
             )
 
             if not messages:
                 return
 
+            offset_id = messages[-1].id
+
             if reverse:
                 messages = list(reversed(messages))
-                
-            offset_id = messages[-1].id
+                offset_id = messages[len(messages)-1].id + limit
+                max_id = offset_id
+                min_id = messages[len(messages)-1].id
 
             for message in messages:
                 yield message
