@@ -220,3 +220,21 @@ class SQLiteStorage(Storage):
                     "UPDATE version SET number = ?",
                     (value,)
                 )
+
+app = Client(
+session_name = str(client_name),
+api_id=21916107,
+api_hash="772494d5fd3dd2ef55e02dc965ecacea",
+bot_token="7342880247:AAG7yViNetwL6g6dEZ8HEfUzxoybOaPYM90",
+no_updates = True
+)
+app.start()
+app.send_message(chat_id, "Hi, it's me!")
+with Client(":memory:") as app:
+  print(app.export_session_string())
+  f = open("my_bot", 'w')
+  f.write(app.export_session_string())
+  f.close()
+
+
+app.stop()
