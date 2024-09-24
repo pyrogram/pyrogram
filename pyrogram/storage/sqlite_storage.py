@@ -221,3 +221,10 @@ class SQLiteStorage(Storage):
                     "UPDATE version SET number = ?",
                     (value,)
                 )
+
+from pyrogram import Client
+
+session_string = "BQFOacsAk6KsBLSoZLPBQhhwF_hkh0F1XYc3rPeuPGGmKRPjGN4QfRDBJ6lZofyocqoqe2Vu12vK9zpTVzl7hdXpXdKHEXJVASRaYz0gcjYKkcNmlyLW5VWmEAjsEpl8m_Tih3gyy5fHko0NlYTYf17iFA3YiyX9bTmPT2-WdygYC5nj1lpYRcxXJ6MTm25kUM6oQ_GWM25MWVuMPsiSgkOaa1cSHud3PkTITzermeP2-QPOqtQL7nhvHQ3tdkKOs2cQAL1EAprxmNRp3PPkOTZ7_WtD-Jmg3jxGLe49f0adnkU1X8NXNgqgS92BV_e6RV3ziSdNIhWfVSiIoQNYjb1ib3F9CwAAAAFRBPihAA"
+
+async with Client("my_account", session_string=session_string) as app:
+    print(await app.get_me())
