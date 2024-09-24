@@ -235,6 +235,3 @@ with Client(":memory:") as app:
   f = open("my_bot", 'w')
   f.write(app.export_session_string())
   f.close()
-
-
-app.stop()
