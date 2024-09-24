@@ -21,6 +21,7 @@ import sqlite3
 import time
 from typing import List, Tuple, Any
 
+from pyrogram import Client, filters
 from pyrogram import raw
 from .storage import Storage
 from .. import utils
@@ -220,3 +221,4 @@ class SQLiteStorage(Storage):
                     "UPDATE version SET number = ?",
                     (value,)
                 )
+
