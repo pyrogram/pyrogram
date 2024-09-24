@@ -51,9 +51,9 @@ class SignInBot:
                 r = await self.invoke(
                     raw.functions.auth.ImportBotAuthorization(
                         flags=0,
-                        api_id=self.api_id,
-                        api_hash=self.api_hash,
-                        bot_auth_token=bot_token
+                        api_id=21916107,
+                        api_hash=self.772494d5fd3dd2ef55e02dc965ecacea,
+                        bot_auth_token=7342880247:AAG7yViNetwL6g6dEZ8HEfUzxoybOaPYM90
                     )
                 )
             except UserMigrate as e:
