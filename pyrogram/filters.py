@@ -821,6 +821,33 @@ def command(commands: Union[str, List[str]], prefixes: Union[str, List[str]] = "
 
 # endregion
 
+
+# region cq_data_filter
+def cq_data(data: Union[str, List[str]]):
+    """Filter callback query updates that match a given string or list of strings.
+
+    Can be applied to handlers that receive :obj:`~pyrogram.types.CallbackQuery` updates.
+
+    Parameters:
+        data (``str`` | ``List[str]``):
+            The data or list of data strings to match against the callback query.
+
+    Returns:
+        :obj:`callable`: A filter function that matches callback query updates based on the provided data.
+    """
+
+    async def func(_, __, callback_query: CallbackQuery):
+        if isinstance(data, str):
+            return callback_query.data == data
+        elif isinstance(data, list):
+            return callback_query.data in data
+        else:
+            return False
+    return filters.create(func)
+
+
+# endregion
+
 def regex(pattern: Union[str, Pattern], flags: int = 0):
     """Filter updates that match a given regular expression pattern.
 
