@@ -50,7 +50,7 @@ class MessagesFilter(AutoName):
     VIDEO_NOTE = raw.types.InputMessagesFilterRoundVideo
     "Video note messages"
 
-    AUDIO_VIDEO_NOTE = raw.types.InputMessagesFilterRoundVideo
+    AUDIO_VIDEO_NOTE = raw.types.InputMessagesFilterRoundVoice
     "Audio and video note messages"
 
     AUDIO = raw.types.InputMessagesFilterMusic
