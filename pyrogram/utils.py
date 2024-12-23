@@ -198,7 +198,7 @@ def unpack_inline_message_id(inline_message_id: str) -> "raw.base.InputBotInline
         )
 
 
-MIN_CHANNEL_ID = -1002147483647
+MIN_CHANNEL_ID = -1009999999999
 MAX_CHANNEL_ID = -1000000000000
 MIN_CHAT_ID = -2147483647
 MAX_USER_ID_OLD = 2147483647
