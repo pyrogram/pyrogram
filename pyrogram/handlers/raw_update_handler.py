@@ -63,5 +63,5 @@ class RawUpdateHandler(Handler):
         - :obj:`~pyrogram.raw.types.ChannelForbidden`
     """
 
-    def __init__(self, callback: Callable):
+    def __init__(self, callback: Callable) -> None:
         super().__init__(callback)

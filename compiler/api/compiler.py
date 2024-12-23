@@ -84,13 +84,13 @@ class Combinator(NamedTuple):
     type: str
 
 
-def snake(s: str):
+def snake(s: str) -> str:
     # https://stackoverflow.com/q/1175208
     s = re.sub(r"(.)([A-Z][a-z]+)", r"\1_\2", s)
     return re.sub(r"([a-z0-9])([A-Z])", r"\1_\2", s).lower()
 
 
-def camel(s: str):
+def camel(s: str) -> str:
     return "".join([i[0].upper() + i[1:] for i in s.split("_")])
 
 
@@ -134,7 +134,7 @@ def get_type_hint(type: str) -> str:
         return f'{type}{" = None" if is_flag else ""}'
 
 
-def sort_args(args):
+def sort_args(args) -> str:
     """Put flags at the end"""
     args = args.copy()
     flags = [i for i in args if FLAGS_RE.match(i[1])]
@@ -160,7 +160,7 @@ def remove_whitespaces(source: str) -> str:
     return "\n".join(lines)
 
 
-def get_docstring_arg_type(t: str):
+def get_docstring_arg_type(t: str) -> str:
     if t in CORE_TYPES:
         if t == "long":
             return "``int`` ``64-bit``"
@@ -185,7 +185,7 @@ def get_docstring_arg_type(t: str):
         return f":obj:`{t} <pyrogram.raw.base.{t}>`"
 
 
-def get_references(t: str, kind: str):
+def get_references(t: str, kind: str) -> tuple:
     if kind == "constructors":
         t = constructors_to_functions.get(t)
     elif kind == "types":

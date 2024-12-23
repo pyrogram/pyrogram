@@ -45,5 +45,5 @@ class InlineQueryHandler(Handler):
             The received inline query.
     """
 
-    def __init__(self, callback: Callable, filters=None):
+    def __init__(self, callback: Callable, filters=None) -> None:
         super().__init__(callback, filters)

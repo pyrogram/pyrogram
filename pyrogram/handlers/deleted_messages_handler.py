@@ -48,10 +48,10 @@ class DeletedMessagesHandler(Handler):
             The deleted messages, as list.
     """
 
-    def __init__(self, callback: Callable, filters: Filter = None):
+    def __init__(self, callback: Callable, filters: Filter = None) -> None:
         super().__init__(callback, filters)
 
-    async def check(self, client: "pyrogram.Client", messages: List[Message]):
+    async def check(self, client: "pyrogram.Client", messages: List[Message]) -> bool:
         # Every message should be checked, if at least one matches the filter True is returned
         # otherwise, or if the list is empty, False is returned
         for message in messages:

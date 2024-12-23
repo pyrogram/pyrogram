@@ -32,10 +32,10 @@ def add_surrogates(text):
     )
 
 
-def remove_surrogates(text):
+def remove_surrogates(text: str) -> str:
     # Replace each surrogate pair with a SMP code point
     return text.encode("utf-16", "surrogatepass").decode("utf-16")
 
 
-def replace_once(source: str, old: str, new: str, start: int):
+def replace_once(source: str, old: str, new: str, start: int) -> str:
     return source[:start] + source[start:].replace(old, new, 1)
