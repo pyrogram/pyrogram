@@ -795,6 +795,9 @@ class Client(Methods):
             if isinstance(e, asyncio.CancelledError):
                 raise e
 
+            if isinstance(e, pyrogram.errors.FloodWait):
+                raise e
+
             return None
         else:
             if in_memory:
@@ -1016,6 +1019,8 @@ class Client(Methods):
                     finally:
                         await cdn_session.stop()
             except pyrogram.StopTransmission:
+                raise
+            except pyrogram.errors.FloodWait:
                 raise
             except Exception as e:
                 log.exception(e)
