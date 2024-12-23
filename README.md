@@ -1,6 +1,6 @@
 <p align="center">
     <a href="https://github.com/pyrogram/pyrogram">
-        <img src="https://docs.pyrogram.org/_static/pyrogram.png" alt="Pyrogram" width="128">
+        <img src="https://raw.githubusercontent.com/pyrogram/artwork/master/artwork/pyrogram-logo.png" alt="Pyrogram" width="128">
     </a>
     <br>
     <b>Telegram MTProto API Framework for Python</b>
@@ -24,6 +24,9 @@
 
 ## Pyrogram
 
+> [!NOTE]
+> The project is no longer maintained or supported. Thanks for appreciating it.
+
 > Elegant, modern and asynchronous Telegram MTProto API framework in Python for users and bots
 
 ``` python
@@ -43,14 +46,6 @@ app.run()
 **Pyrogram** is a modern, elegant and asynchronous [MTProto API](https://docs.pyrogram.org/topics/mtproto-vs-botapi)
 framework. It enables you to easily interact with the main Telegram API through a user account (custom client) or a bot
 identity (bot API alternative) using Python.
-
-### Support
-
-If you'd like to support Pyrogram, you can consider:
-
-- [Become a GitHub sponsor](https://github.com/sponsors/delivrance).
-- [Become a LiberaPay patron](https://liberapay.com/delivrance).
-- [Become an OpenCollective backer](https://opencollective.com/pyrogram).
 
 ### Key Features
 
