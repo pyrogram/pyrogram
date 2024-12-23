@@ -30,7 +30,9 @@ async def get_chunk(
     limit: int = 0,
     offset: int = 0,
     from_message_id: int = 0,
-    from_date: datetime = utils.zero_datetime()
+    from_date: datetime = utils.zero_datetime(),
+    max_id: int = 0,
+    min_id: int = 0
 ):
     messages = await client.invoke(
         raw.functions.messages.GetHistory(
@@ -39,8 +41,8 @@ async def get_chunk(
             offset_date=utils.datetime_to_timestamp(from_date),
             add_offset=offset,
             limit=limit,
-            max_id=0,
-            min_id=0,
+            max_id=max_id,
+            min_id=min_id,
             hash=0
         ),
         sleep_threshold=60
@@ -54,6 +56,7 @@ class GetChatHistory:
         self: "pyrogram.Client",
         chat_id: Union[int, str],
         limit: int = 0,
+        reverse: bool = False,
         offset: int = 0,
         offset_id: int = 0,
         offset_date: datetime = utils.zero_datetime()
@@ -97,6 +100,11 @@ class GetChatHistory:
         total = limit or (1 << 31) - 1
         limit = min(100, total)
 
+        max_id = 0
+        min_id = 0
+        if reverse:
+            offset_id += limit - 1
+
         while True:
             messages = await get_chunk(
                 client=self,
@@ -104,13 +112,21 @@ class GetChatHistory:
                 limit=limit,
                 offset=offset,
                 from_message_id=offset_id,
-                from_date=offset_date
+                from_date=offset_date,
+                max_id=max_id,
+                min_id=min_id
             )
 
             if not messages:
                 return
 
             offset_id = messages[-1].id
+
+            if reverse:
+                messages = list(reversed(messages))
+                offset_id = messages[len(messages)-1].id + limit
+                max_id = offset_id
+                min_id = messages[len(messages)-1].id
 
             for message in messages:
                 yield message
