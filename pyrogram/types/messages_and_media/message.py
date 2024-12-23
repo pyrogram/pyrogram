@@ -257,8 +257,8 @@ class Message(Object, Update):
 
         views (``int``, *optional*):
             Channel post views.
-	    
-	forwards (``int``, *optional*):
+
+        forwards (``int``, *optional*):
             Channel post forwards.
 
         via_bot (:obj:`~pyrogram.types.User`):
@@ -378,6 +378,7 @@ class Message(Object, Update):
         video_chat_ended: "types.VideoChatEnded" = None,
         video_chat_members_invited: "types.VideoChatMembersInvited" = None,
         web_app_data: "types.WebAppData" = None,
+        chat_ttl_period: int = None,
         reply_markup: Union[
             "types.InlineKeyboardMarkup",
             "types.ReplyKeyboardMarkup",
@@ -457,6 +458,7 @@ class Message(Object, Update):
         self.video_chat_members_invited = video_chat_members_invited
         self.web_app_data = web_app_data
         self.reactions = reactions
+        self.chat_ttl_period = chat_ttl_period
 
     @staticmethod
     async def _parse(
@@ -507,6 +509,7 @@ class Message(Object, Update):
             video_chat_ended = None
             video_chat_members_invited = None
             web_app_data = None
+            chat_ttl_period = None
 
             service_type = None
 
@@ -556,6 +559,9 @@ class Message(Object, Update):
             elif isinstance(action, raw.types.MessageActionWebViewDataSentMe):
                 web_app_data = types.WebAppData._parse(action)
                 service_type = enums.MessageServiceType.WEB_APP_DATA
+            elif isinstance(action, raw.types.MessageActionSetMessagesTTL):
+                chat_ttl_period = action.period
+                service_type = enums.MessageServiceType.CHAT_TTL_CHANGED
 
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
@@ -581,6 +587,7 @@ class Message(Object, Update):
                 video_chat_ended=video_chat_ended,
                 video_chat_members_invited=video_chat_members_invited,
                 web_app_data=web_app_data,
+                chat_ttl_period=chat_ttl_period,
                 client=client
                 # TODO: supergroup_chat_created
             )
@@ -1538,7 +1545,7 @@ class Message(Object, Update):
 
             caption_entities (List of :obj:`~pyrogram.types.MessageEntity`):
                 List of special entities that appear in the caption, which can be specified instead of *parse_mode*.
-            
+
             file_name (``str``, *optional*):
                 File name of the document sent.
                 Defaults to file's path basename.
@@ -1554,7 +1561,7 @@ class Message(Object, Update):
 
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
-            
+
             schedule_date (:py:obj:`~datetime.datetime`, *optional*):
                 Date when the message will be automatically sent.
 
@@ -3359,7 +3366,7 @@ class Message(Object, Update):
             emoji (``str``, *optional*):
                 Reaction emoji.
                 Pass "" as emoji (default) to retract the reaction.
-             
+
             big (``bool``, *optional*):
                 Pass True to show a bigger and longer reaction.
                 Defaults to False.
