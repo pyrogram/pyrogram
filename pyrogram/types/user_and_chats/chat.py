@@ -347,6 +347,8 @@ class Chat(Object):
 
             parsed_chat.available_reactions = types.ChatReactions._parse(client, full_chat.available_reactions)
 
+            parsed_chat.location = full_chat.location
+
         return parsed_chat
 
     @staticmethod
