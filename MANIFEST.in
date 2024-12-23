@@ -1,11 +1,13 @@
-## Include
+# Include files
 include README.md COPYING COPYING.lesser NOTICE requirements.txt
 recursive-include compiler *.py *.tl *.tsv *.txt
 recursive-include tests *.py
 
-## Exclude
+# Exclude files
+exclude pyrogram/raw/all.py
+
+# Prune directories
 prune pyrogram/errors/exceptions
 prune pyrogram/raw/functions
 prune pyrogram/raw/types
 prune pyrogram/raw/base
-exclude pyrogram/raw/all.py
