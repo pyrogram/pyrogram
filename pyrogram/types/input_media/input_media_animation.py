@@ -68,7 +68,7 @@ class InputMediaAnimation(InputMedia):
         self,
         media: Union[str, BinaryIO],
         thumb: str = None,
-        caption: str = "",
+        caption: Union[str, BinaryIO] = None,
         parse_mode: Optional["enums.ParseMode"] = None,
         caption_entities: List[MessageEntity] = None,
         width: int = 0,
