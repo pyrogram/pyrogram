@@ -91,6 +91,9 @@ class EditMessageMedia:
         if caption is not None:
             message, entities = (await self.parser.parse(caption, parse_mode)).values()
 
+        is_bytes_io = isinstance(media.media, io.BytesIO)
+        file_name = file_name or (media.media.name if is_bytes_io else os.path.basename(media.media))
+
         if isinstance(media, types.InputMediaPhoto):
             if isinstance(media.media, io.BytesIO) or os.path.isfile(media.media):
                 uploaded_media = await self.invoke(
@@ -124,7 +127,7 @@ class EditMessageMedia:
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
-                            mime_type=self.guess_mime_type(media.media) or "video/mp4",
+                            mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "video/mp4",
                             thumb=await self.save_file(media.thumb),
                             spoiler=media.has_spoiler,
                             file=await self.save_file(media.media),
@@ -136,7 +139,7 @@ class EditMessageMedia:
                                     h=media.height
                                 ),
                                 raw.types.DocumentAttributeFilename(
-                                    file_name=file_name or os.path.basename(media.media)
+                                    file_name=file_name
                                 )
                             ]
                         )
@@ -164,7 +167,7 @@ class EditMessageMedia:
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
-                            mime_type=self.guess_mime_type(media.media) or "audio/mpeg",
+                            mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "audio/mpeg",
                             thumb=await self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[
@@ -174,7 +177,7 @@ class EditMessageMedia:
                                     title=media.title
                                 ),
                                 raw.types.DocumentAttributeFilename(
-                                    file_name=file_name or os.path.basename(media.media)
+                                    file_name=file_name
                                 )
                             ]
                         )
@@ -200,7 +203,7 @@ class EditMessageMedia:
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
-                            mime_type=self.guess_mime_type(media.media) or "video/mp4",
+                            mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "video/mp4",
                             thumb=await self.save_file(media.thumb),
                             spoiler=media.has_spoiler,
                             file=await self.save_file(media.media),
@@ -212,7 +215,7 @@ class EditMessageMedia:
                                     h=media.height
                                 ),
                                 raw.types.DocumentAttributeFilename(
-                                    file_name=file_name or os.path.basename(media.media)
+                                    file_name=file_name
                                 ),
                                 raw.types.DocumentAttributeAnimated()
                             ]
@@ -241,12 +244,12 @@ class EditMessageMedia:
                     raw.functions.messages.UploadMedia(
                         peer=await self.resolve_peer(chat_id),
                         media=raw.types.InputMediaUploadedDocument(
-                            mime_type=self.guess_mime_type(media.media) or "application/zip",
+                            mime_type=(None if is_bytes_io else self.guess_mime_type(media.media)) or "application/zip",
                             thumb=await self.save_file(media.thumb),
                             file=await self.save_file(media.media),
                             attributes=[
                                 raw.types.DocumentAttributeFilename(
-                                    file_name=file_name or os.path.basename(media.media)
+                                    file_name=file_name
                                 )
                             ]
                         )
