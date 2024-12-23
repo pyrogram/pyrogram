@@ -55,6 +55,9 @@ class Chat(Object):
         is_support (``bool``):
             True, if this chat is part of the Telegram support team. Users and bots only.
 
+        is_forum (``bool``, *optional*):
+            True, if the supergroup chat is a forum
+
         title (``str``, *optional*):
             Title, for supergroups, channels and basic group chats.
 
@@ -143,6 +146,7 @@ class Chat(Object):
         is_scam: bool = None,
         is_fake: bool = None,
         is_support: bool = None,
+        is_forum: bool = None,
         title: str = None,
         username: str = None,
         first_name: str = None,
@@ -174,6 +178,7 @@ class Chat(Object):
         self.is_scam = is_scam
         self.is_fake = is_fake
         self.is_support = is_support
+        self.is_forum = is_forum
         self.title = title
         self.username = username
         self.first_name = first_name
@@ -246,6 +251,7 @@ class Chat(Object):
             is_creator=getattr(channel, "creator", None),
             is_scam=getattr(channel, "scam", None),
             is_fake=getattr(channel, "fake", None),
+            is_forum=getattr(channel, "forum", None),
             title=channel.title,
             username=getattr(channel, "username", None),
             photo=types.ChatPhoto._parse(client, getattr(channel, "photo", None), peer_id,

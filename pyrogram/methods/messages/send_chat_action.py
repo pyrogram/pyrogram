@@ -26,7 +26,8 @@ class SendChatAction:
     async def send_chat_action(
         self: "pyrogram.Client",
         chat_id: Union[int, str],
-        action: "enums.ChatAction"
+        action: "enums.ChatAction",
+        message_thread_id: int = None
     ) -> bool:
         """Tell the other party that something is happening on your side.
 
@@ -40,6 +41,10 @@ class SendChatAction:
 
             action (:obj:`~pyrogram.enums.ChatAction`):
                 Type of action to broadcast.
+
+            message_thread_id (```int```):
+                Unique identifier for the target message thread (topic) of the forum.
+                for forum supergroups only.
 
         Returns:
             ``bool``: On success, True is returned.
@@ -75,6 +80,7 @@ class SendChatAction:
         return await self.invoke(
             raw.functions.messages.SetTyping(
                 peer=await self.resolve_peer(chat_id),
-                action=action
+                action=action,
+                top_msg_id=message_thread_id
             )
         )

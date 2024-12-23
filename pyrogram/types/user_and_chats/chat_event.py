@@ -130,6 +130,18 @@ class ChatEvent(Object):
         deleted_invite_link (:obj:`~pyrogram.types.ChatInviteLink`, *optional*):
             Deleted invite link.
             For :obj:`~pyrogram.enums.ChatEventAction.INVITE_LINK_DELETED` action only.
+
+        created_forum_topic (:obj:`~pyrogram.types.ForumTopic`, *optional*):
+            New forum topic.
+            For :obj:`~pyrogram.enums.ChatEvenAction.CREATED_FORUM_TOPIC` action only.
+
+        old_forum_topic, new_forum_topic (:obj:`~pyrogram.types.ForumTopic`, *optional*):
+            Edited forum topic.
+            For :obj:`~pyrogram.enums.ChatEvenAction.EDITED_FORUM_TOPIC` action only.
+
+        deleted_forum_topic (:obj:`~pyrogram.types.ForumTopic`, *optional*):
+            Deleted forum topic.
+            For :obj:`~pyrogram.enums.ChatEvenAction.DELETED_FORUM_TOPIC` action only.
     """
 
     def __init__(
@@ -190,7 +202,12 @@ class ChatEvent(Object):
         old_invite_link: "types.ChatInviteLink" = None,
         new_invite_link: "types.ChatInviteLink" = None,
         revoked_invite_link: "types.ChatInviteLink" = None,
-        deleted_invite_link: "types.ChatInviteLink" = None
+        deleted_invite_link: "types.ChatInviteLink" = None,
+
+        created_forum_topic: "types.ForumTopic" = None,
+        old_forum_topic: "types.ForumTopic" = None,
+        new_forum_topic: "types.ForumTopic" = None,
+        deleted_forum_topic: "types.ForumTopic" = None
     ):
         super().__init__()
 
@@ -251,6 +268,11 @@ class ChatEvent(Object):
         self.new_invite_link = new_invite_link
         self.revoked_invite_link = revoked_invite_link
         self.deleted_invite_link = deleted_invite_link
+
+        self.created_forum_topic = created_forum_topic
+        self.old_forum_topic = old_forum_topic
+        self.new_forum_topic = new_forum_topic
+        self.deleted_forum_topic = deleted_forum_topic
 
     @staticmethod
     async def _parse(
@@ -317,6 +339,11 @@ class ChatEvent(Object):
         new_invite_link: Optional[types.ChatInviteLink] = None
         revoked_invite_link: Optional[types.ChatInviteLink] = None
         deleted_invite_link: Optional[types.ChatInviteLink] = None
+
+        created_forum_topic: Optional[types.ForumTopic] = None
+        old_forum_topic: Optional[types.ForumTopic] = None
+        new_forum_topic: Optional[types.ForumTopic] = None
+        deleted_forum_topic: Optional[types.ForumTopic] = None
 
         if isinstance(action, raw.types.ChannelAdminLogEventActionChangeAbout):
             old_description = action.prev_value
@@ -426,6 +453,19 @@ class ChatEvent(Object):
             deleted_invite_link = types.ChatInviteLink._parse(client, action.invite, users)
             action = enums.ChatEventAction.INVITE_LINK_DELETED
 
+        elif isinstance(action, raw.types.ChannelAdminLogEventActionCreateTopic):
+            created_forum_topic = types.ForumTopic._parse(action.topic)
+            action = enums.ChatEventAction.CREATED_FORUM_TOPIC
+
+        elif isinstance(action, raw.types.ChannelAdminLogEventActionEditTopic):
+            old_forum_topic = types.ForumTopic._parse(action.prev_topic)
+            new_forum_topic = types.ForumTopic._parse(action.new_topic)
+            action = enums.ChatEventAction.EDITED_FORUM_TOPIC
+
+        elif isinstance(action, raw.types.ChannelAdminLogEventActionDeleteTopic):
+            created_forum_topic = types.ForumTopic._parse(action.topic)
+            action = enums.ChatEventAction.DELETED_FORUM_TOPIC
+
         else:
             action = f"{enums.ChatEventAction.UNKNOWN}-{action.QUALNAME}"
 
@@ -485,5 +525,9 @@ class ChatEvent(Object):
             old_invite_link=old_invite_link,
             new_invite_link=new_invite_link,
             revoked_invite_link=revoked_invite_link,
-            deleted_invite_link=deleted_invite_link
+            deleted_invite_link=deleted_invite_link,
+            created_forum_topic=created_forum_topic,
+            old_forum_topic=old_forum_topic,
+            new_forum_topic=new_forum_topic,
+            deleted_forum_topic=deleted_forum_topic
         )

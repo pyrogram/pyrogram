@@ -47,6 +47,7 @@ class SendVideo:
         file_name: str = None,
         supports_streaming: bool = True,
         disable_notification: bool = None,
+        message_thread_id: int = None,
         reply_to_message_id: int = None,
         schedule_date: datetime = None,
         protect_content: bool = None,
@@ -121,6 +122,10 @@ class SendVideo:
                 Sends the message silently.
                 Users will receive a notification with no sound.
 
+            message_thread_id (``int``, *optional*):
+                Unique identifier for the target message thread (topic) of the forum.
+                for forum supergroups only.
+
             reply_to_message_id (``int``, *optional*):
                 If the message is a reply, ID of the original message.
 
@@ -180,6 +185,20 @@ class SendVideo:
         """
         file = None
 
+        reply_to = None
+        if reply_to_message_id or message_thread_id:
+            reply_to_msg_id = None
+            top_msg_id = None
+            if message_thread_id:
+                if not reply_to_message_id:
+                    reply_to_msg_id = message_thread_id
+                else:
+                    reply_to_msg_id = reply_to_message_id
+                    top_msg_id = message_thread_id
+            else:
+                reply_to_msg_id = reply_to_message_id
+            reply_to = raw.types.InputReplyToMessage(reply_to_msg_id=reply_to_msg_id, top_msg_id=top_msg_id)
+
         try:
             if isinstance(video, str):
                 if os.path.isfile(video):
@@ -236,7 +255,7 @@ class SendVideo:
                             peer=await self.resolve_peer(chat_id),
                             media=media,
                             silent=disable_notification or None,
-                            reply_to_msg_id=reply_to_message_id,
+                            reply_to=reply_to,
                             random_id=self.rnd_id(),
                             schedule_date=utils.datetime_to_timestamp(schedule_date),
                             noforwards=protect_content,
