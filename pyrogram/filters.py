@@ -18,7 +18,7 @@
 
 import inspect
 import re
-from typing import Callable, Union, List, Pattern
+from typing import Callable, Union, List, Pattern, Tuple, Set
 
 import pyrogram
 from pyrogram import enums
@@ -871,14 +871,14 @@ class user(Filter, set):
     users container.
 
     Parameters:
-        users (``int`` | ``str`` | ``list``):
+        users (``int`` | ``str`` | ``list`` | ``tuple`` | ``set``):
             Pass one or more user ids/usernames to filter users.
             For you yourself, "me" or "self" can be used as well.
             Defaults to None (no users).
     """
 
-    def __init__(self, users: Union[int, str, List[Union[int, str]]] = None):
-        users = [] if users is None else users if isinstance(users, list) else [users]
+    def __init__(self, users: Union[int, str, List[Union[int, str]], Tuple[Union[int, str]], Set[Union[int, str]]] = None):
+        users = [] if users is None else users if isinstance(users, (list, tuple, set)) else [users]
 
         super().__init__(
             "me" if u in ["me", "self"]
