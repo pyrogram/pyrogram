@@ -33,6 +33,9 @@ class PollOption(Object):
 
         data (``bytes``):
             The data this poll option is holding.
+
+        correct (``bool``, *optional*):
+            the option is the correct answer
     """
 
     def __init__(
@@ -41,10 +44,12 @@ class PollOption(Object):
         client: "pyrogram.Client" = None,
         text: str,
         voter_count: int,
-        data: bytes
+        data: bytes,
+        correct: bool = None
     ):
         super().__init__(client)
 
         self.text = text
         self.voter_count = voter_count
+        self.correct = correct
         self.data = data
