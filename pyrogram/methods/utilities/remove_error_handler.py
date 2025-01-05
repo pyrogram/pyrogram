@@ -16,16 +16,20 @@
 #  You should have received a copy of the GNU Lesser General Public License
 #  along with Pyrogram.  If not, see <http://www.gnu.org/licenses/>.
 
-from .callback_query_handler import CallbackQueryHandler
-from .chat_join_request_handler import ChatJoinRequestHandler
-from .chat_member_updated_handler import ChatMemberUpdatedHandler
-from .chosen_inline_result_handler import ChosenInlineResultHandler
-from .deleted_messages_handler import DeletedMessagesHandler
-from .disconnect_handler import DisconnectHandler
-from .edited_message_handler import EditedMessageHandler
-from .inline_query_handler import InlineQueryHandler
-from .message_handler import MessageHandler
-from .poll_handler import PollHandler
-from .raw_update_handler import RawUpdateHandler
-from .user_status_handler import UserStatusHandler
-from .error_handler import ErrorHandler
+import pyrogram
+
+
+class RemoveErrorHandler:
+    def remove_error_handler(
+        self: "pyrogram.Client",
+        error: "Exception | tuple[Exception]" = Exception
+    ):
+        """Remove a previously-registered error handler. (using exception classes)
+
+        Parameters:
+            error (``Exception``):
+                The error(s) for handlers to be removed.
+        """
+        for handler in self.dispatcher.error_handlers:
+            if handler.check_remove(error):
+                self.dispatcher.error_handlers.remove(handler)

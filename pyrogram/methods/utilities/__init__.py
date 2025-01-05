@@ -24,16 +24,18 @@ from .run import Run
 from .start import Start
 from .stop import Stop
 from .stop_transmission import StopTransmission
+from .remove_error_handler import RemoveErrorHandler
 
 
 class Utilities(
     AddHandler,
     ExportSessionString,
     RemoveHandler,
+    RemoveErrorHandler,
     Restart,
     Run,
     Start,
     Stop,
-    StopTransmission
+    StopTransmission,
 ):
     pass
