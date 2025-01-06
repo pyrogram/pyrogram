@@ -258,7 +258,7 @@ class Message(Object, Update):
         views (``int``, *optional*):
             Channel post views.
 	    
-	forwards (``int``, *optional*):
+        forwards (``int``, *optional*):
             Channel post forwards.
 
         via_bot (:obj:`~pyrogram.types.User`):
@@ -384,7 +384,7 @@ class Message(Object, Update):
             "types.ReplyKeyboardRemove",
             "types.ForceReply"
         ] = None,
-        reactions: List["types.Reaction"] = None
+        reactions: Union[List["types.Reaction"], "types.MessageReactions"] = None
     ):
         super().__init__(client)
 
@@ -456,7 +456,13 @@ class Message(Object, Update):
         self.video_chat_ended = video_chat_ended
         self.video_chat_members_invited = video_chat_members_invited
         self.web_app_data = web_app_data
-        self.reactions = reactions
+        self._reactions = reactions
+
+    @property
+    def reactions(self) -> Optional["types.MessageReactions"]:
+        if isinstance(self._reactions, types.MessageReactions):
+            return self._reactions
+        return None
 
     @staticmethod
     async def _parse(
@@ -756,7 +762,7 @@ class Message(Object, Update):
             from_user = types.User._parse(client, users.get(user_id, None))
             sender_chat = types.Chat._parse(client, message, users, chats, is_chat=False) if not from_user else None
 
-            reactions = types.MessageReactions._parse(client, message.reactions)
+            reactions = types.MessageReactions._parse(client, message._reactions)
 
             parsed_message = Message(
                 id=message.id,
