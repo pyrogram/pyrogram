@@ -159,7 +159,7 @@ class HTML:
             """
             Parses a single entity and returns (start_tag, start), (end_tag, end)
             """
-            entity_type = entity.type
+            entity_type = MessageEntityType(entity.__class__)
             start = entity.offset
             end = start + entity.length
 
